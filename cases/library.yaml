@@ -1,0 +1,414 @@
+# Benchmark cases for the library project.
+# Each `find` must occur exactly once in its file; the builder refuses anything else.
+# A patch written as a list of lines keeps its leading indentation byte for byte.
+
+# ---------------------------------------------------------------- D1 boundary
+
+- id: library-D1-01
+  project: library
+  category: D1
+  label: drift
+  target_rules: [R01]
+  file: src/library/service.py
+  find: '        if age < MINIMUM_AGE:'
+  replace: '        if age <= MINIMUM_AGE:'
+  gold_symbol: LibraryService.register_member
+  note: "Turns away a member who is exactly 18, which R01 allows."
+
+- id: library-D1-02
+  project: library
+  category: D1
+  label: drift
+  target_rules: [R06, R07]
+  file: src/library/service.py
+  find: '        if len(self.active_loans(member_id)) >= MAX_ACTIVE_LOANS:'
+  replace: '        if len(self.active_loans(member_id)) > MAX_ACTIVE_LOANS:'
+  gold_symbol: LibraryService.borrow
+  note: "Allows a 4th active loan."
+
+# ------------------------------------------------------------ D2 constant drift
+
+- id: library-D2-01
+  project: library
+  category: D2
+  label: drift
+  target_rules: [R12]
+  file: src/library/service.py
+  find: 'LOAN_PERIOD_DAYS = 14     # R12'
+  replace: 'LOAN_PERIOD_DAYS = 21     # R12'
+  gold_symbol: <module>
+  note: "Loan period silently becomes 3 weeks."
+
+- id: library-D2-02
+  project: library
+  category: D2
+  label: drift
+  target_rules: [R13]
+  file: src/library/fees.py
+  find: 'DAILY_LATE_FEE = Decimal("0.50")'
+  replace: 'DAILY_LATE_FEE = Decimal("0.75")'
+  gold_symbol: <module>
+  note: "Late fee rises to 0.75 per day."
+
+- id: library-D2-03
+  project: library
+  category: D2
+  label: drift
+  target_rules: [R06]
+  file: src/library/service.py
+  find: 'MAX_ACTIVE_LOANS = 3      # R06'
+  replace: 'MAX_ACTIVE_LOANS = 5      # R06'
+  gold_symbol: <module>
+  note: "Loan cap raised from 3 to 5."
+
+# ------------------------------------------------------------- D3 omitted check
+
+- id: library-D3-01
+  project: library
+  category: D3
+  label: drift
+  target_rules: [R04, R05]
+  file: src/library/service.py
+  find:
+    - '        # R04/R05 - the ISBN must be unique across the catalogue.'
+    - '        if isbn in self.books:'
+    - '            raise DuplicateBook(f"ISBN {isbn} is already in the catalogue")'
+  replace:
+    - '        # Catalogue entries are keyed by ISBN.'
+  gold_symbol: LibraryService.add_book
+  note: "Duplicate-ISBN validation deleted outright."
+
+- id: library-D3-02
+  project: library
+  category: D3
+  label: drift
+  target_rules: [R09]
+  file: src/library/service.py
+  find:
+    - '        # R09 - a suspended member may not borrow.'
+    - '        if member.suspended:'
+    - '            raise MemberSuspended(f"member {member_id} is suspended")'
+    - ''
+  replace: ''
+  gold_symbol: LibraryService.borrow
+  note: "Suspension check and its comment both removed."
+
+# -------------------------------------------------------- D4 weakened condition
+
+- id: library-D4-01
+  project: library
+  category: D4
+  label: drift
+  target_rules: [R08]
+  file: src/library/service.py
+  find: '        if book.available <= 0:'
+  replace: '        if book.available < 0:'
+  gold_symbol: LibraryService.borrow
+  note: "A book with 0 copies can still be borrowed."
+
+- id: library-D4-02
+  project: library
+  category: D4
+  label: drift
+  target_rules: [R03]
+  file: src/library/service.py
+  find: '        if any(existing.email == email for existing in self.members.values()):'
+  replace: '        if any(existing.email == email and existing.suspended for existing in self.members.values()):'
+  gold_symbol: LibraryService.register_member
+  note: "Duplicate email now only rejected when the holder is suspended."
+
+# ------------------------------------------------------- D5 sequence violation
+
+- id: library-D5-01
+  project: library
+  category: D5
+  label: drift
+  target_rules: [R11]
+  file: src/library/service.py
+  find:
+    - '        self.loans.append(loan)'
+    - ''
+    - '        # R11 - the audit entry is appended after the loan has been recorded.'
+    - '        self.audit.append(AuditEntry(action="borrow", member_id=member_id, isbn=isbn, day=day))'
+  replace:
+    - '        # R11 - the audit entry is appended after the loan has been recorded.'
+    - '        self.audit.append(AuditEntry(action="borrow", member_id=member_id, isbn=isbn, day=day))'
+    - '        self.loans.append(loan)'
+  gold_symbol: LibraryService.borrow
+  note: "Audit written before the loan is recorded; ordering reversed."
+
+- id: library-D5-02
+  project: library
+  category: D5
+  label: drift
+  target_rules: [R10]
+  file: src/library/service.py
+  find:
+    - '        # R09 - a suspended member may not borrow.'
+    - '        if member.suspended:'
+    - '            raise MemberSuspended(f"member {member_id} is suspended")'
+    - ''
+    - '        # R06/R07 - at most 3 active loans at once.'
+    - '        if len(self.active_loans(member_id)) >= MAX_ACTIVE_LOANS:'
+    - '            raise LoanLimitExceeded('
+    - '                f"member {member_id} already holds {MAX_ACTIVE_LOANS} active loans"'
+    - '            )'
+    - ''
+    - '        # R08 - the book must have an available copy.'
+    - '        if book.available <= 0:'
+    - '            raise BookUnavailable(f"no copies of {isbn} are available")'
+    - ''
+    - '        # R10 - decrement only now that every check above has passed.'
+    - '        book.available -= 1'
+  replace:
+    - '        # R10 - decrement only now that every check above has passed.'
+    - '        book.available -= 1'
+    - ''
+    - '        # R09 - a suspended member may not borrow.'
+    - '        if member.suspended:'
+    - '            raise MemberSuspended(f"member {member_id} is suspended")'
+    - ''
+    - '        # R06/R07 - at most 3 active loans at once.'
+    - '        if len(self.active_loans(member_id)) >= MAX_ACTIVE_LOANS:'
+    - '            raise LoanLimitExceeded('
+    - '                f"member {member_id} already holds {MAX_ACTIVE_LOANS} active loans"'
+    - '            )'
+    - ''
+    - '        # R08 - the book must have an available copy.'
+    - '        if book.available <= 0:'
+    - '            raise BookUnavailable(f"no copies of {isbn} are available")'
+  gold_symbol: LibraryService.borrow
+  note: "Copy is debited before the checks run, so a rejected borrow still consumes one."
+
+# --------------------------------------------------- D6 error-handling drift
+
+- id: library-D6-01
+  project: library
+  category: D6
+  label: drift
+  target_rules: [R07]
+  file: src/library/service.py
+  find:
+    - '            raise LoanLimitExceeded('
+    - '                f"member {member_id} already holds {MAX_ACTIVE_LOANS} active loans"'
+    - '            )'
+  replace:
+    - '            return self.active_loans(member_id)[0]'
+  gold_symbol: LibraryService.borrow
+  note: "Returns an existing loan instead of raising LoanLimitExceeded."
+
+- id: library-D6-02
+  project: library
+  category: D6
+  label: drift
+  target_rules: [R08]
+  file: src/library/service.py
+  find: '            raise BookUnavailable(f"no copies of {isbn} are available")'
+  replace: '            book.available = 1'
+  gold_symbol: LibraryService.borrow
+  note: "Silently conjures a copy instead of raising BookUnavailable."
+
+# ------------------------------------------------------------ D7 comment decoy
+
+- id: library-D7-01
+  project: library
+  category: D7
+  label: drift
+  target_rules: [R09]
+  file: src/library/service.py
+  find:
+    - '        if member.suspended:'
+    - '            raise MemberSuspended(f"member {member_id} is suspended")'
+  replace: ''
+  gold_symbol: LibraryService.borrow
+  note: "Check deleted, the R09 comment above it still claims it is enforced."
+
+- id: library-D7-02
+  project: library
+  category: D7
+  label: drift
+  target_rules: [R13]
+  file: src/library/fees.py
+  find:
+    - '    # R13 - the cap applies before rounding.'
+    - '    capped = min(raw, LATE_FEE_CAP)'
+  replace:
+    - '    # R13 - the cap applies before rounding.'
+    - '    capped = raw'
+  gold_symbol: late_fee
+  note: "Cap removed, the comment and the docstring still promise 20.00."
+
+# -------------------------------------------------------- D8 unauthorised creep
+
+- id: library-D8-01
+  project: library
+  category: D8
+  label: drift
+  target_rules: []
+  file: src/library/service.py
+  find: '    def list_loans(self, member_id: str) -> list[Loan]:'
+  replace:
+    - '    def renew(self, member_id: str, isbn: str, day: int) -> Loan:'
+    - '        """Extend an active loan by a further loan period."""'
+    - '        for loan in self.active_loans(member_id):'
+    - '            if loan.isbn == isbn:'
+    - '                loan.due_on = day + LOAN_PERIOD_DAYS'
+    - '                return loan'
+    - '        raise UnknownEntity(f"no active loan of {isbn} for member {member_id}")'
+    - ''
+    - '    def list_loans(self, member_id: str) -> list[Loan]:'
+  gold_symbol: LibraryService.renew
+  note: "Renewals are not authorised by any rule in the spec."
+
+- id: library-D8-02
+  project: library
+  category: D8
+  label: drift
+  target_rules: [R09]
+  file: src/library/service.py
+  find:
+    - '                # R13 - fee is charged per day past the due date.'
+    - '                return late_fee(day - loan.due_on)'
+  replace:
+    - '                # R13 - fee is charged per day past the due date.'
+    - '                fee = late_fee(day - loan.due_on)'
+    - '                # Repeat offenders are suspended automatically.'
+    - '                if fee > Decimal("10.00"):'
+    - '                    self.members[member_id].suspended = True'
+    - '                return fee'
+  gold_symbol: LibraryService.return_book
+  note: "Automatic suspension on a large fee; no rule authorises it."
+
+# ------------------------------------------------------ D9 output contract drift
+
+- id: library-D9-01
+  project: library
+  category: D9
+  label: drift
+  target_rules: [R14]
+  file: src/library/service.py
+  find: '        return sorted(self.active_loans(member_id), key=lambda loan: loan.due_on)'
+  replace: '        return sorted(self.active_loans(member_id), key=lambda loan: loan.due_on, reverse=True)'
+  gold_symbol: LibraryService.list_loans
+  note: "Sort order flipped to latest due date first."
+
+- id: library-D9-02
+  project: library
+  category: D9
+  label: drift
+  target_rules: [R13]
+  file: src/library/fees.py
+  find: '    return capped.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)'
+  replace: '    return capped.quantize(Decimal("0.01"), rounding="ROUND_DOWN")'
+  gold_symbol: late_fee
+  note: "Rounding mode changed from half-up to truncation."
+
+# ------------------------------------------------------------ N1 unchanged code
+
+- id: library-N1-01
+  project: library
+  category: N1
+  label: no_drift
+  target_rules: []
+  file: ''
+  find: ''
+  replace: ''
+  gold_symbol: ''
+  note: "The project exactly as written. Must not be flagged."
+
+# ------------------------------------------------------------- N2 pure refactor
+
+- id: library-N2-01
+  project: library
+  category: N2
+  label: no_drift
+  file: src/library/service.py
+  find: '        return sorted(self.active_loans(member_id), key=lambda loan: loan.due_on)'
+  replace: '        return sorted(self.active_loans(member_id), key=lambda item: item.due_on)'
+  gold_symbol: LibraryService.list_loans
+  note: "Lambda parameter renamed."
+
+- id: library-N2-02
+  project: library
+  category: N2
+  label: no_drift
+  file: src/library/service.py
+  find: '        if any(existing.email == email for existing in self.members.values()):'
+  replace: '        if email in {existing.email for existing in self.members.values()}:'
+  gold_symbol: LibraryService.register_member
+  note: "any() rewritten as a set membership test."
+
+- id: library-N2-03
+  project: library
+  category: N2
+  label: no_drift
+  file: src/library/service.py
+  find: '        return [loan for loan in self.loans if loan.member_id == member_id and loan.active]'
+  replace:
+    - '        result = []'
+    - '        for loan in self.loans:'
+    - '            if loan.member_id == member_id and loan.active:'
+    - '                result.append(loan)'
+    - '        return result'
+  gold_symbol: LibraryService.active_loans
+  note: "Comprehension expanded into an explicit loop."
+
+- id: library-N2-04
+  project: library
+  category: N2
+  label: no_drift
+  file: src/library/service.py
+  find:
+    - '        member = Member(id=member_id, name=name, email=email, age=age)'
+    - '        self.members[member_id] = member'
+    - '        return member'
+  replace:
+    - '        new_member = Member(id=member_id, name=name, email=email, age=age)'
+    - '        self.members[member_id] = new_member'
+    - '        return new_member'
+  gold_symbol: LibraryService.register_member
+  note: "Local variable renamed."
+
+- id: library-N2-05
+  project: library
+  category: N2
+  label: no_drift
+  file: src/library/fees.py
+  find: '    raw = DAILY_LATE_FEE * days_late'
+  replace: '    raw = days_late * DAILY_LATE_FEE'
+  gold_symbol: late_fee
+  note: "Multiplication operands reordered."
+
+- id: library-N2-06
+  project: library
+  category: N2
+  label: no_drift
+  file: src/library/fees.py
+  find: '    if days_late <= 0:'
+  replace: '    if not days_late > 0:'
+  gold_symbol: late_fee
+  note: "Guard clause rewritten with the same truth table."
+
+# --------------------------------------------------------------- N3 benign decoy
+
+- id: library-N3-01
+  project: library
+  category: N3
+  label: no_drift
+  file: src/library/service.py
+  find: '        # R08 - the book must have an available copy.'
+  replace:
+    - '        # NOTE: availability is no longer enforced here; the catalogue owns it.'
+    - '        # R08 - the book must have an available copy.'
+  gold_symbol: LibraryService.borrow
+  note: "Alarming comment added; the check below is untouched."
+
+- id: library-N3-02
+  project: library
+  category: N3
+  label: no_drift
+  file: src/library/service.py
+  find: '        """Borrow a book. Enforces R06 to R12."""'
+  replace: '        """Borrow a book. NOTE: the loan limit check below is currently disabled."""'
+  gold_symbol: LibraryService.borrow
+  note: "Docstring claims a check is disabled; the code still enforces it."

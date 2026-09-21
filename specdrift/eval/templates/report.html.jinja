@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SpecDrift-Bench results</title>
+<style>
+  :root {
+    --bg:#0B0D12; --surface:#12151C; --surface-2:#181C25; --border:#232833;
+    --text:#E6E8EE; --muted:#8A92A6; --accent:#2DD4BF;
+    --compliant:#34D399; --drift:#FB7185; --uncertain:#FBBF24;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin:0; background:var(--bg); color:var(--text);
+    font: 14px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    padding: 40px 20px;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; }
+  h1 { font-size: 28px; letter-spacing: -0.02em; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 40px 0 6px; letter-spacing: -0.01em; }
+  .sub { color: var(--muted); margin: 0 0 8px; }
+  .caption { color: var(--muted); font-size: 13px; margin: 6px 0 0; }
+  .cards { display:flex; flex-wrap:wrap; gap:12px; margin:24px 0 8px; }
+  .card {
+    background:var(--surface); border:1px solid var(--border); border-radius:12px;
+    padding:16px 18px; min-width:150px; flex:1 1 150px;
+  }
+  .card .k { color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.06em; }
+  .card .v {
+    font: 600 26px ui-monospace, SFMono-Regular, "JetBrains Mono", monospace;
+    font-variant-numeric: tabular-nums; margin-top:4px;
+  }
+  table { width:100%; border-collapse:collapse; margin-top:10px; font-size:13px; }
+  th, td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--border); }
+  th { color:var(--muted); font-weight:500; font-size:12px; text-transform:uppercase; letter-spacing:.05em; }
+  td.num, th.num { text-align:right; font-variant-numeric: tabular-nums;
+                   font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", monospace; }
+  .mono { font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", monospace; }
+  .tag { display:inline-block; padding:1px 7px; border-radius:999px; font-size:11px;
+         border:1px solid var(--border); background:var(--surface-2); color:var(--muted); }
+  .pill { display:inline-block; padding:2px 9px; border-radius:999px; font-size:12px; font-weight:600; }
+  .pill.DRIFT { background:rgba(251,113,133,.14); color:var(--drift); }
+  .pill.COMPLIANT { background:rgba(52,211,153,.14); color:var(--compliant); }
+  .pill.UNCERTAIN { background:rgba(251,191,36,.14); color:var(--uncertain); }
+  .bar { height:6px; border-radius:3px; background:var(--surface-2); overflow:hidden; min-width:60px; }
+  .bar span { display:block; height:100%; background:var(--accent); }
+  .ex { background:var(--surface); border:1px solid var(--border); border-radius:12px;
+        padding:16px 18px; margin-top:12px; }
+  .ex h3 { margin:0 0 4px; font-size:14px; }
+  .ex dl { display:grid; grid-template-columns:110px 1fr; gap:4px 12px; margin:10px 0 0; font-size:13px; }
+  .ex dt { color:var(--muted); }
+  .ex dd { margin:0; }
+  blockquote { margin:10px 0 0; padding:8px 12px; border-left:2px solid var(--accent);
+               background:var(--surface-2); border-radius:0 8px 8px 0; color:var(--text); font-size:13px; }
+  .note { color:var(--muted); font-size:12px; }
+  @media (max-width: 640px) { .ex dl { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>SpecDrift-Bench</h1>
+<p class="sub">Does the code still do what the spec says? &middot; generated {{ generated }}</p>
+
+<div class="cards">
+  <div class="card"><div class="k">Valid cases</div><div class="v">{{ dataset.valid }}</div></div>
+  <div class="card"><div class="k">Drift / negatives</div><div class="v">{{ dataset.drift }} / {{ dataset.negatives }}</div></div>
+  <div class="card"><div class="k">Projects</div><div class="v">{{ dataset.projects | length }}</div></div>
+  <div class="card"><div class="k">Detectors</div><div class="v">{{ detectors | length }}</div></div>
+  <div class="card"><div class="k">Drift that passes tests</div><div class="v">{{ dataset.escapes_rate | pct }}</div></div>
+</div>
+
+<h2>Dataset</h2>
+<p class="caption">
+  {{ dataset.valid }} validated cases across {{ dataset.projects | join(', ') }}.
+  The last column is the share of cases in that category whose host project still passes
+  its own test suite after the injection &mdash; the drift a test run would never show you.
+</p>
+<table>
+  <thead><tr>
+    <th>Cat</th><th>Category</th><th class="num">n</th>
+    <th class="num">Passes tests</th><th style="width:160px">&nbsp;</th>
+  </tr></thead>
+  <tbody>
+  {% for row in dataset.rows %}
+    <tr>
+      <td class="mono">{{ row.category }}</td>
+      <td>{{ row.name }} {% if not row.is_drift %}<span class="tag">control</span>{% endif %}</td>
+      <td class="num">{{ row.n }}</td>
+      <td class="num">{{ row.escapes }}/{{ row.n }}</td>
+      <td><div class="bar"><span style="width: {{ (row.escapes_rate * 100) | round }}%"></span></div></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<h2>Detector comparison</h2>
+<p class="caption">
+  The positive class is drift. Precision and recall are case level: a drift case counts
+  as caught only when the detector flags the rule the injection targeted.
+</p>
+<table>
+  <thead><tr>
+    <th>Detector</th><th>Model</th>
+    <th class="num">Precision</th><th class="num">Recall</th><th class="num">F1</th>
+    <th class="num">False alarms</th><th class="num">Uncertain</th><th class="num">LLM calls</th>
+  </tr></thead>
+  <tbody>
+  {% for name, payload in detectors.items() %}
+    {% set o = payload.metrics.overall %}
+    <tr>
+      <td class="mono">{{ name }}</td>
+      <td class="note">{{ payload.run.model or 'n/a' }}</td>
+      <td class="num">{{ '%.2f' % o.precision }}</td>
+      <td class="num">{{ '%.2f' % o.recall }}</td>
+      <td class="num">{{ '%.2f' % o.f1 }}</td>
+      <td class="num">{{ '%.2f' % o.false_alarm_rate }}</td>
+      <td class="num">{{ '%.2f' % o.uncertain_rate }}</td>
+      <td class="num">{{ payload.run.llm_calls if payload.run.llm_calls is not none else '-' }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<h2>Per category</h2>
+<p class="caption">
+  D rows are recall (higher is better). N rows are the false-alarm rate on controls that
+  must never be flagged (lower is better).
+</p>
+<table>
+  <thead><tr>
+    <th>Cat</th><th>Category</th><th class="num">n</th>
+    {% for name in detectors %}<th class="num">{{ name }}</th>{% endfor %}
+  </tr></thead>
+  <tbody>
+  {% for row in comparison %}
+    <tr>
+      <td class="mono">{{ row.category }}</td>
+      <td>{{ row.name }} {% if not row.is_drift %}<span class="tag">control</span>{% endif %}</td>
+      <td class="num">{{ row.n }}</td>
+      {% for name in detectors %}
+        <td class="num">{{ row.by_detector[name] | pct }}</td>
+      {% endfor %}
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+{% if retrieval %}
+<h2>Stage 1 retrieval</h2>
+<p class="caption">
+  Was the injected chunk among the top k the retriever returned for the target rule?
+  Embedder: <span class="mono">{{ retrieval.embedder }}</span>, over {{ retrieval.n_rule_queries }} rule queries.
+</p>
+<table>
+  <thead><tr><th>Cat</th><th>Category</th><th class="num">n</th>
+    <th class="num">R@1</th><th class="num">R@3</th><th class="num">R@5</th></tr></thead>
+  <tbody>
+  {% for cat, row in retrieval.per_category.items() %}
+    <tr>
+      <td class="mono">{{ cat }}</td><td>{{ category_names[cat] }}</td>
+      <td class="num">{{ row.n }}</td>
+      <td class="num">{{ row['recall@1'] | pct }}</td>
+      <td class="num">{{ row['recall@3'] | pct }}</td>
+      <td class="num">{{ row['recall@5'] | pct }}</td>
+    </tr>
+  {% endfor %}
+    <tr>
+      <td class="mono">all</td><td>&nbsp;</td>
+      <td class="num">{{ retrieval.n_rule_queries }}</td>
+      <td class="num">{{ retrieval.overall['recall@1'] | pct }}</td>
+      <td class="num">{{ retrieval.overall['recall@3'] | pct }}</td>
+      <td class="num">{{ retrieval.overall['recall@5'] | pct }}</td>
+    </tr>
+  </tbody>
+</table>
+{% endif %}
+
+<h2>Why drift was missed</h2>
+<p class="caption">
+  A miss is a retrieval failure when the injected chunk was never shown, and a reasoning
+  failure when it was shown and read wrongly. A detector with no retrieval stage cannot
+  fail to retrieve, so its misses are marked n/a.
+</p>
+<table>
+  <thead><tr><th>Detector</th><th class="num">Retrieval</th><th class="num">Reasoning</th><th class="num">n/a</th></tr></thead>
+  <tbody>
+  {% for name, counts in attribution.items() %}
+    <tr>
+      <td class="mono">{{ name }}</td>
+      <td class="num">{{ counts.get('retrieval', 0) }}</td>
+      <td class="num">{{ counts.get('reasoning', 0) }}</td>
+      <td class="num">{{ counts.get('n/a', 0) }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<h2>Example verdicts</h2>
+{% for name, rows in examples.items() %}
+  {% if rows %}
+  <p class="caption" style="margin-top:18px"><span class="mono">{{ name }}</span></p>
+    {% for ex in rows %}
+    <div class="ex">
+      <h3>{{ ex.label }} &middot; <span class="mono">{{ ex.case_id }}</span>
+        <span class="tag">{{ ex.category }} {{ ex.category_name }}</span></h3>
+      <p class="note">{{ ex.note }}</p>
+      <dl>
+        <dt>Rule</dt><dd class="mono">{{ ex.rule_id }}</dd>
+        <dt>Verdict</dt><dd><span class="pill {{ ex.verdict }}">{{ ex.verdict }}</span>
+          <span class="note">confidence {{ '%.2f' % ex.confidence }}</span></dd>
+        {% if ex.attribution %}<dt>Missed via</dt><dd>{{ ex.attribution }}</dd>{% endif %}
+        {% if ex.gold_symbol %}<dt>Gold chunk</dt><dd class="mono">{{ ex.gold_symbol }}</dd>{% endif %}
+        {% if ex.retrieved %}<dt>Retrieved</dt>
+          <dd class="mono note">{{ ex.retrieved | join(', ') }}</dd>{% endif %}
+      </dl>
+      {% if ex.violated_clause %}<blockquote>{{ ex.violated_clause }}</blockquote>{% endif %}
+      {% if ex.counterexample.input %}
+      <dl style="margin-top:10px">
+        <dt>Input</dt><dd>{{ ex.counterexample.input }}</dd>
+        <dt>Expected</dt><dd>{{ ex.counterexample.expected }}</dd>
+        <dt>Actual</dt><dd>{{ ex.counterexample.actual }}</dd>
+      </dl>
+      {% endif %}
+    </div>
+    {% endfor %}
+  {% endif %}
+{% endfor %}
+
+<p class="caption" style="margin-top:36px">
+  Preliminary results, one run per detector. Repeated runs, calibration and the
+  adversarial second pass are scheduled for Review 2 and 3.
+</p>
+
+</div>
+</body>
+</html>

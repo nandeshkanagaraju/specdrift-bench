@@ -1,0 +1,415 @@
+# Benchmark cases for the wallet project.
+
+# ---------------------------------------------------------------- D1 boundary
+
+- id: wallet-D1-01
+  project: wallet
+  category: D1
+  label: drift
+  target_rules: [R01, R02]
+  file: src/wallet/service.py
+  find: '        if balance < ZERO:'
+  replace: '        if balance <= ZERO:'
+  gold_symbol: WalletService.open_account
+  note: "Rejects a zero opening balance, which R01 allows."
+
+- id: wallet-D1-02
+  project: wallet
+  category: D1
+  label: drift
+  target_rules: [R07, R08]
+  file: src/wallet/service.py
+  find: '        if self.daily.total(sender_id, day) + amount > DAILY_SEND_LIMIT:'
+  replace: '        if self.daily.total(sender_id, day) + amount >= DAILY_SEND_LIMIT:'
+  gold_symbol: WalletService.transfer
+  note: "Rejects a transfer that lands exactly on the 1000.00 limit."
+
+- id: wallet-D1-03
+  project: wallet
+  category: D1
+  label: drift
+  target_rules: [R06]
+  file: src/wallet/service.py
+  find: '        if sender.balance < amount + fee:'
+  replace: '        if sender.balance <= amount + fee:'
+  gold_symbol: WalletService.transfer
+  note: "Refuses a transfer the balance covers exactly."
+
+# ------------------------------------------------------------ D2 constant drift
+
+- id: wallet-D2-01
+  project: wallet
+  category: D2
+  label: drift
+  target_rules: [R07]
+  file: src/wallet/service.py
+  find: 'DAILY_SEND_LIMIT = Decimal("1000.00")   # R07'
+  replace: 'DAILY_SEND_LIMIT = Decimal("2500.00")   # R07'
+  gold_symbol: <module>
+  note: "Daily limit raised from 1000.00 to 2500.00."
+
+- id: wallet-D2-02
+  project: wallet
+  category: D2
+  label: drift
+  target_rules: [R11]
+  file: src/wallet/fees.py
+  find: 'FEE_RATE = Decimal("0.01")'
+  replace: 'FEE_RATE = Decimal("0.02")'
+  gold_symbol: <module>
+  note: "Fee doubled from 1% to 2%."
+
+- id: wallet-D2-03
+  project: wallet
+  category: D2
+  label: drift
+  target_rules: [R11]
+  file: src/wallet/fees.py
+  find: 'MAX_FEE = Decimal("5.00")'
+  replace: 'MAX_FEE = Decimal("50.00")'
+  gold_symbol: <module>
+  note: "Fee cap raised tenfold."
+
+# ------------------------------------------------------------- D3 omitted check
+
+- id: wallet-D3-01
+  project: wallet
+  category: D3
+  label: drift
+  target_rules: [R07, R08]
+  file: src/wallet/service.py
+  find:
+    - '        # R07/R08 - the daily total of sent amounts may not exceed the limit.'
+    - '        if self.daily.total(sender_id, day) + amount > DAILY_SEND_LIMIT:'
+    - '            raise DailyLimitExceeded('
+    - '                f"account {sender_id} would exceed the {DAILY_SEND_LIMIT} daily limit"'
+    - '            )'
+    - ''
+  replace: ''
+  gold_symbol: WalletService.transfer
+  note: "Daily-limit check deleted entirely."
+
+- id: wallet-D3-02
+  project: wallet
+  category: D3
+  label: drift
+  target_rules: [R03]
+  file: src/wallet/service.py
+  find:
+    - '        # R03 - the account id must be unused.'
+    - '        if account_id in self.accounts:'
+    - '            raise DuplicateAccount(f"account {account_id} already exists")'
+    - ''
+  replace: ''
+  gold_symbol: WalletService.open_account
+  note: "Duplicate account ids silently overwrite the existing account."
+
+# -------------------------------------------------------- D4 weakened condition
+
+- id: wallet-D4-01
+  project: wallet
+  category: D4
+  label: drift
+  target_rules: [R09]
+  file: src/wallet/service.py
+  find: '        if sender.frozen:'
+  replace: '        if sender.frozen and sender.balance <= ZERO:'
+  gold_symbol: WalletService.transfer
+  note: "A frozen account with money can still send."
+
+- id: wallet-D4-02
+  project: wallet
+  category: D4
+  label: drift
+  target_rules: [R04, R05]
+  file: src/wallet/service.py
+  find:
+    - '        # R04/R05 - the amount must be strictly positive.'
+    - '        if amount <= ZERO:'
+  replace:
+    - '        # R04/R05 - the amount must be strictly positive.'
+    - '        if amount < ZERO:'
+  gold_symbol: WalletService.transfer
+  note: "A zero-value transfer is accepted."
+
+# ------------------------------------------------------- D5 sequence violation
+
+- id: wallet-D5-01
+  project: wallet
+  category: D5
+  label: drift
+  target_rules: [R12]
+  file: src/wallet/service.py
+  find:
+    - '        sender.balance -= amount + fee'
+    - '        recipient.balance += amount'
+    - '        self.daily.add(sender_id, day, amount)'
+    - ''
+    - '        # R12 - the audit entry is appended after both balances have been updated.'
+    - '        self._record("transfer", sender_id, recipient_id, amount, fee, day)'
+  replace:
+    - '        # R12 - the audit entry is appended after both balances have been updated.'
+    - '        self._record("transfer", sender_id, recipient_id, amount, fee, day)'
+    - ''
+    - '        sender.balance -= amount + fee'
+    - '        recipient.balance += amount'
+    - '        self.daily.add(sender_id, day, amount)'
+  gold_symbol: WalletService.transfer
+  note: "Audit written before the balances move; ordering reversed."
+
+- id: wallet-D5-02
+  project: wallet
+  category: D5
+  label: drift
+  target_rules: [R10]
+  file: src/wallet/service.py
+  find:
+    - '        # R07/R08 - the daily total of sent amounts may not exceed the limit.'
+    - '        if self.daily.total(sender_id, day) + amount > DAILY_SEND_LIMIT:'
+    - '            raise DailyLimitExceeded('
+    - '                f"account {sender_id} would exceed the {DAILY_SEND_LIMIT} daily limit"'
+    - '            )'
+    - ''
+    - '        # R10 - debit only now that every check above has passed.'
+    - '        sender.balance -= amount + fee'
+  replace:
+    - '        # R10 - debit only now that every check above has passed.'
+    - '        sender.balance -= amount + fee'
+    - ''
+    - '        # R07/R08 - the daily total of sent amounts may not exceed the limit.'
+    - '        if self.daily.total(sender_id, day) + amount > DAILY_SEND_LIMIT:'
+    - '            raise DailyLimitExceeded('
+    - '                f"account {sender_id} would exceed the {DAILY_SEND_LIMIT} daily limit"'
+    - '            )'
+  gold_symbol: WalletService.transfer
+  note: "Sender is debited before the daily-limit check, so a rejected transfer still costs money."
+
+# --------------------------------------------------- D6 error-handling drift
+
+- id: wallet-D6-01
+  project: wallet
+  category: D6
+  label: drift
+  target_rules: [R06]
+  file: src/wallet/service.py
+  find:
+    - '            raise InsufficientFunds('
+    - '                f"account {sender_id} holds {sender.balance}, needs {amount + fee}"'
+    - '            )'
+  replace:
+    - '            amount = sender.balance - fee'
+  gold_symbol: WalletService.transfer
+  note: "Silently clamps the amount instead of raising InsufficientFunds."
+
+- id: wallet-D6-02
+  project: wallet
+  category: D6
+  label: drift
+  target_rules: [R09]
+  file: src/wallet/service.py
+  find: '            raise AccountFrozen(f"account {sender_id} is frozen")'
+  replace: '            return ZERO'
+  gold_symbol: WalletService.transfer
+  note: "Returns zero instead of raising AccountFrozen."
+
+# ------------------------------------------------------------ D7 comment decoy
+
+- id: wallet-D7-01
+  project: wallet
+  category: D7
+  label: drift
+  target_rules: [R09]
+  file: src/wallet/service.py
+  find:
+    - '        if sender.frozen:'
+    - '            raise AccountFrozen(f"account {sender_id} is frozen")'
+  replace: ''
+  gold_symbol: WalletService.transfer
+  note: "Freeze check deleted, the R09 comment above it still claims it is enforced."
+
+- id: wallet-D7-02
+  project: wallet
+  category: D7
+  label: drift
+  target_rules: [R11]
+  file: src/wallet/fees.py
+  find:
+    - '    # R11 - the floor and the cap both apply before rounding.'
+    - '    bounded = max(MIN_FEE, min(raw, MAX_FEE))'
+  replace:
+    - '    # R11 - the floor and the cap both apply before rounding.'
+    - '    bounded = min(raw, MAX_FEE)'
+  gold_symbol: transfer_fee
+  note: "Minimum fee dropped; the comment and docstring still promise a 0.10 floor."
+
+# -------------------------------------------------------- D8 unauthorised creep
+
+- id: wallet-D8-01
+  project: wallet
+  category: D8
+  label: drift
+  target_rules: []
+  file: src/wallet/service.py
+  find: '    def statement(self, account_id: str) -> list[AuditEntry]:'
+  replace:
+    - '    def overdraft(self, account_id: str, amount: Decimal, day: int) -> Decimal:'
+    - '        """Lend an account money when its balance runs out."""'
+    - '        account = self._account(account_id)'
+    - '        account.balance += amount'
+    - '        self._record("overdraft", account_id, "", amount, ZERO, day)'
+    - '        return account.balance'
+    - ''
+    - '    def statement(self, account_id: str) -> list[AuditEntry]:'
+  gold_symbol: WalletService.overdraft
+  note: "Overdrafts are not authorised anywhere in the spec."
+
+- id: wallet-D8-02
+  project: wallet
+  category: D8
+  label: drift
+  target_rules: [R11]
+  file: src/wallet/service.py
+  find: '        fee = transfer_fee(amount)'
+  replace:
+    - '        fee = transfer_fee(amount)'
+    - '        # Loyalty: large transfers travel free.'
+    - '        if amount >= Decimal("900.00"):'
+    - '            fee = ZERO'
+  gold_symbol: WalletService.transfer
+  note: "An undocumented fee waiver no rule authorises."
+
+# ------------------------------------------------------ D9 output contract drift
+
+- id: wallet-D9-01
+  project: wallet
+  category: D9
+  label: drift
+  target_rules: [R13]
+  file: src/wallet/service.py
+  find: '        return sorted(entries, key=lambda entry: entry.seq, reverse=True)'
+  replace: '        return sorted(entries, key=lambda entry: entry.seq)'
+  gold_symbol: WalletService.statement
+  note: "Statement order flipped to oldest first."
+
+- id: wallet-D9-02
+  project: wallet
+  category: D9
+  label: drift
+  target_rules: [R11]
+  file: src/wallet/fees.py
+  find: '    return bounded.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)'
+  replace: '    return bounded.quantize(Decimal("0.001"), rounding=ROUND_HALF_UP)'
+  gold_symbol: transfer_fee
+  note: "Fee returned to 3 decimal places instead of 2."
+
+# ------------------------------------------------------------ N1 unchanged code
+
+- id: wallet-N1-01
+  project: wallet
+  category: N1
+  label: no_drift
+  target_rules: []
+  file: ''
+  find: ''
+  replace: ''
+  gold_symbol: ''
+  note: "The project exactly as written. Must not be flagged."
+
+# ------------------------------------------------------------- N2 pure refactor
+
+- id: wallet-N2-01
+  project: wallet
+  category: N2
+  label: no_drift
+  file: src/wallet/service.py
+  find: '        return sorted(entries, key=lambda entry: entry.seq, reverse=True)'
+  replace: '        return sorted(entries, key=lambda row: row.seq, reverse=True)'
+  gold_symbol: WalletService.statement
+  note: "Lambda parameter renamed."
+
+- id: wallet-N2-02
+  project: wallet
+  category: N2
+  label: no_drift
+  file: src/wallet/service.py
+  find: '        if sender.balance < amount + fee:'
+  replace: '        if not sender.balance >= amount + fee:'
+  gold_symbol: WalletService.transfer
+  note: "Comparison rewritten with the same truth table."
+
+- id: wallet-N2-03
+  project: wallet
+  category: N2
+  label: no_drift
+  file: src/wallet/fees.py
+  find: '    raw = amount * FEE_RATE'
+  replace: '    raw = FEE_RATE * amount'
+  gold_symbol: transfer_fee
+  note: "Multiplication operands reordered."
+
+- id: wallet-N2-04
+  project: wallet
+  category: N2
+  label: no_drift
+  file: src/wallet/service.py
+  find:
+    - '        account = Account(id=account_id, owner=owner, balance=balance)'
+    - '        self.accounts[account_id] = account'
+    - '        return account'
+  replace:
+    - '        opened = Account(id=account_id, owner=owner, balance=balance)'
+    - '        self.accounts[account_id] = opened'
+    - '        return opened'
+  gold_symbol: WalletService.open_account
+  note: "Local variable renamed."
+
+- id: wallet-N2-05
+  project: wallet
+  category: N2
+  label: no_drift
+  file: src/wallet/fees.py
+  find: '    bounded = max(MIN_FEE, min(raw, MAX_FEE))'
+  replace:
+    - '    bounded = raw'
+    - '    if bounded > MAX_FEE:'
+    - '        bounded = MAX_FEE'
+    - '    if bounded < MIN_FEE:'
+    - '        bounded = MIN_FEE'
+  gold_symbol: transfer_fee
+  note: "max/min expanded into explicit clamping with identical behaviour."
+
+- id: wallet-N2-06
+  project: wallet
+  category: N2
+  label: no_drift
+  file: src/wallet/models.py
+  find: '        return self.sent.get((account_id, day), Decimal("0.00"))'
+  replace:
+    - '        key = (account_id, day)'
+    - '        return self.sent.get(key, Decimal("0.00"))'
+  gold_symbol: DailyTotals.total
+  note: "Tuple key extracted into a local."
+
+# --------------------------------------------------------------- N3 benign decoy
+
+- id: wallet-N3-01
+  project: wallet
+  category: N3
+  label: no_drift
+  file: src/wallet/service.py
+  find: '        # R09 - a frozen account may not send.'
+  replace:
+    - '        # TODO: freeze enforcement moved to the gateway, this is now a no-op.'
+    - '        # R09 - a frozen account may not send.'
+  gold_symbol: WalletService.transfer
+  note: "Alarming comment added; the check below is untouched."
+
+- id: wallet-N3-02
+  project: wallet
+  category: N3
+  label: no_drift
+  file: src/wallet/fees.py
+  find: '    """R11 - 1% of the amount, floored at 0.10, capped at 5.00, rounded to 2 dp."""'
+  replace: '    """R11 - NOTE: the cap is not applied in this build."""'
+  gold_symbol: transfer_fee
+  note: "Docstring claims the cap is gone; the code still applies it."

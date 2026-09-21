@@ -1,0 +1,427 @@
+# Benchmark cases for the ratelimiter project.
+
+# ---------------------------------------------------------------- D1 boundary
+
+- id: ratelimiter-D1-01
+  project: ratelimiter
+  category: D1
+  label: drift
+  target_rules: [R06, R08]
+  file: src/ratelimiter/bucket.py
+  find: '        return self.tokens >= 1.0'
+  replace: '        return self.tokens > 1.0'
+  gold_symbol: TokenBucket.has_token
+  note: "Rejects a request when exactly one token remains, which R06 allows."
+
+- id: ratelimiter-D1-02
+  project: ratelimiter
+  category: D1
+  label: drift
+  target_rules: [R05]
+  file: src/ratelimiter/bucket.py
+  find: '        if self.tokens > BURST_LIMIT:'
+  replace: '        if self.tokens > BURST_LIMIT + 1:'
+  gold_symbol: TokenBucket.refill
+  note: "Lets the bucket hold one token more than the burst limit."
+
+- id: ratelimiter-D1-03
+  project: ratelimiter
+  category: D1
+  label: drift
+  target_rules: [R12]
+  file: src/ratelimiter/limiter.py
+  find: '        if stats.rejected >= BLOCK_AFTER_REJECTIONS:'
+  replace: '        if stats.rejected > BLOCK_AFTER_REJECTIONS:'
+  gold_symbol: RateLimiter._reject
+  note: "Blocks only on the 6th rejection, not the 5th."
+
+# ------------------------------------------------------------ D2 constant drift
+
+- id: ratelimiter-D2-01
+  project: ratelimiter
+  category: D2
+  label: drift
+  target_rules: [R03]
+  file: src/ratelimiter/bucket.py
+  find: 'BURST_LIMIT = 10.0      # R03'
+  replace: 'BURST_LIMIT = 25.0      # R03'
+  gold_symbol: <module>
+  note: "Burst limit raised from 10 to 25."
+
+- id: ratelimiter-D2-02
+  project: ratelimiter
+  category: D2
+  label: drift
+  target_rules: [R04]
+  file: src/ratelimiter/bucket.py
+  find: 'REFILL_PER_SECOND = 2.0  # R04'
+  replace: 'REFILL_PER_SECOND = 5.0  # R04'
+  gold_symbol: <module>
+  note: "Refill rate more than doubled."
+
+- id: ratelimiter-D2-03
+  project: ratelimiter
+  category: D2
+  label: drift
+  target_rules: [R12]
+  file: src/ratelimiter/limiter.py
+  find: 'BLOCK_AFTER_REJECTIONS = 5   # R12'
+  replace: 'BLOCK_AFTER_REJECTIONS = 50   # R12'
+  gold_symbol: <module>
+  note: "Automatic blocking effectively disabled."
+
+# ------------------------------------------------------------- D3 omitted check
+
+- id: ratelimiter-D3-01
+  project: ratelimiter
+  category: D3
+  label: drift
+  target_rules: [R05]
+  file: src/ratelimiter/bucket.py
+  find:
+    - '        # R05 - the bucket is capped at the burst limit.'
+    - '        if self.tokens > BURST_LIMIT:'
+    - '            self.tokens = BURST_LIMIT'
+  replace:
+    - '        # Tokens accumulate while the client is idle.'
+  gold_symbol: TokenBucket.refill
+  note: "Burst cap deleted, so an idle client accrues unlimited tokens."
+
+- id: ratelimiter-D3-02
+  project: ratelimiter
+  category: D3
+  label: drift
+  target_rules: [R12]
+  file: src/ratelimiter/limiter.py
+  find:
+    - '        # R12 - blocked automatically at the rejection threshold.'
+    - '        if stats.rejected >= BLOCK_AFTER_REJECTIONS:'
+    - '            self.blocked.add(stats.client_id)'
+  replace:
+    - '        # Rejection counters are reported, not acted on.'
+  gold_symbol: RateLimiter._reject
+  note: "Automatic blocking removed entirely."
+
+# -------------------------------------------------------- D4 weakened condition
+
+- id: ratelimiter-D4-01
+  project: ratelimiter
+  category: D4
+  label: drift
+  target_rules: [R09]
+  file: src/ratelimiter/limiter.py
+  find: '        if client_id in self.blocked:'
+  replace: '        if client_id in self.blocked and not self.buckets.get(client_id):'
+  gold_symbol: RateLimiter.allow
+  note: "A blocked client with a live bucket is admitted anyway."
+
+- id: ratelimiter-D4-02
+  project: ratelimiter
+  category: D4
+  label: drift
+  target_rules: [R06, R08]
+  file: src/ratelimiter/limiter.py
+  find: '        if not bucket.has_token():'
+  replace: '        if not bucket.has_token() and client_id in self.blocked:'
+  gold_symbol: RateLimiter.allow
+  note: "An empty bucket only rejects when the client is also blocked."
+
+# ------------------------------------------------------- D5 sequence violation
+
+- id: ratelimiter-D5-01
+  project: ratelimiter
+  category: D5
+  label: drift
+  target_rules: [R11]
+  file: src/ratelimiter/limiter.py
+  find:
+    - '        bucket.consume()'
+    - '        stats.allowed += 1'
+    - ''
+    - '        # R11 - the decision is logged after the token count has been updated.'
+    - '        decision = Decision('
+    - '            client_id=client_id,'
+    - '            allowed=True,'
+    - '            reason="ok",'
+    - '            tokens_left=bucket.tokens,'
+    - '            at=now,'
+    - '        )'
+  replace:
+    - '        # R11 - the decision is logged after the token count has been updated.'
+    - '        decision = Decision('
+    - '            client_id=client_id,'
+    - '            allowed=True,'
+    - '            reason="ok",'
+    - '            tokens_left=bucket.tokens,'
+    - '            at=now,'
+    - '        )'
+    - '        bucket.consume()'
+    - '        stats.allowed += 1'
+  gold_symbol: RateLimiter.allow
+  note: "Decision is built before the token is spent, so the log reports a stale count."
+
+- id: ratelimiter-D5-02
+  project: ratelimiter
+  category: D5
+  label: drift
+  target_rules: [R10]
+  file: src/ratelimiter/limiter.py
+  find:
+    - '        # R06/R08 - the bucket must hold at least one whole token.'
+    - '        if not bucket.has_token():'
+    - '            self._reject(stats)'
+    - '            raise RateLimited(f"client {client_id} has {bucket.tokens:.2f} tokens")'
+    - ''
+    - '        # R07/R10 - consume only now that every check above has passed.'
+    - '        bucket.consume()'
+  replace:
+    - '        # R07/R10 - consume only now that every check above has passed.'
+    - '        bucket.consume()'
+    - ''
+    - '        # R06/R08 - the bucket must hold at least one whole token.'
+    - '        if not bucket.has_token():'
+    - '            self._reject(stats)'
+    - '            raise RateLimited(f"client {client_id} has {bucket.tokens:.2f} tokens")'
+  gold_symbol: RateLimiter.allow
+  note: "Token is spent before the check, so a rejected request still costs one."
+
+# --------------------------------------------------- D6 error-handling drift
+
+- id: ratelimiter-D6-01
+  project: ratelimiter
+  category: D6
+  label: drift
+  target_rules: [R08]
+  file: src/ratelimiter/limiter.py
+  find: '            raise RateLimited(f"client {client_id} has {bucket.tokens:.2f} tokens")'
+  replace: '            bucket.tokens = 1.0'
+  gold_symbol: RateLimiter.allow
+  note: "Tops the bucket back up instead of raising RateLimited."
+
+- id: ratelimiter-D6-02
+  project: ratelimiter
+  category: D6
+  label: drift
+  target_rules: [R09]
+  file: src/ratelimiter/limiter.py
+  find: '            raise ClientBlocked(f"client {client_id} is blocked")'
+  replace:
+    - '            return Decision(client_id=client_id, allowed=False, reason="blocked",'
+    - '                            tokens_left=0.0, at=now)'
+  gold_symbol: RateLimiter.allow
+  note: "Returns a rejected Decision instead of raising ClientBlocked."
+
+# ------------------------------------------------------------ D7 comment decoy
+
+- id: ratelimiter-D7-01
+  project: ratelimiter
+  category: D7
+  label: drift
+  target_rules: [R05]
+  file: src/ratelimiter/bucket.py
+  find:
+    - '        if self.tokens > BURST_LIMIT:'
+    - '            self.tokens = BURST_LIMIT'
+  replace: ''
+  gold_symbol: TokenBucket.refill
+  note: "Cap deleted; the R05 comment above it still claims the bucket is capped."
+
+- id: ratelimiter-D7-02
+  project: ratelimiter
+  category: D7
+  label: drift
+  target_rules: [R07]
+  file: src/ratelimiter/bucket.py
+  find:
+    - '        """R07 - an allowed request costs exactly one token."""'
+    - '        self.tokens -= 1.0'
+  replace:
+    - '        """R07 - an allowed request costs exactly one token."""'
+    - '        self.tokens -= 0.5'
+  gold_symbol: TokenBucket.consume
+  note: "Half a token is charged; the docstring still says exactly one."
+
+# -------------------------------------------------------- D8 unauthorised creep
+
+- id: ratelimiter-D8-01
+  project: ratelimiter
+  category: D8
+  label: drift
+  target_rules: []
+  file: src/ratelimiter/limiter.py
+  find: '    def report(self) -> list[ClientStats]:'
+  replace:
+    - '    def grant_bonus(self, client_id: str, tokens: float, now: float) -> float:'
+    - '        """Hand a client extra tokens outside the refill schedule."""'
+    - '        bucket = self.bucket_for(client_id, now)'
+    - '        bucket.tokens += tokens'
+    - '        return bucket.tokens'
+    - ''
+    - '    def report(self) -> list[ClientStats]:'
+  gold_symbol: RateLimiter.grant_bonus
+  note: "Out-of-band token grants are not authorised by any rule."
+
+- id: ratelimiter-D8-02
+  project: ratelimiter
+  category: D8
+  label: drift
+  target_rules: [R09]
+  file: src/ratelimiter/limiter.py
+  find:
+    - '        bucket = self.bucket_for(client_id, now)'
+    - ''
+    - '        # R06/R08 - the bucket must hold at least one whole token.'
+  replace:
+    - '        bucket = self.bucket_for(client_id, now)'
+    - ''
+    - '        # Trusted clients skip the bucket entirely.'
+    - '        if client_id.startswith("internal-"):'
+    - '            bucket.tokens = BURST_LIMIT'
+    - ''
+    - '        # R06/R08 - the bucket must hold at least one whole token.'
+  gold_symbol: RateLimiter.allow
+  note: "An undocumented allow-list exempts some clients from rate limiting."
+
+# ------------------------------------------------------ D9 output contract drift
+
+- id: ratelimiter-D9-01
+  project: ratelimiter
+  category: D9
+  label: drift
+  target_rules: [R13]
+  file: src/ratelimiter/limiter.py
+  find: '            key=lambda s: (-s.rejected, s.client_id),'
+  replace: '            key=lambda s: (s.rejected, s.client_id),'
+  gold_symbol: RateLimiter.report
+  note: "Report sorted by fewest rejections first."
+
+- id: ratelimiter-D9-02
+  project: ratelimiter
+  category: D9
+  label: drift
+  target_rules: [R11]
+  file: src/ratelimiter/limiter.py
+  find: '            tokens_left=bucket.tokens,'
+  replace: '            tokens_left=round(bucket.tokens),'
+  gold_symbol: RateLimiter.allow
+  note: "Logged token count is rounded to a whole number."
+
+# ------------------------------------------------------------ N1 unchanged code
+
+- id: ratelimiter-N1-01
+  project: ratelimiter
+  category: N1
+  label: no_drift
+  target_rules: []
+  file: ''
+  find: ''
+  replace: ''
+  gold_symbol: ''
+  note: "The project exactly as written. Must not be flagged."
+
+# ------------------------------------------------------------- N2 pure refactor
+
+- id: ratelimiter-N2-01
+  project: ratelimiter
+  category: N2
+  label: no_drift
+  file: src/ratelimiter/bucket.py
+  find: '        return self.tokens >= 1.0'
+  replace: '        return not self.tokens < 1.0'
+  gold_symbol: TokenBucket.has_token
+  note: "Comparison rewritten with the same truth table."
+
+- id: ratelimiter-N2-02
+  project: ratelimiter
+  category: N2
+  label: no_drift
+  file: src/ratelimiter/bucket.py
+  find:
+    - '        elapsed = now - self.updated_at'
+    - '        # R04 - the refill rate.'
+    - '        self.tokens += elapsed * REFILL_PER_SECOND'
+  replace:
+    - '        seconds_idle = now - self.updated_at'
+    - '        # R04 - the refill rate.'
+    - '        self.tokens += seconds_idle * REFILL_PER_SECOND'
+  gold_symbol: TokenBucket.refill
+  note: "Local variable renamed."
+
+- id: ratelimiter-N2-03
+  project: ratelimiter
+  category: N2
+  label: no_drift
+  file: src/ratelimiter/limiter.py
+  find: '            key=lambda s: (-s.rejected, s.client_id),'
+  replace: '            key=lambda row: (-row.rejected, row.client_id),'
+  gold_symbol: RateLimiter.report
+  note: "Lambda parameter renamed."
+
+- id: ratelimiter-N2-04
+  project: ratelimiter
+  category: N2
+  label: no_drift
+  file: src/ratelimiter/limiter.py
+  find:
+    - '        if client_id not in self.buckets:'
+    - '            self.buckets[client_id] = TokenBucket(client_id=client_id, updated_at=now)'
+    - '        bucket = self.buckets[client_id]'
+  replace:
+    - '        existing = self.buckets.get(client_id)'
+    - '        if existing is None:'
+    - '            existing = TokenBucket(client_id=client_id, updated_at=now)'
+    - '            self.buckets[client_id] = existing'
+    - '        bucket = existing'
+  gold_symbol: RateLimiter.bucket_for
+  note: "Lookup restructured; the same bucket is created and returned."
+
+- id: ratelimiter-N2-05
+  project: ratelimiter
+  category: N2
+  label: no_drift
+  file: src/ratelimiter/limiter.py
+  find:
+    - '        if client_id not in self.stats:'
+    - '            self.stats[client_id] = ClientStats(client_id=client_id)'
+    - '        return self.stats[client_id]'
+  replace:
+    - '        return self.stats.setdefault(client_id, ClientStats(client_id=client_id))'
+  gold_symbol: RateLimiter._stats
+  note: "Guard replaced by setdefault with identical behaviour."
+
+- id: ratelimiter-N2-06
+  project: ratelimiter
+  category: N2
+  label: no_drift
+  file: src/ratelimiter/limiter.py
+  find: '        return bucket.tokens if bucket else 0.0'
+  replace:
+    - '        if bucket is None:'
+    - '            return 0.0'
+    - '        return bucket.tokens'
+  gold_symbol: RateLimiter._tokens_left
+  note: "Conditional expression expanded into a guard clause."
+
+# --------------------------------------------------------------- N3 benign decoy
+
+- id: ratelimiter-N3-01
+  project: ratelimiter
+  category: N3
+  label: no_drift
+  file: src/ratelimiter/limiter.py
+  find: '        # R09 - a blocked client is rejected whatever its bucket says.'
+  replace:
+    - '        # DEPRECATED: the block list is advisory only in this build.'
+    - '        # R09 - a blocked client is rejected whatever its bucket says.'
+  gold_symbol: RateLimiter.allow
+  note: "Alarming comment added; the check below is untouched."
+
+- id: ratelimiter-N3-02
+  project: ratelimiter
+  category: N3
+  label: no_drift
+  file: src/ratelimiter/bucket.py
+  find: '        """R04/R05 - add 2 tokens per elapsed second, never past the burst limit."""'
+  replace: '        """R04/R05 - NOTE: the burst cap is no longer applied here."""'
+  gold_symbol: TokenBucket.refill
+  note: "Docstring claims the cap is gone; the code still applies it."

@@ -1,0 +1,72 @@
+# SpecDrift-Bench results
+
+_Generated {{ generated }}. Preliminary, one run per detector._
+
+## Dataset
+
+{{ dataset.valid }} valid cases across {{ dataset.projects | join(', ') }} &mdash;
+{{ dataset.drift }} drift, {{ dataset.negatives }} negative controls.
+**{{ dataset.escapes_rate | pct }} of drift cases still pass the host project's own test suite.**
+
+| Cat | Category | n | Passes tests |
+| --- | --- | ---: | ---: |
+{% for row in dataset.rows %}
+| {{ row.category }} | {{ row.name }} | {{ row.n }} | {{ row.escapes }}/{{ row.n }} ({{ row.escapes_rate | pct }}) |
+{% endfor %}
+
+## Detector comparison
+
+| Detector | Model | Precision | Recall | F1 | False-alarm rate | Uncertain | LLM calls |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+{% for name, payload in detectors.items() %}
+{% set o = payload.metrics.overall %}
+| {{ name }} | {{ payload.run.model or 'n/a' }} | {{ '%.2f' % o.precision }} | {{ '%.2f' % o.recall }} | {{ '%.2f' % o.f1 }} | {{ '%.2f' % o.false_alarm_rate }} | {{ '%.2f' % o.uncertain_rate }} | {{ payload.run.llm_calls if payload.run.llm_calls is not none else '-' }} |
+{% endfor %}
+
+## Per category
+
+D rows are recall, N rows are the false-alarm rate on controls.
+
+| Cat | Category | n |{% for name in detectors %} {{ name }} |{% endfor +%}
+| --- | --- | ---: |{% for name in detectors %} ---: |{% endfor +%}
+{% for row in comparison %}
+| {{ row.category }} | {{ row.name }} | {{ row.n }} |{% for name in detectors %} {{ row.by_detector[name] | pct }} |{% endfor +%}
+{% endfor %}
+
+{% if retrieval %}
+## Stage 1 retrieval ({{ retrieval.embedder }})
+
+| Cat | n | R@1 | R@3 | R@5 |
+| --- | ---: | ---: | ---: | ---: |
+{% for cat, row in retrieval.per_category.items() %}
+| {{ cat }} | {{ row.n }} | {{ row['recall@1'] | pct }} | {{ row['recall@3'] | pct }} | {{ row['recall@5'] | pct }} |
+{% endfor %}
+| **all** | {{ retrieval.n_rule_queries }} | {{ retrieval.overall['recall@1'] | pct }} | {{ retrieval.overall['recall@3'] | pct }} | {{ retrieval.overall['recall@5'] | pct }} |
+{% endif %}
+
+## Why drift was missed
+
+| Detector | Retrieval | Reasoning | n/a |
+| --- | ---: | ---: | ---: |
+{% for name, counts in attribution.items() %}
+| {{ name }} | {{ counts.get('retrieval', 0) }} | {{ counts.get('reasoning', 0) }} | {{ counts.get('n/a', 0) }} |
+{% endfor %}
+
+## Example verdicts
+
+{% for name, rows in examples.items() %}
+{% for ex in rows %}
+### {{ name }} &mdash; {{ ex.label }} (`{{ ex.case_id }}`, {{ ex.category }})
+
+{{ ex.note }}
+
+- Rule `{{ ex.rule_id }}` &rarr; **{{ ex.verdict }}** (confidence {{ '%.2f' % ex.confidence }})
+{% if ex.attribution %}- Missed via: {{ ex.attribution }}
+{% endif %}
+{% if ex.violated_clause %}- Clause: _{{ ex.violated_clause }}_
+{% endif %}
+{% if ex.counterexample.input %}- Counterexample: given {{ ex.counterexample.input }}, expected {{ ex.counterexample.expected }}, actual {{ ex.counterexample.actual }}
+{% endif %}
+
+{% endfor %}
+{% endfor %}

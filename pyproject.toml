@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "specdrift"
+version = "0.1.0"
+description = "SpecDrift-Bench: a benchmark for specification-drift detection"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2",
+    "pydantic-settings>=2",
+    "typer>=0.12",
+    "pyyaml>=6",
+    "numpy>=1.26",
+    "jinja2>=3.1",
+    "python-dotenv>=1",
+    "fastapi>=0.110",
+    "uvicorn>=0.29",
+    "sse-starlette>=2",
+]
+
+[project.optional-dependencies]
+llm = ["openai>=1.30", "anthropic>=0.25"]
+embed = ["sentence-transformers>=2.7"]
+dev = ["pytest>=8", "httpx>=0.27"]
+
+[project.scripts]
+specdrift = "specdrift.cli:app"
+
+[tool.setuptools.packages.find]
+include = ["specdrift*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = [
+    # Starlette's TestClient warns about its own httpx usage; not ours to fix.
+    "ignore::DeprecationWarning:starlette.*",
+    "ignore:Using `httpx` with `starlette.testclient`:UserWarning",
+]
