@@ -163,9 +163,9 @@ function DetectorCard({
   onJumpTo: (line: number) => void;
 }) {
   const targets = detail.case.target_rules;
-  const interesting =
-    verdicts.filter((v) => v.verdict === "DRIFT" || targets.includes(v.rule_id)).slice(0, 4) ||
-    verdicts.slice(0, 1);
+  // An empty array is truthy, so this cannot be written as a `||` fallback.
+  const relevant = verdicts.filter((v) => v.verdict === "DRIFT" || targets.includes(v.rule_id));
+  const interesting = (relevant.length ? relevant : verdicts.slice(0, 1)).slice(0, 4);
   const outcome = detail.outcomes[name];
 
   return (
