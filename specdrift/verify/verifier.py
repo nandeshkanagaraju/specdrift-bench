@@ -8,7 +8,7 @@ import time
 
 from specdrift.bench.schema import Chunk, Counterexample, Evidence, Rule, Verdict
 from specdrift.cache import ResponseCache
-from specdrift.verify.llm import Completer, LLMError
+from specdrift.verify.llm import Completer, LLMError, with_retries
 from specdrift.verify.prompts import PROMPT_VERSION, SYSTEM_PROMPT, build_user_prompt
 
 _FENCE_RE = re.compile(r"^\s*```(?:json)?\s*|\s*```\s*$", re.MULTILINE)
@@ -113,7 +113,7 @@ def verify_rule(
 
     if response is None:
         try:
-            response = llm.complete(SYSTEM_PROMPT, user)
+            response = with_retries(llm, SYSTEM_PROMPT, user)
         except LLMError as exc:
             return uncertain(case_id, rule.id, detector, f"provider error: {exc}")
 
@@ -121,7 +121,7 @@ def verify_rule(
     if payload is None and cached is None:
         # One retry, exactly as the design document specifies, then give up.
         try:
-            response = llm.complete(SYSTEM_PROMPT, user)
+            response = with_retries(llm, SYSTEM_PROMPT, user)
         except LLMError as exc:
             return uncertain(case_id, rule.id, detector, f"provider error: {exc}")
         payload = parse_response(response)

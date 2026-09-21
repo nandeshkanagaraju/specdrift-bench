@@ -23,6 +23,46 @@ still passes after the injection. On this dataset **22% of drift survives the te
 and unauthorised scope creep (D8) survives 100% of the time — the tests were written
 before the behaviour existed, so they cannot fail on it.
 
+## Results so far
+
+One run of each detector over all 86 cases, `gpt-4o-mini`, temperature 0. Preliminary,
+n=1, and the numbers below are the reason the project exists rather than a claim about
+how good any of these detectors is.
+
+| Detector | Precision | Recall | F1 | False-alarm rate | Uncertain | LLM calls |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| specguard (retrieval + verification) | 0.67 | 0.58 | 0.62 | 0.63 | 0.06 | 252 |
+| wholefile (one prompt, whole codebase) | 0.91 | 0.17 | 0.29 | 0.04 | 0.01 | 86 |
+| keyword (vocabulary matching) | 0.33 | 0.08 | 0.14 | 0.37 | 0.00 | 0 |
+
+The two LLM detectors fail in opposite directions. Retrieval more than triples recall
+(0.58 against 0.17) — showing the model a short, relevant excerpt is what lets it see a
+violation at all. It also makes the detector far noisier: SpecGuard flags 63% of the
+negative controls, including two thirds of the semantics-preserving refactors. The
+whole-file prompt is quiet and precise but blind, missing five categories outright.
+
+Per category, SpecGuard is strongest exactly where a rule states something checkable —
+constants (D2, 100%) and weakened conditions (D4, 100%) — and weakest on ordering (D5,
+33%) and error handling (D6, 33%), which need the model to reason about sequence rather
+than to compare a value.
+
+### The false alarms are worth reading
+
+Requiring a cited clause and a concrete counterexample removes *unsupported* drift
+claims. It does not remove **wrong** ones. Two real examples from the run above, both on
+code that was never modified:
+
+- Rule: *"A new bucket MUST start full."* The model reported `bucket_for(...) → tokens = 0.0`.
+  The dataclass field is `tokens: float = BURST_LIMIT`; it misread the default.
+- Rule: *"An allowed request MUST consume exactly 1 token."* The model's counterexample was
+  `tokens 1.5 → 0.5` — which is consuming exactly one token, and so confirms the rule it
+  claims is violated.
+
+Both arrived with a quoted clause, a counterexample and confidence 0.9, so the evidence
+bar passed them through. This is the concrete case for the next step already scheduled in
+the plan: **execute** the counterexample and keep the drift claim only if the code really
+behaves as alleged. A fabricated counterexample cannot survive being run.
+
 ## Quick start
 
 ```bash

@@ -12,6 +12,7 @@ def client(settings):
 
     settings.results_dir = REPO_ROOT / "results"
     settings.work_dir = REPO_ROOT / "work"
+    settings.cases_dir = REPO_ROOT / "cases"
     return TestClient(create_app(settings))
 
 

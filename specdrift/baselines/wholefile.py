@@ -14,7 +14,7 @@ from specdrift.bench.schema import CaseResult, Verdict
 from specdrift.cache import ResponseCache
 from specdrift.config import Settings
 from specdrift.spec.parser import load_project_rules
-from specdrift.verify.llm import build_llm
+from specdrift.verify.llm import LLMError, build_llm, with_retries
 from specdrift.verify.verifier import parse_response, to_verdict, uncertain
 
 NAME = "wholefile"
@@ -58,7 +58,7 @@ class WholeFileDetector:
 
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
-        self.llm = build_llm(settings)
+        self.llm = build_llm(settings, settings.llm_max_tokens_wholefile)
         self.cache = ResponseCache(settings.cache_dir, namespace="wholefile")
 
     @property
@@ -81,7 +81,14 @@ class WholeFileDetector:
         cached = self.cache.get(key)
         response = cached
         if response is None:
-            response = self.llm.complete(SYSTEM_PROMPT, user)
+            try:
+                response = with_retries(self.llm, SYSTEM_PROMPT, user)
+            except LLMError as exc:
+                # One unreachable case must not sink a whole benchmark run.
+                return [
+                    uncertain(case.case_id, rule.id, self.name, f"provider error: {exc}")
+                    for rule in rules
+                ]
             self.cache.put(key, response)
 
         by_rule = self._index(response)
@@ -100,8 +107,52 @@ class WholeFileDetector:
         return verdicts
 
     @staticmethod
+    def salvage_objects(text: str) -> list[dict]:
+        """Pull every complete JSON object out of a truncated array.
+
+        A reply cut off by the token limit still carries valid verdicts for the rules
+        it reached. Discarding all of them would report a budget problem as a wall of
+        UNCERTAIN, which reads like a model that cannot decide anything.
+        """
+        objects: list[dict] = []
+        depth = 0
+        start = -1
+        in_string = False
+        escaped = False
+
+        for index, character in enumerate(text):
+            if in_string:
+                if escaped:
+                    escaped = False
+                elif character == "\\":
+                    escaped = True
+                elif character == '"':
+                    in_string = False
+                continue
+
+            if character == '"':
+                in_string = True
+            elif character == "{":
+                if depth == 0:
+                    start = index
+                depth += 1
+            elif character == "}":
+                depth -= 1
+                if depth == 0 and start != -1:
+                    try:
+                        parsed = json.loads(text[start : index + 1])
+                    except json.JSONDecodeError:
+                        parsed = None
+                    if isinstance(parsed, dict):
+                        objects.append(parsed)
+                    start = -1
+
+        return objects
+
+    @staticmethod
     def _index(response: str) -> dict[str, dict]:
-        """The reply should be a list; tolerate a bare object or a wrapped list."""
+        """The reply should be a list; tolerate a bare object, a wrapped list, or a
+        list the token limit cut in half."""
         text = (response or "").strip()
         parsed: object = None
         try:
@@ -119,6 +170,10 @@ class WholeFileDetector:
         if not isinstance(parsed, list):
             single = parse_response(text)
             parsed = [single] if single else []
+
+        # Nothing well formed came back, but a truncated array may still hold answers.
+        if not parsed:
+            parsed = WholeFileDetector.salvage_objects(text)
 
         return {
             str(item.get("rule_id")): item

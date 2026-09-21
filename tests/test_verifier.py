@@ -113,3 +113,41 @@ def test_fake_llm_never_touches_the_network():
     llm = FakeLLM()
     reply = llm.complete("sys", build_user_prompt(RULE, [CHUNK]))
     assert json.loads(reply)["verdict"] in {"COMPLIANT", "DRIFT", "UNCERTAIN"}
+
+
+class FlakyLLM:
+    """Fails a given number of times before answering, like a rate-limited provider."""
+
+    model = "flaky"
+
+    def __init__(self, failures: int, reply: str = FULL_DRIFT) -> None:
+        self.remaining = failures
+        self.reply = reply
+        self.attempts = 0
+
+    def complete(self, system: str, user: str) -> str:
+        self.attempts += 1
+        if self.remaining > 0:
+            self.remaining -= 1
+            raise RuntimeError("429 rate limit exceeded")
+        return self.reply
+
+
+def test_a_transient_provider_error_is_retried(monkeypatch):
+    monkeypatch.setattr("specdrift.verify.llm.BACKOFF_S", 0)
+    llm = FlakyLLM(failures=2)
+    verdict = verify_rule(RULE, [CHUNK], llm, None, "case-1")
+
+    assert verdict.verdict == "DRIFT"
+    assert llm.attempts == 3
+
+
+def test_a_persistent_provider_error_becomes_uncertain(monkeypatch):
+    """A dead provider must not sink the run; the case is recorded as undecided."""
+    monkeypatch.setattr("specdrift.verify.llm.BACKOFF_S", 0)
+    llm = FlakyLLM(failures=99)
+    verdict = verify_rule(RULE, [CHUNK], llm, None, "case-1")
+
+    assert verdict.verdict == "UNCERTAIN"
+    assert verdict.parse_error is True
+    assert "provider error" in verdict.violated_clause

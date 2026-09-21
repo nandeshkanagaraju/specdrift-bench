@@ -74,3 +74,37 @@ def test_wholefile_marks_rules_the_model_skipped(settings):
     assert next(v for v in verdicts if v.rule_id == "R01").verdict == "COMPLIANT"
     skipped = next(v for v in verdicts if v.rule_id == "R05")
     assert skipped.verdict == "UNCERTAIN" and skipped.parse_error is True
+
+
+TRUNCATED = (
+    '[{"rule_id": "R01", "verdict": "COMPLIANT", "confidence": 1.0},\n'
+    ' {"rule_id": "R02", "verdict": "DRIFT", "violated_clause": "a}b", "confidence": 0.9},\n'
+    ' {"rule_id": "R03", "verdict": "COMPL'
+)
+
+
+def test_truncated_reply_keeps_the_rules_it_reached():
+    """A reply cut off by the token limit still answers the rules it got to."""
+    indexed = WholeFileDetector._index(TRUNCATED)
+    assert set(indexed) == {"R01", "R02"}
+    assert indexed["R02"]["verdict"] == "DRIFT"
+
+
+def test_salvage_is_not_confused_by_braces_inside_strings():
+    objects = WholeFileDetector.salvage_objects('[{"a": "x}y{z", "b": 1}]')
+    assert objects == [{"a": "x}y{z", "b": 1}]
+
+
+def test_salvage_handles_escaped_quotes():
+    objects = WholeFileDetector.salvage_objects(r'[{"a": "he said \"hi\"", "b": 2}]')
+    assert objects == [{"a": 'he said "hi"', "b": 2}]
+
+
+def test_wholefile_gets_a_larger_token_budget(settings):
+    from specdrift.registry import build_detector
+
+    settings.llm_provider = "openai"
+    settings.llm_api_key = "test-key"
+    detector = build_detector("wholefile", settings)
+    assert detector.llm.max_tokens == settings.llm_max_tokens_wholefile
+    assert detector.llm.max_tokens > settings.llm_max_tokens

@@ -215,18 +215,20 @@ def with_retries(llm: Completer, system: str, user: str) -> str:
     raise LLMError(f"provider failed after {RETRIES} attempts: {last}")
 
 
-def build_llm(settings) -> Completer:
+def build_llm(settings, max_tokens: int | None = None) -> Completer:
     provider = settings.llm_provider.lower()
+    budget = max_tokens or settings.llm_max_tokens
+
     if provider == "fake":
         return FakeLLM()
     if provider == "openai":
         return OpenAICompatibleLLM(
             settings.llm_model, settings.llm_api_key, settings.llm_base_url,
-            settings.llm_timeout_s, settings.llm_max_tokens,
+            settings.llm_timeout_s, budget,
         )
     if provider == "anthropic":
         return AnthropicLLM(
             settings.llm_model, settings.llm_api_key, settings.llm_base_url,
-            settings.llm_timeout_s, settings.llm_max_tokens,
+            settings.llm_timeout_s, budget,
         )
     raise ValueError(f"unknown LLM provider {provider!r}")

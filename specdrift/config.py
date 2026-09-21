@@ -19,6 +19,9 @@ class Settings(BaseSettings):
     llm_base_url: str = ""              # any OpenAI-compatible endpoint
     llm_api_key: str = ""
     llm_max_tokens: int = 600
+    # The whole-file baseline answers every rule in one reply, so it needs a
+    # budget roughly one rule's worth per rule, not one in total.
+    llm_max_tokens_wholefile: int = 6000
     llm_timeout_s: float = 60.0
 
     # Stage 1 retrieval.
