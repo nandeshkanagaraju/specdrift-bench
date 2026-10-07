@@ -15,7 +15,8 @@ from docx.oxml.ns import qn
 from docx.shared import Inches, Pt
 from docx.text.paragraph import Paragraph
 
-import content as C
+import importlib, os, sys
+C = importlib.import_module(os.environ.get("PAPER_CONTENT", "content"))
 
 DOC = docx.Document("template_fixed.docx")
 BODY = DOC.element.body
@@ -185,5 +186,5 @@ for item in C.BODY:
 
 DOC.core_properties.title = C.TITLE
 DOC.core_properties.author = ", ".join(a[0] for a in C.AUTHORS)
-DOC.save("../SpecDrift-Bench_IEEE_paper.docx")
+DOC.save(os.environ.get("PAPER_OUT", "../SpecDrift-Bench_IEEE_paper.docx"))
 print("saved")
