@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from specdrift.bench.schema import Verdict
 
@@ -125,6 +125,55 @@ class ProjectOut(BaseModel):
     rules: list[RuleOut]
 
 
+class SourceFile(BaseModel):
+    """One Python file of a host project, as the detector sees it."""
+
+    path: str
+    lines: int
+    source: str
+
+
+class UploadFileIn(BaseModel):
+    path: str
+    source: str
+
+
+class UploadIn(BaseModel):
+    """A project typed or pasted in the browser: one spec, one or more Python files."""
+
+    name: str = "upload"
+    spec: str = ""
+    files: list[UploadFileIn]
+
+
+class UploadFileOut(BaseModel):
+    path: str
+    lines: int
+    source: str
+
+
+class UploadOut(BaseModel):
+    id: str
+    name: str
+    rules: list[RuleOut]
+    files: list[UploadFileOut]
+    warnings: list[str]
+    spec_path: str = ""
+
+
 class CheckRequest(BaseModel):
-    project: str
+    """One of the built-in projects, or a workspace created by POST /api/uploads."""
+
+    project: str | None = None
     case_id: str | None = None
+    upload_id: str | None = None
+
+    @model_validator(mode="after")
+    def _one_target(self) -> CheckRequest:
+        if self.upload_id and self.project:
+            raise ValueError("provide a project or an upload_id, not both")
+        if self.upload_id and self.case_id:
+            raise ValueError("an uploaded project has no drift cases to inject")
+        if not self.upload_id and not self.project:
+            raise ValueError("provide a project or an upload_id")
+        return self

@@ -13,10 +13,12 @@ interface Entry {
 }
 
 const PAGES: Entry[] = [
-  { id: "page-overview", label: "Overview", hint: "page", to: "/" },
+  { id: "page-walkthrough", label: "Walkthrough", hint: "page", to: "/" },
+  { id: "page-overview", label: "Overview", hint: "page", to: "/dashboard" },
   { id: "page-explorer", label: "Benchmark Explorer", hint: "page", to: "/explorer" },
   { id: "page-compare", label: "Detector Comparison", hint: "page", to: "/compare" },
   { id: "page-live", label: "Live Check", hint: "page", to: "/live" },
+  { id: "page-yours", label: "Your code", hint: "page", to: "/yours" },
 ];
 
 /** Subsequence match, so "lD201" still finds library-D2-01. */

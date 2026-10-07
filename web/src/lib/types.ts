@@ -113,6 +113,7 @@ export interface Verdict {
   latency_ms: number;
   cache_hit: boolean;
   parse_error: boolean;
+  downgraded: boolean;
 }
 
 export interface RetrievedChunk {
@@ -156,6 +157,39 @@ export interface Project {
   rules: Rule[];
 }
 
+export interface SourceFile {
+  path: string;
+  lines: number;
+  source: string;
+}
+
+/** A project the user pasted or uploaded, saved as a workspace the checker can read. */
+export interface UploadRecord {
+  id: string;
+  name: string;
+  rules: Rule[];
+  files: SourceFile[];
+  warnings: string[];
+  spec_path: string;
+}
+
+/** Emitted by POST /api/check while the run is in flight. */
+export type StageId = "setup" | "spec" | "chunk" | "rank" | "verify" | "gate";
+
+export interface StageEvent {
+  stage: StageId;
+  state: "running" | "done";
+  detail?: string;
+  total?: number;
+}
+
+/** What Stage 1 actually handed the model for one rule. */
+export interface RuleDetail {
+  rule_id: string;
+  retrieved: number;
+  constant_context: number;
+}
+
 export interface CheckSummary {
   status: "PASS" | "DRIFT" | "NEEDS_HUMAN";
   counts: Record<VerdictValue, number>;
@@ -163,4 +197,31 @@ export interface CheckSummary {
   chunks: number;
   model: string;
   scope_note: string;
+}
+
+/** One category's planted change, announced before it is checked. */
+export interface SweepCase {
+  case_id: string;
+  category: string;
+  category_name: string;
+  project: string;
+  note: string;
+  file: string;
+  target_rules: string[];
+  escapes_tests: boolean | null;
+  before: string;
+  after: string;
+  line: number;
+}
+
+/** What the detector made of it. */
+export interface SweepResult {
+  case_id: string;
+  category: string;
+  project: string;
+  caught: boolean;
+  flagged_rules: string[];
+  target_rules: string[];
+  rules_checked: number;
+  escapes_tests: boolean | null;
 }

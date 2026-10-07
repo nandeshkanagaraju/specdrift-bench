@@ -142,6 +142,7 @@ class Verdict(BaseModel):
     latency_ms: int = 0
     cache_hit: bool = False
     parse_error: bool = False
+    downgraded: bool = False     # the evidence bar turned a DRIFT claim into UNCERTAIN
 
     @property
     def flags_drift(self) -> bool:

@@ -66,7 +66,8 @@ def to_verdict(payload: dict, case_id: str, rule_id: str, detector: str) -> Verd
     # An unsupported drift claim is the dominant false-alarm mode in the literature,
     # so a DRIFT without both a quoted clause and a counterexample is not accepted.
     has_counterexample = bool(counterexample.input and counterexample.actual)
-    if verdict == "DRIFT" and not (clause and has_counterexample):
+    downgraded = verdict == "DRIFT" and not (clause and has_counterexample)
+    if downgraded:
         verdict = "UNCERTAIN"
 
     return Verdict(
@@ -78,6 +79,7 @@ def to_verdict(payload: dict, case_id: str, rule_id: str, detector: str) -> Verd
         violated_clause=clause,
         evidence=evidence,
         counterexample=counterexample,
+        downgraded=downgraded,
     )
 
 

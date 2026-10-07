@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Activity, LayoutDashboard, Moon, Play, Rows3, Sun } from "lucide-react";
+import { Activity, FolderUp, LayoutDashboard, Moon, Play, Rows3, Sun } from "lucide-react";
 import { type ReactNode } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { CommandPalette } from "./ui/CommandPalette";
@@ -7,10 +7,11 @@ import { useTheme } from "../lib/theme";
 import { cn } from "../lib/format";
 
 const NAV = [
-  { to: "/", label: "Overview", Icon: LayoutDashboard, end: true },
+  { to: "/dashboard", label: "Overview", Icon: LayoutDashboard, end: true },
   { to: "/explorer", label: "Explorer", Icon: Rows3, end: false },
   { to: "/compare", label: "Compare", Icon: Activity, end: false },
   { to: "/live", label: "Live Check", Icon: Play, end: false },
+  { to: "/yours", label: "Your code", Icon: FolderUp, end: false },
 ];
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -23,10 +24,12 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <aside className="sticky top-0 hidden h-screen w-[208px] shrink-0 flex-col border-r border-border bg-surface px-3 py-4 md:flex">
         <div className="px-2 pb-5">
-          <p className="font-mono text-[15px] font-semibold tracking-tight">
-            Spec<span className="text-accent">Drift</span>
-          </p>
-          <p className="mt-0.5 text-[11px] text-muted">drift detection benchmark</p>
+          <NavLink to="/" className="block">
+            <p className="font-mono text-[15px] font-semibold tracking-tight">
+              Spec<span className="text-accent">Drift</span>
+            </p>
+            <p className="mt-0.5 text-[11px] text-muted">&larr; back to the walkthrough</p>
+          </NavLink>
         </div>
 
         <nav className="flex flex-col gap-0.5">

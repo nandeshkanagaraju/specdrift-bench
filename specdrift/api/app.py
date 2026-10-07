@@ -7,7 +7,7 @@ import json
 from datetime import date
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from fastapi.staticfiles import StaticFiles
@@ -26,7 +26,11 @@ from specdrift.api.models import (
     ProjectOut,
     RetrievedChunk,
     RuleOut,
+    SourceFile,
     Summary,
+    UploadFileOut,
+    UploadIn,
+    UploadOut,
 )
 from specdrift.api.store import Store, workspace_for
 from specdrift.bench.schema import (
@@ -291,6 +295,83 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             for name in store.projects
         ]
 
+    @app.get("/api/projects/{name}/code", response_model=list[SourceFile])
+    def project_code(name: str) -> list[SourceFile]:
+        """The project's own Python sources — the second input, shown as the UI's input panel."""
+        root = settings.projects_dir / name
+        if not (root / "spec.md").exists():
+            raise HTTPException(404, f"unknown project {name!r}")
+
+        # The chunker reads root/src, so show exactly that and nothing else: the
+        # project's own tests are not part of what the detector ever sees.
+        base = root / "src" if (root / "src").exists() else root
+        files = sorted(p for p in base.rglob("*.py") if "__pycache__" not in p.parts)
+        out = []
+        for path in files:
+            text = path.read_text(encoding="utf-8")
+            out.append(
+                SourceFile(
+                    path=str(path.relative_to(root)),
+                    lines=text.count("\n") + 1,
+                    source=text,
+                )
+            )
+        return out
+
+    # --------------------------------------------------------------- uploads
+
+    def _upload_out(record) -> UploadOut:
+        return UploadOut(
+            id=record.id,
+            name=record.name,
+            rules=[RuleOut(id=rule.id, text=rule.text, section=rule.section) for rule in record.rules],
+            files=[
+                UploadFileOut(path=item.path, lines=item.lines, source=item.source)
+                for item in record.files
+            ],
+            warnings=record.warnings,
+            spec_path=record.spec_path,
+        )
+
+    @app.post("/api/uploads", response_model=UploadOut)
+    def create_upload(body: UploadIn) -> UploadOut:
+        """Save a pasted spec and Python files, then return the rules the checker will use."""
+        from specdrift.intake import IntakeError, materialize_files
+
+        try:
+            record = materialize_files(
+                settings,
+                body.name,
+                body.spec,
+                [(item.path, item.source) for item in body.files],
+            )
+        except IntakeError as exc:
+            raise HTTPException(422, str(exc)) from exc
+        return _upload_out(record)
+
+    @app.post("/api/uploads/archive", response_model=UploadOut)
+    async def create_upload_archive(request: Request, name: str = Query("upload")) -> UploadOut:
+        """Save a zip (``spec.md`` plus ``.py`` files) sent as the raw request body."""
+        from specdrift.intake import MAX_TOTAL_BYTES, IntakeError, materialize_zip
+
+        data = await request.body()
+        if len(data) > MAX_TOTAL_BYTES:
+            raise HTTPException(413, "The archive is larger than 1.5 MB.")
+        try:
+            record = materialize_zip(settings, name, data)
+        except IntakeError as exc:
+            raise HTTPException(422, str(exc)) from exc
+        return _upload_out(record)
+
+    @app.get("/api/uploads/{upload_id}", response_model=UploadOut)
+    def get_upload(upload_id: str) -> UploadOut:
+        from specdrift.intake import load_upload
+
+        record = load_upload(settings, upload_id)
+        if record is None:
+            raise HTTPException(404, f"unknown upload {upload_id!r}")
+        return _upload_out(record)
+
     # --------------------------------------------------------------- check
 
     @app.post("/api/check")
@@ -298,18 +379,49 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         target = _resolve_check_target(request)
 
         async def stream():
+            from specdrift.bench.schema import Verdict
             from specdrift.live import check_project
 
             loop = asyncio.get_running_loop()
-            yield _sse("start", {"project": request.project, "case_id": request.case_id})
+            queue: asyncio.Queue = asyncio.Queue()
+            done = object()
 
-            verdicts, summary_payload = await loop.run_in_executor(
-                None, check_project, target, settings, None
+            def on_progress(event: str, payload) -> None:
+                """Called from the worker thread; hand the event to the event loop."""
+                if isinstance(payload, Verdict):
+                    payload = json.loads(payload.model_dump_json())
+                loop.call_soon_threadsafe(queue.put_nowait, (event, payload))
+
+            def work():
+                try:
+                    return check_project(target, settings, None, on_progress)
+                finally:
+                    loop.call_soon_threadsafe(queue.put_nowait, done)
+
+            future = loop.run_in_executor(None, work)
+            yield _sse(
+                "start",
+                {
+                    "project": request.project,
+                    "case_id": request.case_id,
+                    "upload_id": request.upload_id,
+                },
             )
-            for verdict in verdicts:
-                yield _sse("verdict", json.loads(verdict.model_dump_json()))
-                await asyncio.sleep(0.04)      # paced so the UI can stagger the reveal
 
+            while True:
+                item = await queue.get()
+                if item is done:
+                    break
+                event, payload = item
+                yield _sse(event, payload)
+                if event == "verdict":
+                    # Cached answers come back instantly, which makes a 14-rule run
+                    # finish before anyone can watch it. Pace the reveal so each check
+                    # is visibly its own step. An uncached model call is slower than
+                    # this anyway, so it costs a real run nothing.
+                    await asyncio.sleep(0.28)
+
+            _, summary_payload = await future
             yield _sse("summary", summary_payload)
 
         return StreamingResponse(
@@ -318,7 +430,107 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
         )
 
+    # ---------------------------------------------------------------- sweep
+
+    @app.post("/api/sweep")
+    async def sweep() -> StreamingResponse:
+        """Check one representative case of every drift category, category by category."""
+        from specdrift.live import run_sweep, sweep_cases
+
+        cases = sweep_cases(settings)
+        by_id = {case.case_id: case for case in cases}
+
+        def describe(case_id: str) -> dict:
+            """The planted change, as one line before and one line after."""
+            case = by_id[case_id]
+            before_src, after_src, changed = store.sources(case_id)
+            before_lines, after_lines = before_src.split("\n"), after_src.split("\n")
+
+            head = 0
+            while (
+                head < len(before_lines)
+                and head < len(after_lines)
+                and before_lines[head] == after_lines[head]
+            ):
+                head += 1
+            tail = 0
+            while (
+                tail < len(before_lines) - head
+                and tail < len(after_lines) - head
+                and before_lines[-1 - tail] == after_lines[-1 - tail]
+            ):
+                tail += 1
+
+            removed = [line.strip() for line in before_lines[head : len(before_lines) - tail]]
+            added = [line.strip() for line in after_lines[head : len(after_lines) - tail]]
+
+            return {
+                "case_id": case_id,
+                "category": case.category,
+                "category_name": store.category_name(case.category),
+                "project": case.project,
+                "note": case.note,
+                "file": case.file,
+                "target_rules": case.target_rules,
+                "escapes_tests": case.escapes_tests,
+                "before": " ".join(removed)[:120],
+                "after": " ".join(added)[:120],
+                "line": changed[0] if changed else 0,
+            }
+
+        async def stream():
+            loop = asyncio.get_running_loop()
+            queue: asyncio.Queue = asyncio.Queue()
+            done = object()
+
+            def on_progress(event: str, payload) -> None:
+                if event == "case_start":
+                    payload = describe(payload["case_id"])
+                loop.call_soon_threadsafe(queue.put_nowait, (event, payload))
+
+            def work():
+                try:
+                    return run_sweep(cases, settings, on_progress)
+                finally:
+                    loop.call_soon_threadsafe(queue.put_nowait, done)
+
+            future = loop.run_in_executor(None, work)
+            yield _sse(
+                "sweep_start",
+                {"total": len(cases), "categories": [c.category for c in cases]},
+            )
+
+            while True:
+                item = await queue.get()
+                if item is done:
+                    break
+                event, payload = item
+                yield _sse(event, payload)
+                # Paced so each category reads as its own step rather than a blur;
+                # cached answers make the real work almost instantaneous.
+                await asyncio.sleep(0.75 if event == "case_result" else 0.35)
+
+            rows = await future
+            yield _sse(
+                "sweep_summary",
+                {"total": len(rows), "caught": sum(1 for r in rows if r["caught"])},
+            )
+
+        return StreamingResponse(
+            stream(),
+            media_type="text/event-stream",
+            headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+        )
+
     def _resolve_check_target(request: CheckRequest) -> Path:
+        if request.upload_id:
+            from specdrift.intake import upload_root
+
+            root = upload_root(settings, request.upload_id)
+            if root is None:
+                raise HTTPException(404, f"unknown upload {request.upload_id!r}")
+            return root
+
         if request.case_id:
             case = store.cases_by_id.get(request.case_id)
             if case is None:
@@ -328,7 +540,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 raise HTTPException(409, "case workspace is missing; run `specdrift build`")
             return workspace
 
-        target = settings.projects_dir / request.project
+        target = settings.projects_dir / (request.project or "")
         if not (target / "spec.md").exists():
             raise HTTPException(404, f"unknown project {request.project!r}")
         return target
