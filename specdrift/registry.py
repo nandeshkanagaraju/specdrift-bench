@@ -19,6 +19,14 @@ def build_detector(name: str, settings: Settings) -> Detector:
         from specdrift.verify.engine import SpecGuard
 
         return SpecGuard(settings)
+    if name == "reverse":
+        from specdrift.verify.reverse import ReverseChecker
+
+        return ReverseChecker(settings)
+    if name == "specguard-reverse":
+        from specdrift.verify.reverse import SpecGuardReverse
+
+        return SpecGuardReverse(settings)
     if name == "keyword":
         from specdrift.baselines.keyword import KeywordDetector
 
@@ -30,4 +38,4 @@ def build_detector(name: str, settings: Settings) -> Detector:
     raise ValueError(f"unknown detector {name!r}")
 
 
-DETECTOR_NAMES = ("specguard", "keyword", "wholefile")
+DETECTOR_NAMES = ("specguard", "keyword", "wholefile", "reverse", "specguard-reverse")

@@ -61,6 +61,13 @@ def case_outcome(case: CaseResult, verdicts: list[Verdict]) -> dict:
             # D8 scope creep names no rule, so no flag can match by rule id. A flag counts
             # only if it was raised on the planted code; flags raised elsewhere are spurious.
             on_target = [v for v in flagged if _localised(case, v)]
+        if case.category == "D8":
+            # A reverse-direction finding names no rule either; on a D8 case it counts when it
+            # points at the planted code, whether or not the case also names a rule.
+            on_target += [
+                v for v in flagged
+                if v.direction == "reverse" and v not in on_target and _localised(case, v)
+            ]
 
         caught = bool(on_target)
         spurious = [v for v in flagged if v not in on_target]
@@ -100,7 +107,11 @@ def _attribute_miss(case: CaseResult, verdicts: list[Verdict]) -> str:
     'n/a' is the honest answer for a detector with no retrieval stage - a whole-file
     prompt cannot fail to retrieve.
     """
-    relevant = [v for v in verdicts if not case.target_rules or v.rule_id in case.target_rules]
+    relevant = [
+        v for v in verdicts
+        if not case.target_rules or v.rule_id in case.target_rules
+        or (case.category == "D8" and v.direction == "reverse")
+    ]
     if not relevant or not any(v.retrieved_chunks for v in relevant):
         return "n/a"
     if not case.gold_symbol:

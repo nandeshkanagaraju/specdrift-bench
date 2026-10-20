@@ -15,7 +15,7 @@ The positive class is **drift**. Verdicts are `COMPLIANT`, `DRIFT` or `UNCERTAIN
 | --- | --- |
 | Host projects | 3 working Python projects (`library`, `wallet`, `ratelimiter`), 13–14 numbered rules each, one test per rule |
 | Cases | 86 labelled cases: 59 drift across 9 categories, 27 negative controls across 3 |
-| Detectors | `specguard` (retrieval + verification), `keyword` (vocabulary matching), `wholefile` (one prompt, whole codebase) |
+| Detectors | `specguard` (retrieval + verification), `reverse` (code to rules, for scope creep), `specguard-reverse` (both directions), `keyword` (vocabulary matching), `wholefile` (one prompt, whole codebase) |
 | Outputs | Per-category recall and false-alarm rate, Recall@k, retrieval-vs-reasoning attribution, an HTML report, and a web dashboard |
 
 Every drift case records `escapes_tests`: whether the host project's own test suite
@@ -119,6 +119,43 @@ Single run each, compared with run 1 above:
 well inside its interval, and its retrieval misses went from 11 to 9. **The keyword baseline
 does:** without ids it flags every negative control, because a `# R12` comment used to make
 a rule stating 12 look satisfied. Its original numbers partly reflect that artefact.
+
+### The reverse direction: catching scope creep (D8)
+
+SpecGuard goes rule to code, so it cannot see behaviour no rule mentions: that code is
+similar to no rule, and no rule's retrieval ever surfaces it. `verify/reverse.py` goes the
+other way. For every function and method it shows the model the whole rule list and asks
+whether everything the function does is described or presupposed by some rule.
+
+Two things keep it honest. A finding must **quote, verbatim, the code that carries out the
+extra behaviour**; a quote that is not in the function is downgraded to `UNCERTAIN`, and the
+quote's real line numbers become the evidence. And a function **identical to one already
+reported on the pristine project is treated as accepted**, as with a static-analysis
+baseline file, because real specifications leave things out (the wallet spec mentions frozen accounts
+but never says how one is frozen) and the checker would otherwise report that gap on every case.
+
+| Detector (3 runs) | D8 recall (95% CI) | Overall recall | False-alarm rate |
+| --- | --- | --- | --- |
+| `specguard` (forward only) | 0.17 [0.00, 0.50] | 0.54 [0.41, 0.66] | 0.65 [0.47, 0.83] |
+| `reverse` alone | 0.78 [0.44, 1.00] | 0.08 [0.02, 0.16] | 0.07 [0.00, 0.17] |
+| `specguard-reverse` | 0.78 [0.44, 1.00] | 0.61 [0.48, 0.73] | 0.67 [0.48, 0.85] |
+
+**What this shows.** The reverse pass finds the scope creep the forward pass cannot, and by
+itself it is quiet: in run 1, 2 false alarms on 27 clean controls, both on the benign-decoy cases
+whose planted comment makes ordinary code look suspicious. Combined, overall recall rises
+from 0.54 to 0.61, but the intervals overlap, so that rise is not established; the D8 gain is
+the finding, and with six D8 cases even it is suggestive rather than conclusive (the
+intervals touch between 0.44 and 0.50). The combined false-alarm rate is SpecGuard's, since
+the forward pass supplies almost all of it.
+
+**What it does not do.** It missed two of six D8 cases in run 1: a brand-new `renew` method
+that the model judged authorised, and an exemption for `internal-` clients hidden inside the
+existing `allow`. It audits functions and methods only, so creep expressed as a module-level
+constant is out of reach. And the prompt was adjusted once, after seeing what the model
+flagged on the three *pristine* projects (11 of 31 functions on the first wording, 3 on the
+second, mostly "this method has no checks", which is the absence of behaviour, not extra
+behaviour); the D8 cases were not consulted when doing so, but the same three host projects
+supply both, so treat the numbers as optimistic until a fourth project confirms them.
 
 ### The false alarms are worth reading
 
@@ -254,7 +291,10 @@ false-alarm rate.
   counts only if it was raised on the planted code (the detector retrieved the gold symbol,
   or cited its file); a flag raised elsewhere is spurious, like any other off-target flag.
   A detector that reports neither retrieval nor evidence gets the benefit of the doubt.
-- **Any** drift flag on a negative control is a false alarm.
+- A reverse-direction finding names no rule. On a D8 case it counts when it points at the
+  planted code, whether or not the case also names a rule; on any other drift case it is a
+  spurious flag.
+- **Any** drift flag on a negative control is a false alarm, reverse findings included.
 - `UNCERTAIN` counts as "not flagged". In Review 3 it becomes the abstention route.
 - A miss is attributed to **retrieval** when the injected chunk was never shown, and to
   **reasoning** when it was shown and read wrongly. A detector with no retrieval stage
@@ -288,7 +328,7 @@ specdrift/
   code/chunker.py           source -> function/method/class/module chunks
   bench/                    builder, validator, schema, build pipeline
   retrieval/                embedder (local or sentence-transformers), retriever, Recall@k
-  verify/                   llm adapter, prompt, verifier, SpecGuard engine
+  verify/                   llm adapter, prompt, verifier, SpecGuard engine, reverse check
   baselines/                keyword, wholefile
   eval/                     metrics, report + templates
   api/                      FastAPI app, in-memory store, response models
@@ -351,6 +391,6 @@ the embedder was recorded in `run.json` used the local hashing embedder.
 ## Not built yet
 
 Deferred by design, each with a slot in the code: the adversarial second pass
-(`verify/adversary`), the reverse-direction authorisation pass, the Semcheck baseline,
+(`verify/adversary`), the Semcheck baseline,
 calibration and an abstention threshold, a per-rule whole-file baseline (to separate
 retrieval from prompt shape), and seven more host projects.

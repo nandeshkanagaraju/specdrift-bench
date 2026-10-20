@@ -1,0 +1,13 @@
+{
+  "detector": "reverse",
+  "model": "gpt-4o-mini",
+  "cases": 86,
+  "verdicts": 891,
+  "verdicts_this_run": 891,
+  "cache_hits": 817,
+  "llm_calls": 105,
+  "run": 2,
+  "embedder": "n/a",
+  "embed_model": "local-hashing-tfidf",
+  "strip_rule_ids": false
+}

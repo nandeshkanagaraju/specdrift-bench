@@ -95,6 +95,8 @@ class FakeLLM:
         self.calls.append((system, user))
         if self.scripted:
             return self.scripted.pop(0)
+        if user.startswith("UNAUTHORISED-BEHAVIOUR CHECK"):
+            return json.dumps(self._judge_reverse(user))
         if user.startswith("RULES:"):
             return json.dumps(self._judge_many(user))
         return json.dumps(self._judge(user))
@@ -106,6 +108,32 @@ class FakeLLM:
     @staticmethod
     def _format(value: float) -> str:
         return str(int(value)) if value.is_integer() else str(value)
+
+    def _judge_reverse(self, user: str) -> dict:
+        """Reverse pass stand-in: a function whose name shares no word with any rule is creep.
+
+        Deliberately crude, like the forward stand-in. It can spot a brand-new operation
+        (``renew``, ``overdraft``) but is blind to an exemption hidden inside an existing one.
+        """
+        rules_part, _, code_part = user.partition("CODE EXCERPT:")
+        rules_text = rules_part.lower()
+        header = code_part.strip().splitlines()[0] if code_part.strip() else ""
+        qual = re.search(r"\(([^)]*)\)", header)
+        name = (qual.group(1) if qual else "").rsplit(".", 1)[-1].lstrip("_")
+        words = [w for w in re.split(r"_+", name.lower()) if len(w) > 3]
+        known = any(w[:5] in rules_text for w in words) if words else True
+        if known:
+            return {"verdict": "AUTHORISED", "confidence": 0.6, "behaviour": "", "quote": "", "closest_rule": ""}
+        def_line = next(
+            (line.split("|", 1)[-1].strip() for line in code_part.splitlines() if "def " in line), ""
+        )
+        return {
+            "verdict": "UNAUTHORISED",
+            "confidence": 0.6,
+            "behaviour": f"the operation {name!r} is not mentioned by any rule",
+            "quote": def_line,
+            "closest_rule": "none",
+        }
 
     def _judge_many(self, user: str) -> list[dict]:
         """The whole-file shape: every rule judged against the whole codebase at once."""

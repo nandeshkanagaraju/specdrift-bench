@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Reverse direction
+- `verify/reverse.py`: a code-to-rules pass that audits every function and method against the
+  whole rule list for behaviour no rule describes (D8 scope creep). Findings must quote the
+  code verbatim, and functions already reported on the pristine project are accepted.
+- Detectors `reverse` and `specguard-reverse` (both directions); verdicts carry a `direction`.
+- Scoring: a reverse finding on the planted code catches a D8 case; elsewhere it is spurious
+  or, on a control, a false alarm. D8 recall 0.17 -> 0.78 over three runs.
+
 ### Measurement
 - `strict_precision`: flags on non-target rules of drift cases now count as false positives.
 - D8 scoring: on rule-less scope-creep cases a flag counts only if raised on the planted code.

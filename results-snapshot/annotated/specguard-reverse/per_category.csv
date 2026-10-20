@@ -1,0 +1,13 @@
+category,name,n,metric,value,uncertain
+D1,Boundary shift,8,recall,0.25,4
+D2,Value / constant drift,9,recall,1.0,6
+D3,Omitted check,6,recall,0.3333,10
+D4,Weakened condition,6,recall,1.0,4
+D5,Sequence violation,6,recall,0.3333,4
+D6,Error-handling drift,6,recall,0.3333,5
+D7,Comment decoy,6,recall,0.6667,6
+D8,Unauthorised scope creep,6,recall,0.6667,5
+D9,Output contract drift,6,recall,0.6667,4
+N1,Unchanged code,3,false alarm rate,0.6667,2
+N2,Semantics-preserving refactor,18,false alarm rate,0.6667,12
+N3,Benign decoy,6,false alarm rate,0.6667,7

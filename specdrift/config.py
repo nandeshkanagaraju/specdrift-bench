@@ -33,6 +33,10 @@ class Settings(BaseSettings):
     # RESULTS_DIR so the ablated results do not overwrite the annotated ones.
     strip_rule_ids: bool = False
 
+    # Reverse check: treat a function identical to one already reported on the pristine
+    # project as accepted, so only new unauthorised behaviour is reported.
+    reverse_baseline: bool = True
+
     # API protection. A token is optional (empty = open, fine on 127.0.0.1); the rate limit
     # applies to the endpoints that spend LLM money or write uploads. 0 disables it.
     api_token: str = ""

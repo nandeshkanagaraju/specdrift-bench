@@ -133,6 +133,7 @@ class Verdict(BaseModel):
     case_id: str
     rule_id: str
     detector: str
+    direction: Literal["forward", "reverse"] = "forward"   # reverse = code -> rules (D8)
     verdict: VerdictValue
     confidence: float = 0.0
     violated_clause: str = ""

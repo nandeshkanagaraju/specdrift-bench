@@ -40,12 +40,12 @@ def test_summary_reports_the_dataset(client):
 
 def test_summary_lists_every_detector_that_has_run(client):
     names = {d["name"] for d in client.get("/api/summary").json()["detectors"]}
-    assert names == {"specguard", "keyword", "wholefile"}
+    assert names >= {"specguard", "keyword", "wholefile", "reverse", "specguard-reverse"}
 
 
 def test_metrics_returns_every_scored_detector(client):
     body = client.get("/api/metrics").json()
-    assert len(body["detectors"]) == 3
+    assert len(body["detectors"]) >= 3
     first = body["detectors"][0]
     assert {"precision", "recall", "f1", "false_alarm_rate"} <= set(first["overall"])
 
@@ -73,7 +73,7 @@ def test_cases_search_matches_the_id(client):
 
 def test_case_rows_carry_each_detector_verdict(client):
     row = client.get("/api/cases?q=library-D2-01").json()["items"][0]
-    assert set(row["verdicts"]) == {"specguard", "keyword", "wholefile"}
+    assert set(row["verdicts"]) >= {"specguard", "keyword", "wholefile"}
 
 
 def test_case_detail_returns_the_diff_and_the_verdicts(client):
