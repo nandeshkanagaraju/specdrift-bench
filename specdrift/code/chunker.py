@@ -23,7 +23,7 @@ def _segment(lines: list[str], start: int, end: int) -> str:
 def _node_start(node: ast.AST) -> int:
     """First line of a definition, counting its decorators."""
     decorators = getattr(node, "decorator_list", [])
-    starts = [node.lineno] + [d.lineno for d in decorators]
+    starts = [getattr(node, "lineno", 1)] + [d.lineno for d in decorators]
     return min(starts)
 
 

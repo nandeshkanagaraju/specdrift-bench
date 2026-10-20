@@ -1,0 +1,168 @@
+{
+  "detector": "keyword",
+  "runs": [
+    1
+  ],
+  "n_boot": 2000,
+  "cases_scored": 86,
+  "per_run": [
+    {
+      "run": 1,
+      "counts": {
+        "TP": 5,
+        "FN": 54,
+        "FP": 10,
+        "TN": 17
+      },
+      "precision": 0.3333,
+      "recall": 0.0847,
+      "f1": 0.1351,
+      "false_alarm_rate": 0.3704
+    }
+  ],
+  "overall": {
+    "precision": {
+      "mean": 0.3333,
+      "run_std": 0.0,
+      "ci95": [
+        0.1,
+        0.6
+      ]
+    },
+    "recall": {
+      "mean": 0.0847,
+      "run_std": 0.0,
+      "ci95": [
+        0.0182,
+        0.1579
+      ]
+    },
+    "f1": {
+      "mean": 0.1351,
+      "run_std": 0.0,
+      "ci95": [
+        0.0299,
+        0.2381
+      ]
+    },
+    "false_alarm_rate": {
+      "mean": 0.3704,
+      "run_std": 0.0,
+      "ci95": [
+        0.1852,
+        0.5556
+      ]
+    }
+  },
+  "per_category": {
+    "D1": {
+      "metric": "recall",
+      "n": 8,
+      "mean": 0.125,
+      "ci95": [
+        0.0,
+        0.375
+      ]
+    },
+    "D2": {
+      "metric": "recall",
+      "n": 9,
+      "mean": 0.2222,
+      "ci95": [
+        0.0,
+        0.5556
+      ]
+    },
+    "D3": {
+      "metric": "recall",
+      "n": 6,
+      "mean": 0.1667,
+      "ci95": [
+        0.0,
+        0.5
+      ]
+    },
+    "D4": {
+      "metric": "recall",
+      "n": 6,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "D5": {
+      "metric": "recall",
+      "n": 6,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "D6": {
+      "metric": "recall",
+      "n": 6,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "D7": {
+      "metric": "recall",
+      "n": 6,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "D8": {
+      "metric": "recall",
+      "n": 6,
+      "mean": 0.1667,
+      "ci95": [
+        0.0,
+        0.5
+      ]
+    },
+    "D9": {
+      "metric": "recall",
+      "n": 6,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "N1": {
+      "metric": "false_alarm_rate",
+      "n": 3,
+      "mean": 0.3333,
+      "ci95": [
+        0.0,
+        1.0
+      ]
+    },
+    "N2": {
+      "metric": "false_alarm_rate",
+      "n": 18,
+      "mean": 0.3333,
+      "ci95": [
+        0.1111,
+        0.5556
+      ]
+    },
+    "N3": {
+      "metric": "false_alarm_rate",
+      "n": 6,
+      "mean": 0.5,
+      "ci95": [
+        0.1667,
+        0.8333
+      ]
+    }
+  },
+  "flip_rate": 0.0
+}

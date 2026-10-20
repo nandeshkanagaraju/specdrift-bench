@@ -6,7 +6,7 @@ import json
 import re
 import time
 
-from specdrift.bench.schema import Chunk, Counterexample, Evidence, Rule, Verdict
+from specdrift.bench.schema import Chunk, Counterexample, Evidence, Rule, Verdict, VerdictValue
 from specdrift.cache import ResponseCache
 from specdrift.verify.llm import Completer, LLMError, with_retries
 from specdrift.verify.prompts import PROMPT_VERSION, SYSTEM_PROMPT, build_user_prompt
@@ -43,10 +43,20 @@ def _clamp_confidence(value: object) -> float:
         return 0.0
 
 
+def _line_number(value: object) -> int:
+    """Models sometimes answer '41-44' or '41' as a string; take the first integer."""
+    if isinstance(value, bool):
+        return 0
+    if isinstance(value, (int, float)):
+        return max(0, int(value))
+    match = re.search(r"\d+", str(value or ""))
+    return int(match.group()) if match else 0
+
+
 def to_verdict(payload: dict, case_id: str, rule_id: str, detector: str) -> Verdict:
     """Build a Verdict, applying the evidence bar that a DRIFT claim has to clear."""
     raw = str(payload.get("verdict", "")).strip().upper()
-    verdict = raw if raw in VALID_VERDICTS else "UNCERTAIN"
+    verdict: VerdictValue = raw if raw in VALID_VERDICTS else "UNCERTAIN"  # type: ignore[assignment]
 
     clause = str(payload.get("violated_clause") or "").strip()
     evidence_raw = payload.get("evidence") or {}
@@ -54,8 +64,8 @@ def to_verdict(payload: dict, case_id: str, rule_id: str, detector: str) -> Verd
 
     evidence = Evidence(
         file=str(evidence_raw.get("file") or ""),
-        start_line=int(evidence_raw.get("start_line") or 0),
-        end_line=int(evidence_raw.get("end_line") or 0),
+        start_line=_line_number(evidence_raw.get("start_line")),
+        end_line=_line_number(evidence_raw.get("end_line")),
     )
     counterexample = Counterexample(
         input=str(counter_raw.get("input") or "").strip(),

@@ -5,7 +5,6 @@ from __future__ import annotations
 import json
 import sys
 from collections import Counter
-from pathlib import Path
 
 from specdrift.bench.builder import PatchError, build_case, load_all_manifests
 from specdrift.bench.schema import ALL_CATEGORIES, CATEGORY_NAMES, CaseResult, CaseSpec
@@ -126,10 +125,10 @@ def summarise(results: list[CaseResult]) -> str:
         f"({len(invalid_negatives)} of them negative controls)",
     ]
     if drift_valid:
-        pct = 100 * len(drift_escaped) / len(drift_valid)
+        escaped_pct = 100 * len(drift_escaped) / len(drift_valid)
         lines.append(
             f"drift that still passes the project's own tests: "
-            f"{len(drift_escaped)}/{len(drift_valid)} ({pct:.0f}%)"
+            f"{len(drift_escaped)}/{len(drift_valid)} ({escaped_pct:.0f}%)"
         )
     if invalid:
         lines.append("")

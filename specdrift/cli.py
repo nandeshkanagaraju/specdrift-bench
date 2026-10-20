@@ -45,6 +45,7 @@ def run(
     project: str = typer.Option(None, help="Only this project's cases."),
     limit: int = typer.Option(0, help="Stop after this many cases (0 = all)."),
     run_index: int = typer.Option(1, "--run", help="Run number; >1 bypasses the cache."),
+    repeat: int = typer.Option(1, "--repeat", min=1, help="Run this many consecutive runs from --run."),
 ) -> None:
     """Run a detector over every built case and write its verdicts."""
     import time
@@ -70,16 +71,80 @@ def run(
             fg=typer.colors.YELLOW,
         )
 
-    started = time.perf_counter()
-    typer.echo(f"running {detector} over {len(cases)} cases...")
-    _, stats = run_detector(detector, cases, settings, run=run_index)
-    elapsed = time.perf_counter() - started
+    if repeat > 1 and run_index + repeat - 1 > 1:
+        typer.echo("note: runs after #1 bypass the cache, so each one makes fresh LLM calls.")
 
-    typer.echo(
-        f"{stats['verdicts']} verdicts from {stats['cases']} cases  |  "
-        f"model={stats['model']}  LLM calls={stats['llm_calls']}  "
-        f"cache hits={stats['cache_hits']}  |  {elapsed:.1f}s"
-    )
+    for current in range(run_index, run_index + repeat):
+        started = time.perf_counter()
+        typer.echo(f"running {detector} (run {current}) over {len(cases)} cases...")
+        _, stats = run_detector(detector, cases, settings, run=current)
+        elapsed = time.perf_counter() - started
+
+        typer.echo(
+            f"{stats['verdicts']} verdicts from {stats['cases']} cases  |  "
+            f"model={stats['model']}  LLM calls={stats['llm_calls']}  "
+            f"cache hits={stats['cache_hits']}  |  {elapsed:.1f}s"
+        )
+
+
+@app.command()
+def oracles() -> None:
+    """Check every escaping drift case against its oracle test (pass pristine, fail drifted)."""
+    import json
+    from collections import Counter
+
+    from specdrift.bench.oracle import check_oracle, needs_oracle
+    from specdrift.bench.pipeline import load_built
+
+    settings = get_settings()
+    cases = [case for case in load_built(settings) if needs_oracle(case)]
+    if not cases:
+        typer.echo("no escaping drift cases; run `specdrift build` first")
+        raise typer.Exit(code=1)
+
+    report = {case.case_id: check_oracle(case, settings) for case in cases}
+    for case_id, row in report.items():
+        typer.echo(f"{case_id:<22} {row['status']:<20} {row['detail'][:70]}")
+
+    tally = Counter(row["status"] for row in report.values())
+    typer.echo("")
+    typer.echo("  ".join(f"{status} {count}" for status, count in sorted(tally.items())))
+
+    out = settings.results_dir / "oracles.json"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(report, indent=2), encoding="utf-8")
+    if set(tally) - {"confirmed", "waived"}:
+        raise typer.Exit(code=1)
+
+
+@app.command()
+def stability(
+    detector: str = typer.Option("specguard", help="Detector to analyse."),
+    boot: int = typer.Option(2000, help="Bootstrap resamples."),
+) -> None:
+    """Mean, run-to-run spread and bootstrap 95% CIs over every stored run."""
+    import json
+
+    from specdrift.bench.pipeline import load_built
+    from specdrift.eval.stability import format_stability, score_runs
+    from specdrift.runner import available_runs, load_verdicts
+
+    settings = get_settings()
+    cases = load_built(settings)
+    if not cases:
+        typer.echo("no built cases; run `specdrift build` first")
+        raise typer.Exit(code=1)
+
+    runs = available_runs(settings, detector)
+    if not runs:
+        typer.echo(f"no verdicts for {detector}; run `specdrift run --detector {detector}` first")
+        raise typer.Exit(code=1)
+
+    verdict_sets = {run: load_verdicts(settings, detector, run) for run in runs}
+    report = score_runs(cases, verdict_sets, detector, n_boot=boot)
+    out = settings.detector_dir(detector) / "stability.json"
+    out.write_text(json.dumps(report, indent=2), encoding="utf-8")
+    typer.echo(format_stability(report))
 
 
 @app.command()
@@ -88,7 +153,8 @@ def score(
 ) -> None:
     """Join verdicts with labels and write metrics.json plus per_category.csv."""
     from specdrift.bench.pipeline import load_built
-    from specdrift.eval.metrics import format_scores, score as score_detector, write_scores
+    from specdrift.eval.metrics import format_scores, write_scores
+    from specdrift.eval.metrics import score as score_detector
     from specdrift.registry import DETECTOR_NAMES
     from specdrift.runner import load_verdicts
 

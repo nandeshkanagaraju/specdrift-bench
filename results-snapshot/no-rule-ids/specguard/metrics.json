@@ -1,0 +1,1297 @@
+{
+  "detector": "specguard",
+  "cases_scored": 86,
+  "counts": {
+    "TP": 34,
+    "FN": 25,
+    "FP": 18,
+    "TN": 9
+  },
+  "overall": {
+    "precision": 0.6538,
+    "strict_precision": 0.2982,
+    "recall": 0.5763,
+    "f1": 0.6126,
+    "false_alarm_rate": 0.6667,
+    "uncertain_rate": 0.082,
+    "spurious_rule_flags": 62
+  },
+  "per_category": {
+    "D1": {
+      "name": "Boundary shift",
+      "n": 8,
+      "uncertain": 7,
+      "metric": "recall",
+      "value": 0.375,
+      "caught": 3,
+      "missed": 5
+    },
+    "D2": {
+      "name": "Value / constant drift",
+      "n": 9,
+      "uncertain": 9,
+      "metric": "recall",
+      "value": 1.0,
+      "caught": 9,
+      "missed": 0
+    },
+    "D3": {
+      "name": "Omitted check",
+      "n": 6,
+      "uncertain": 11,
+      "metric": "recall",
+      "value": 0.3333,
+      "caught": 2,
+      "missed": 4
+    },
+    "D4": {
+      "name": "Weakened condition",
+      "n": 6,
+      "uncertain": 6,
+      "metric": "recall",
+      "value": 0.8333,
+      "caught": 5,
+      "missed": 1
+    },
+    "D5": {
+      "name": "Sequence violation",
+      "n": 6,
+      "uncertain": 6,
+      "metric": "recall",
+      "value": 0.5,
+      "caught": 3,
+      "missed": 3
+    },
+    "D6": {
+      "name": "Error-handling drift",
+      "n": 6,
+      "uncertain": 7,
+      "metric": "recall",
+      "value": 0.5,
+      "caught": 3,
+      "missed": 3
+    },
+    "D7": {
+      "name": "Comment decoy",
+      "n": 6,
+      "uncertain": 8,
+      "metric": "recall",
+      "value": 0.6667,
+      "caught": 4,
+      "missed": 2
+    },
+    "D8": {
+      "name": "Unauthorised scope creep",
+      "n": 6,
+      "uncertain": 6,
+      "metric": "recall",
+      "value": 0.1667,
+      "caught": 1,
+      "missed": 5
+    },
+    "D9": {
+      "name": "Output contract drift",
+      "n": 6,
+      "uncertain": 6,
+      "metric": "recall",
+      "value": 0.6667,
+      "caught": 4,
+      "missed": 2
+    },
+    "N1": {
+      "name": "Unchanged code",
+      "n": 3,
+      "uncertain": 3,
+      "metric": "false alarm rate",
+      "value": 0.6667,
+      "false_alarms": 2,
+      "clean": 1
+    },
+    "N2": {
+      "name": "Semantics-preserving refactor",
+      "n": 18,
+      "uncertain": 18,
+      "metric": "false alarm rate",
+      "value": 0.6667,
+      "false_alarms": 12,
+      "clean": 6
+    },
+    "N3": {
+      "name": "Benign decoy",
+      "n": 6,
+      "uncertain": 7,
+      "metric": "false alarm rate",
+      "value": 0.6667,
+      "false_alarms": 4,
+      "clean": 2
+    }
+  },
+  "attribution": {
+    "retrieval": 9,
+    "reasoning": 16
+  },
+  "outcomes": [
+    {
+      "case_id": "library-D1-01",
+      "category": "D1",
+      "label": "drift",
+      "outcome": "FN",
+      "flagged_rules": [],
+      "spurious_rules": [],
+      "attribution": "retrieval",
+      "uncertain": 2,
+      "confidence": 0.0
+    },
+    {
+      "case_id": "library-D1-02",
+      "category": "D1",
+      "label": "drift",
+      "outcome": "FN",
+      "flagged_rules": [],
+      "spurious_rules": [],
+      "attribution": "reasoning",
+      "uncertain": 2,
+      "confidence": 0.0
+    },
+    {
+      "case_id": "library-D2-01",
+      "category": "D2",
+      "label": "drift",
+      "outcome": "TP",
+      "flagged_rules": [
+        "R12"
+      ],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 2,
+      "confidence": 1.0
+    },
+    {
+      "case_id": "library-D2-02",
+      "category": "D2",
+      "label": "drift",
+      "outcome": "TP",
+      "flagged_rules": [
+        "R13"
+      ],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 2,
+      "confidence": 0.9
+    },
+    {
+      "case_id": "library-D2-03",
+      "category": "D2",
+      "label": "drift",
+      "outcome": "TP",
+      "flagged_rules": [
+        "R06"
+      ],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 2,
+      "confidence": 1.0
+    },
+    {
+      "case_id": "library-D3-01",
+      "category": "D3",
+      "label": "drift",
+      "outcome": "TP",
+      "flagged_rules": [
+        "R05"
+      ],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 3,
+      "confidence": 0.9
+    },
+    {
+      "case_id": "library-D3-02",
+      "category": "D3",
+      "label": "drift",
+      "outcome": "FN",
+      "flagged_rules": [],
+      "spurious_rules": [],
+      "attribution": "retrieval",
+      "uncertain": 3,
+      "confidence": 0.0
+    },
+    {
+      "case_id": "library-D4-01",
+      "category": "D4",
+      "label": "drift",
+      "outcome": "TP",
+      "flagged_rules": [
+        "R08"
+      ],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 2,
+      "confidence": 0.9
+    },
+    {
+      "case_id": "library-D4-02",
+      "category": "D4",
+      "label": "drift",
+      "outcome": "TP",
+      "flagged_rules": [
+        "R03"
+      ],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 2,
+      "confidence": 0.9
+    },
+    {
+      "case_id": "library-D5-01",
+      "category": "D5",
+      "label": "drift",
+      "outcome": "TP",
+      "flagged_rules": [
+        "R11"
+      ],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 2,
+      "confidence": 1.0
+    },
+    {
+      "case_id": "library-D5-02",
+      "category": "D5",
+      "label": "drift",
+      "outcome": "FN",
+      "flagged_rules": [],
+      "spurious_rules": [],
+      "attribution": "reasoning",
+      "uncertain": 2,
+      "confidence": 0.0
+    },
+    {
+      "case_id": "library-D6-01",
+      "category": "D6",
+      "label": "drift",
+      "outcome": "FN",
+      "flagged_rules": [],
+      "spurious_rules": [
+        "R06"
+      ],
+      "attribution": "retrieval",
+      "uncertain": 2,
+      "confidence": 0.0
+    },
+    {
+      "case_id": "library-D6-02",
+      "category": "D6",
+      "label": "drift",
+      "outcome": "TP",
+      "flagged_rules": [
+        "R08"
+      ],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 2,
+      "confidence": 1.0
+    },
+    {
+      "case_id": "library-D7-01",
+      "category": "D7",
+      "label": "drift",
+      "outcome": "FN",
+      "flagged_rules": [],
+      "spurious_rules": [],
+      "attribution": "reasoning",
+      "uncertain": 3,
+      "confidence": 0.0
+    },
+    {
+      "case_id": "library-D7-02",
+      "category": "D7",
+      "label": "drift",
+      "outcome": "TP",
+      "flagged_rules": [
+        "R13"
+      ],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 2,
+      "confidence": 0.9
+    },
+    {
+      "case_id": "library-D8-01",
+      "category": "D8",
+      "label": "drift",
+      "outcome": "FN",
+      "flagged_rules": [],
+      "spurious_rules": [],
+      "attribution": "reasoning",
+      "uncertain": 2,
+      "confidence": 0.0
+    },
+    {
+      "case_id": "library-D8-02",
+      "category": "D8",
+      "label": "drift",
+      "outcome": "FN",
+      "flagged_rules": [],
+      "spurious_rules": [],
+      "attribution": "retrieval",
+      "uncertain": 2,
+      "confidence": 0.0
+    },
+    {
+      "case_id": "library-D9-01",
+      "category": "D9",
+      "label": "drift",
+      "outcome": "TP",
+      "flagged_rules": [
+        "R14"
+      ],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 2,
+      "confidence": 1.0
+    },
+    {
+      "case_id": "library-D9-02",
+      "category": "D9",
+      "label": "drift",
+      "outcome": "TP",
+      "flagged_rules": [
+        "R13"
+      ],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 2,
+      "confidence": 0.9
+    },
+    {
+      "case_id": "library-N1-01",
+      "category": "N1",
+      "label": "no_drift",
+      "outcome": "TN",
+      "flagged_rules": [],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 2,
+      "confidence": 0.0
+    },
+    {
+      "case_id": "library-N2-01",
+      "category": "N2",
+      "label": "no_drift",
+      "outcome": "TN",
+      "flagged_rules": [],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 2,
+      "confidence": 0.0
+    },
+    {
+      "case_id": "library-N2-02",
+      "category": "N2",
+      "label": "no_drift",
+      "outcome": "TN",
+      "flagged_rules": [],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 2,
+      "confidence": 0.0
+    },
+    {
+      "case_id": "library-N2-03",
+      "category": "N2",
+      "label": "no_drift",
+      "outcome": "TN",
+      "flagged_rules": [],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 2,
+      "confidence": 0.0
+    },
+    {
+      "case_id": "library-N2-04",
+      "category": "N2",
+      "label": "no_drift",
+      "outcome": "TN",
+      "flagged_rules": [],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 2,
+      "confidence": 0.0
+    },
+    {
+      "case_id": "library-N2-05",
+      "category": "N2",
+      "label": "no_drift",
+      "outcome": "TN",
+      "flagged_rules": [],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 2,
+      "confidence": 0.0
+    },
+    {
+      "case_id": "library-N2-06",
+      "category": "N2",
+      "label": "no_drift",
+      "outcome": "TN",
+      "flagged_rules": [],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 2,
+      "confidence": 0.0
+    },
+    {
+      "case_id": "library-N3-01",
+      "category": "N3",
+      "label": "no_drift",
+      "outcome": "TN",
+      "flagged_rules": [],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 2,
+      "confidence": 0.0
+    },
+    {
+      "case_id": "library-N3-02",
+      "category": "N3",
+      "label": "no_drift",
+      "outcome": "FP",
+      "flagged_rules": [
+        "R06"
+      ],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 2,
+      "confidence": 1.0
+    },
+    {
+      "case_id": "ratelimiter-D1-01",
+      "category": "D1",
+      "label": "drift",
+      "outcome": "TP",
+      "flagged_rules": [
+        "R06",
+        "R08"
+      ],
+      "spurious_rules": [
+        "R02",
+        "R07",
+        "R10"
+      ],
+      "attribution": "",
+      "uncertain": 0,
+      "confidence": 1.0
+    },
+    {
+      "case_id": "ratelimiter-D1-02",
+      "category": "D1",
+      "label": "drift",
+      "outcome": "TP",
+      "flagged_rules": [
+        "R05"
+      ],
+      "spurious_rules": [
+        "R02",
+        "R03",
+        "R07"
+      ],
+      "attribution": "",
+      "uncertain": 0,
+      "confidence": 0.9
+    },
+    {
+      "case_id": "ratelimiter-D1-03",
+      "category": "D1",
+      "label": "drift",
+      "outcome": "TP",
+      "flagged_rules": [
+        "R12"
+      ],
+      "spurious_rules": [
+        "R02",
+        "R07"
+      ],
+      "attribution": "",
+      "uncertain": 0,
+      "confidence": 1.0
+    },
+    {
+      "case_id": "ratelimiter-D2-01",
+      "category": "D2",
+      "label": "drift",
+      "outcome": "TP",
+      "flagged_rules": [
+        "R03"
+      ],
+      "spurious_rules": [
+        "R02",
+        "R07"
+      ],
+      "attribution": "",
+      "uncertain": 0,
+      "confidence": 1.0
+    },
+    {
+      "case_id": "ratelimiter-D2-02",
+      "category": "D2",
+      "label": "drift",
+      "outcome": "TP",
+      "flagged_rules": [
+        "R04"
+      ],
+      "spurious_rules": [
+        "R02",
+        "R07"
+      ],
+      "attribution": "",
+      "uncertain": 0,
+      "confidence": 1.0
+    },
+    {
+      "case_id": "ratelimiter-D2-03",
+      "category": "D2",
+      "label": "drift",
+      "outcome": "TP",
+      "flagged_rules": [
+        "R12"
+      ],
+      "spurious_rules": [
+        "R02",
+        "R07"
+      ],
+      "attribution": "",
+      "uncertain": 0,
+      "confidence": 1.0
+    },
+    {
+      "case_id": "ratelimiter-D3-01",
+      "category": "D3",
+      "label": "drift",
+      "outcome": "FN",
+      "flagged_rules": [],
+      "spurious_rules": [
+        "R02",
+        "R03",
+        "R07"
+      ],
+      "attribution": "retrieval",
+      "uncertain": 1,
+      "confidence": 0.0
+    },
+    {
+      "case_id": "ratelimiter-D3-02",
+      "category": "D3",
+      "label": "drift",
+      "outcome": "FN",
+      "flagged_rules": [],
+      "spurious_rules": [
+        "R02",
+        "R07"
+      ],
+      "attribution": "retrieval",
+      "uncertain": 1,
+      "confidence": 0.0
+    },
+    {
+      "case_id": "ratelimiter-D4-01",
+      "category": "D4",
+      "label": "drift",
+      "outcome": "FN",
+      "flagged_rules": [],
+      "spurious_rules": [
+        "R02",
+        "R07"
+      ],
+      "attribution": "reasoning",
+      "uncertain": 0,
+      "confidence": 0.0
+    },
+    {
+      "case_id": "ratelimiter-D4-02",
+      "category": "D4",
+      "label": "drift",
+      "outcome": "TP",
+      "flagged_rules": [
+        "R06",
+        "R08"
+      ],
+      "spurious_rules": [
+        "R02",
+        "R07",
+        "R09"
+      ],
+      "attribution": "",
+      "uncertain": 0,
+      "confidence": 0.9
+    },
+    {
+      "case_id": "ratelimiter-D5-01",
+      "category": "D5",
+      "label": "drift",
+      "outcome": "FN",
+      "flagged_rules": [],
+      "spurious_rules": [
+        "R02",
+        "R07"
+      ],
+      "attribution": "reasoning",
+      "uncertain": 0,
+      "confidence": 0.0
+    },
+    {
+      "case_id": "ratelimiter-D5-02",
+      "category": "D5",
+      "label": "drift",
+      "outcome": "TP",
+      "flagged_rules": [
+        "R10"
+      ],
+      "spurious_rules": [
+        "R02",
+        "R06",
+        "R07"
+      ],
+      "attribution": "",
+      "uncertain": 0,
+      "confidence": 0.9
+    },
+    {
+      "case_id": "ratelimiter-D6-01",
+      "category": "D6",
+      "label": "drift",
+      "outcome": "FN",
+      "flagged_rules": [],
+      "spurious_rules": [
+        "R02",
+        "R06",
+        "R07"
+      ],
+      "attribution": "retrieval",
+      "uncertain": 1,
+      "confidence": 0.0
+    },
+    {
+      "case_id": "ratelimiter-D6-02",
+      "category": "D6",
+      "label": "drift",
+      "outcome": "FN",
+      "flagged_rules": [],
+      "spurious_rules": [
+        "R02",
+        "R07"
+      ],
+      "attribution": "reasoning",
+      "uncertain": 0,
+      "confidence": 0.0
+    },
+    {
+      "case_id": "ratelimiter-D7-01",
+      "category": "D7",
+      "label": "drift",
+      "outcome": "TP",
+      "flagged_rules": [
+        "R05"
+      ],
+      "spurious_rules": [
+        "R02",
+        "R07"
+      ],
+      "attribution": "",
+      "uncertain": 0,
+      "confidence": 0.9
+    },
+    {
+      "case_id": "ratelimiter-D7-02",
+      "category": "D7",
+      "label": "drift",
+      "outcome": "TP",
+      "flagged_rules": [
+        "R07"
+      ],
+      "spurious_rules": [
+        "R02",
+        "R06"
+      ],
+      "attribution": "",
+      "uncertain": 0,
+      "confidence": 1.0
+    },
+    {
+      "case_id": "ratelimiter-D8-01",
+      "category": "D8",
+      "label": "drift",
+      "outcome": "FN",
+      "flagged_rules": [],
+      "spurious_rules": [
+        "R02",
+        "R07"
+      ],
+      "attribution": "reasoning",
+      "uncertain": 0,
+      "confidence": 0.0
+    },
+    {
+      "case_id": "ratelimiter-D8-02",
+      "category": "D8",
+      "label": "drift",
+      "outcome": "FN",
+      "flagged_rules": [],
+      "spurious_rules": [
+        "R02",
+        "R07"
+      ],
+      "attribution": "reasoning",
+      "uncertain": 0,
+      "confidence": 0.0
+    },
+    {
+      "case_id": "ratelimiter-D9-01",
+      "category": "D9",
+      "label": "drift",
+      "outcome": "FN",
+      "flagged_rules": [],
+      "spurious_rules": [
+        "R02",
+        "R07"
+      ],
+      "attribution": "reasoning",
+      "uncertain": 0,
+      "confidence": 0.0
+    },
+    {
+      "case_id": "ratelimiter-D9-02",
+      "category": "D9",
+      "label": "drift",
+      "outcome": "FN",
+      "flagged_rules": [],
+      "spurious_rules": [
+        "R02",
+        "R07"
+      ],
+      "attribution": "reasoning",
+      "uncertain": 0,
+      "confidence": 0.0
+    },
+    {
+      "case_id": "ratelimiter-N1-01",
+      "category": "N1",
+      "label": "no_drift",
+      "outcome": "FP",
+      "flagged_rules": [
+        "R02",
+        "R07"
+      ],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 0,
+      "confidence": 0.9
+    },
+    {
+      "case_id": "ratelimiter-N2-01",
+      "category": "N2",
+      "label": "no_drift",
+      "outcome": "FP",
+      "flagged_rules": [
+        "R02",
+        "R07"
+      ],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 0,
+      "confidence": 0.9
+    },
+    {
+      "case_id": "ratelimiter-N2-02",
+      "category": "N2",
+      "label": "no_drift",
+      "outcome": "FP",
+      "flagged_rules": [
+        "R02",
+        "R07"
+      ],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 0,
+      "confidence": 0.9
+    },
+    {
+      "case_id": "ratelimiter-N2-03",
+      "category": "N2",
+      "label": "no_drift",
+      "outcome": "FP",
+      "flagged_rules": [
+        "R02",
+        "R07"
+      ],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 0,
+      "confidence": 0.9
+    },
+    {
+      "case_id": "ratelimiter-N2-04",
+      "category": "N2",
+      "label": "no_drift",
+      "outcome": "FP",
+      "flagged_rules": [
+        "R02",
+        "R07"
+      ],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 0,
+      "confidence": 0.9
+    },
+    {
+      "case_id": "ratelimiter-N2-05",
+      "category": "N2",
+      "label": "no_drift",
+      "outcome": "FP",
+      "flagged_rules": [
+        "R02",
+        "R07"
+      ],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 0,
+      "confidence": 0.9
+    },
+    {
+      "case_id": "ratelimiter-N2-06",
+      "category": "N2",
+      "label": "no_drift",
+      "outcome": "FP",
+      "flagged_rules": [
+        "R02",
+        "R07"
+      ],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 0,
+      "confidence": 0.9
+    },
+    {
+      "case_id": "ratelimiter-N3-01",
+      "category": "N3",
+      "label": "no_drift",
+      "outcome": "FP",
+      "flagged_rules": [
+        "R02",
+        "R07",
+        "R09"
+      ],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 0,
+      "confidence": 1.0
+    },
+    {
+      "case_id": "ratelimiter-N3-02",
+      "category": "N3",
+      "label": "no_drift",
+      "outcome": "FP",
+      "flagged_rules": [
+        "R02",
+        "R05",
+        "R07"
+      ],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 0,
+      "confidence": 0.9
+    },
+    {
+      "case_id": "wallet-D1-01",
+      "category": "D1",
+      "label": "drift",
+      "outcome": "FN",
+      "flagged_rules": [],
+      "spurious_rules": [
+        "R11"
+      ],
+      "attribution": "reasoning",
+      "uncertain": 1,
+      "confidence": 0.0
+    },
+    {
+      "case_id": "wallet-D1-02",
+      "category": "D1",
+      "label": "drift",
+      "outcome": "FN",
+      "flagged_rules": [],
+      "spurious_rules": [
+        "R11"
+      ],
+      "attribution": "reasoning",
+      "uncertain": 1,
+      "confidence": 0.0
+    },
+    {
+      "case_id": "wallet-D1-03",
+      "category": "D1",
+      "label": "drift",
+      "outcome": "FN",
+      "flagged_rules": [],
+      "spurious_rules": [
+        "R11"
+      ],
+      "attribution": "reasoning",
+      "uncertain": 1,
+      "confidence": 0.0
+    },
+    {
+      "case_id": "wallet-D2-01",
+      "category": "D2",
+      "label": "drift",
+      "outcome": "TP",
+      "flagged_rules": [
+        "R07"
+      ],
+      "spurious_rules": [
+        "R11"
+      ],
+      "attribution": "",
+      "uncertain": 1,
+      "confidence": 1.0
+    },
+    {
+      "case_id": "wallet-D2-02",
+      "category": "D2",
+      "label": "drift",
+      "outcome": "TP",
+      "flagged_rules": [
+        "R11"
+      ],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 1,
+      "confidence": 1.0
+    },
+    {
+      "case_id": "wallet-D2-03",
+      "category": "D2",
+      "label": "drift",
+      "outcome": "TP",
+      "flagged_rules": [
+        "R11"
+      ],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 1,
+      "confidence": 1.0
+    },
+    {
+      "case_id": "wallet-D3-01",
+      "category": "D3",
+      "label": "drift",
+      "outcome": "FN",
+      "flagged_rules": [],
+      "spurious_rules": [
+        "R11"
+      ],
+      "attribution": "retrieval",
+      "uncertain": 2,
+      "confidence": 0.0
+    },
+    {
+      "case_id": "wallet-D3-02",
+      "category": "D3",
+      "label": "drift",
+      "outcome": "TP",
+      "flagged_rules": [
+        "R03"
+      ],
+      "spurious_rules": [
+        "R11"
+      ],
+      "attribution": "",
+      "uncertain": 1,
+      "confidence": 1.0
+    },
+    {
+      "case_id": "wallet-D4-01",
+      "category": "D4",
+      "label": "drift",
+      "outcome": "TP",
+      "flagged_rules": [
+        "R09"
+      ],
+      "spurious_rules": [
+        "R11"
+      ],
+      "attribution": "",
+      "uncertain": 1,
+      "confidence": 0.9
+    },
+    {
+      "case_id": "wallet-D4-02",
+      "category": "D4",
+      "label": "drift",
+      "outcome": "TP",
+      "flagged_rules": [
+        "R05"
+      ],
+      "spurious_rules": [
+        "R11"
+      ],
+      "attribution": "",
+      "uncertain": 1,
+      "confidence": 1.0
+    },
+    {
+      "case_id": "wallet-D5-01",
+      "category": "D5",
+      "label": "drift",
+      "outcome": "TP",
+      "flagged_rules": [
+        "R12"
+      ],
+      "spurious_rules": [
+        "R11"
+      ],
+      "attribution": "",
+      "uncertain": 1,
+      "confidence": 1.0
+    },
+    {
+      "case_id": "wallet-D5-02",
+      "category": "D5",
+      "label": "drift",
+      "outcome": "FN",
+      "flagged_rules": [],
+      "spurious_rules": [
+        "R11"
+      ],
+      "attribution": "reasoning",
+      "uncertain": 1,
+      "confidence": 0.0
+    },
+    {
+      "case_id": "wallet-D6-01",
+      "category": "D6",
+      "label": "drift",
+      "outcome": "TP",
+      "flagged_rules": [
+        "R06"
+      ],
+      "spurious_rules": [
+        "R11"
+      ],
+      "attribution": "",
+      "uncertain": 1,
+      "confidence": 1.0
+    },
+    {
+      "case_id": "wallet-D6-02",
+      "category": "D6",
+      "label": "drift",
+      "outcome": "TP",
+      "flagged_rules": [
+        "R09"
+      ],
+      "spurious_rules": [
+        "R11"
+      ],
+      "attribution": "",
+      "uncertain": 1,
+      "confidence": 1.0
+    },
+    {
+      "case_id": "wallet-D7-01",
+      "category": "D7",
+      "label": "drift",
+      "outcome": "FN",
+      "flagged_rules": [],
+      "spurious_rules": [
+        "R11"
+      ],
+      "attribution": "reasoning",
+      "uncertain": 2,
+      "confidence": 0.0
+    },
+    {
+      "case_id": "wallet-D7-02",
+      "category": "D7",
+      "label": "drift",
+      "outcome": "TP",
+      "flagged_rules": [
+        "R11"
+      ],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 1,
+      "confidence": 0.9
+    },
+    {
+      "case_id": "wallet-D8-01",
+      "category": "D8",
+      "label": "drift",
+      "outcome": "FN",
+      "flagged_rules": [],
+      "spurious_rules": [
+        "R11"
+      ],
+      "attribution": "retrieval",
+      "uncertain": 1,
+      "confidence": 0.0
+    },
+    {
+      "case_id": "wallet-D8-02",
+      "category": "D8",
+      "label": "drift",
+      "outcome": "TP",
+      "flagged_rules": [
+        "R11"
+      ],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 1,
+      "confidence": 0.9
+    },
+    {
+      "case_id": "wallet-D9-01",
+      "category": "D9",
+      "label": "drift",
+      "outcome": "TP",
+      "flagged_rules": [
+        "R13"
+      ],
+      "spurious_rules": [
+        "R11"
+      ],
+      "attribution": "",
+      "uncertain": 1,
+      "confidence": 1.0
+    },
+    {
+      "case_id": "wallet-D9-02",
+      "category": "D9",
+      "label": "drift",
+      "outcome": "TP",
+      "flagged_rules": [
+        "R11"
+      ],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 1,
+      "confidence": 0.9
+    },
+    {
+      "case_id": "wallet-N1-01",
+      "category": "N1",
+      "label": "no_drift",
+      "outcome": "FP",
+      "flagged_rules": [
+        "R11"
+      ],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 1,
+      "confidence": 0.9
+    },
+    {
+      "case_id": "wallet-N2-01",
+      "category": "N2",
+      "label": "no_drift",
+      "outcome": "FP",
+      "flagged_rules": [
+        "R11"
+      ],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 1,
+      "confidence": 0.9
+    },
+    {
+      "case_id": "wallet-N2-02",
+      "category": "N2",
+      "label": "no_drift",
+      "outcome": "FP",
+      "flagged_rules": [
+        "R11"
+      ],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 1,
+      "confidence": 0.9
+    },
+    {
+      "case_id": "wallet-N2-03",
+      "category": "N2",
+      "label": "no_drift",
+      "outcome": "FP",
+      "flagged_rules": [
+        "R11"
+      ],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 1,
+      "confidence": 0.9
+    },
+    {
+      "case_id": "wallet-N2-04",
+      "category": "N2",
+      "label": "no_drift",
+      "outcome": "FP",
+      "flagged_rules": [
+        "R11"
+      ],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 1,
+      "confidence": 0.9
+    },
+    {
+      "case_id": "wallet-N2-05",
+      "category": "N2",
+      "label": "no_drift",
+      "outcome": "FP",
+      "flagged_rules": [
+        "R11"
+      ],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 1,
+      "confidence": 0.9
+    },
+    {
+      "case_id": "wallet-N2-06",
+      "category": "N2",
+      "label": "no_drift",
+      "outcome": "FP",
+      "flagged_rules": [
+        "R11"
+      ],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 1,
+      "confidence": 0.9
+    },
+    {
+      "case_id": "wallet-N3-01",
+      "category": "N3",
+      "label": "no_drift",
+      "outcome": "FP",
+      "flagged_rules": [
+        "R09",
+        "R11"
+      ],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 1,
+      "confidence": 1.0
+    },
+    {
+      "case_id": "wallet-N3-02",
+      "category": "N3",
+      "label": "no_drift",
+      "outcome": "TN",
+      "flagged_rules": [],
+      "spurious_rules": [],
+      "attribution": "",
+      "uncertain": 2,
+      "confidence": 0.0
+    }
+  ]
+}

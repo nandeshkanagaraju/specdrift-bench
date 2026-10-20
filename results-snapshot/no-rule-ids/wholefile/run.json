@@ -1,0 +1,10 @@
+{
+  "detector": "wholefile",
+  "model": "gpt-4o-mini",
+  "cases": 86,
+  "verdicts": 1146,
+  "verdicts_this_run": 1146,
+  "cache_hits": 0,
+  "llm_calls": 86,
+  "run": 1
+}

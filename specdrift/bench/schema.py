@@ -106,6 +106,7 @@ class CaseResult(BaseModel):
     note: str = ""
     status: Literal["valid", "invalid"] = "valid"
     escapes_tests: bool | None = None   # did the project's own suite still pass?
+    oracle: str = ""                    # confirmed | waived | ... (see bench/oracle.py)
     error: str = ""
     workspace: str = ""
 

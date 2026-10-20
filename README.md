@@ -23,28 +23,102 @@ still passes after the injection. On this dataset **22% of drift survives the te
 and unauthorised scope creep (D8) survives 100% of the time — the tests were written
 before the behaviour existed, so they cannot fail on it.
 
+### Are the drift labels real?
+
+`escapes_tests` only says the host project's own suite still passes. It cannot tell a
+genuine spec violation from a patch that changed nothing observable. So each of the 13
+drift cases that escape the tests has an **oracle** in `cases/oracles/<case_id>.py`: a
+small pytest file stating the spec's behaviour, which must pass on the pristine project
+and fail on the drifted one. `specdrift oracles` checks all 13.
+
+**12 of 13 are confirmed.** The exception, `library-D9-02` (rounding mode changed from
+half-up to truncation), is waived with a reason in `cases/oracles/waivers.yaml`:
+R13 names no rounding mode, and 0.50 per whole day is always exactly two decimal places,
+so both modes return identical values for every input the service can produce. It is a
+code change, not a spec violation, and should be read as an unconfirmed label.
+
 ## Results so far
 
-One run of each detector over all 86 cases, `gpt-4o-mini`, temperature 0. Preliminary,
-n=1, and the numbers below are the reason the project exists rather than a claim about
-how good any of these detectors is.
+Each detector over all 86 cases, `gpt-4o-mini`, temperature 0; the table shows run 1. The
+intervals below it show how far to trust it. These numbers are the reason the project
+exists rather than a claim about how good any of these detectors is.
 
-| Detector | Precision | Recall | F1 | False-alarm rate | Uncertain | LLM calls |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| specguard (retrieval + verification) | 0.67 | 0.58 | 0.62 | 0.63 | 0.06 | 252 |
-| wholefile (one prompt, whole codebase) | 0.91 | 0.17 | 0.29 | 0.04 | 0.01 | 86 |
-| keyword (vocabulary matching) | 0.33 | 0.08 | 0.14 | 0.37 | 0.00 | 0 |
+| Detector | Precision | Strict precision | Recall | F1 | False-alarm rate | Uncertain | LLM calls |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| specguard (retrieval + verification) | 0.65 | 0.29 | 0.54 | 0.59 | 0.63 | 0.06 | 252 |
+| wholefile (one prompt, whole codebase) | 0.91 | 0.83 | 0.17 | 0.29 | 0.04 | 0.01 | 86 |
+| keyword (vocabulary matching) | 0.33 | 0.16 | 0.08 | 0.14 | 0.37 | 0.00 | 0 |
+
+Precision counts only false alarms on negative controls. **Strict precision** also counts
+every flag on a rule the injection did not target (61 for specguard), so it is the better
+guide to how noisy a detector is.
+
+### How much to trust these numbers
+
+Specguard was run three times (run 1 from the cache, runs 2 and 3 with fresh model calls),
+and the other detectors once. Intervals are bootstrap 95% over cases, resampling cases
+with replacement and pooling every run's outcome for each one (`specdrift stability`).
+
+| Detector | Runs | Recall (95% CI) | Precision (95% CI) | False-alarm rate (95% CI) |
+| --- | ---: | --- | --- | --- |
+| specguard | 3 | 0.54 [0.41, 0.66] | 0.64 [0.51, 0.77] | 0.65 [0.47, 0.83] |
+| wholefile | 1 | 0.17 [0.08, 0.27] | 0.91 [0.70, 1.00] | 0.04 [0.00, 0.12] |
+| keyword | 1 | 0.08 [0.02, 0.16] | 0.33 [0.10, 0.60] | 0.37 [0.19, 0.56] |
+
+- **The model is nearly deterministic here; the case set is the noise.** Across specguard's
+  three runs recall did not move at all and the run-to-run standard deviation of the other
+  metrics is at most 0.02. Only 5% of cases changed outcome between runs. The width of the
+  intervals comes almost entirely from having 86 cases, not from sampling variance in the
+  model. The wholefile and keyword intervals cover case sampling only.
+- **The ranking of recall is solid; the ranking of precision is not.** Specguard's recall
+  interval ([0.41, 0.66]) sits clear of wholefile's ([0.08, 0.27]) and keyword's. Specguard's
+  and keyword's precision intervals overlap, and so do specguard's and wholefile's.
+- **Per-category differences are mostly not significant.** Categories hold 3–9 cases. Only
+  D2 and D4 (every case caught in every run) are clearly separated from the rest; the
+  intervals for D1, D3, D5, D6, D8 and D9 are 0.3–0.7 wide and overlap each other. Treat
+  the category table as a description of this dataset, not a ranking of failure modes.
+  N1 has three cases, so its false-alarm rate (0.67) has an interval of [0.00, 1.00].
+
+Three-run means differ slightly from the single-run table above (specguard precision
+0.64 against 0.65, false-alarm rate 0.65 against 0.63) because the table shows run 1.
 
 The two LLM detectors fail in opposite directions. Retrieval more than triples recall
-(0.58 against 0.17) — showing the model a short, relevant excerpt is what lets it see a
+(0.54 against 0.17) — showing the model a short, relevant excerpt is what lets it see a
 violation at all. It also makes the detector far noisier: SpecGuard flags 63% of the
 negative controls, including two thirds of the semantics-preserving refactors. The
-whole-file prompt is quiet and precise but blind, missing five categories outright.
+whole-file prompt is quiet and precise but blind, missing four categories outright.
+
+That blindness is not a budget artefact. The whole-file prompt answers every rule in one
+reply, so its 6000-token output cap was a suspect, but all 172 cached whole-file responses
+(annotated and stripped runs) answered all 13 or 14 rules, the longest at about 900
+tokens, and no verdict came from a missing rule or a provider error. The model simply
+said COMPLIANT: 1125 of 1146 verdicts. What this comparison does not isolate is
+*prompt shape*: whole-file asks for every rule at once, while specguard asks one rule per
+call about a short excerpt.
 
 Per category, SpecGuard is strongest exactly where a rule states something checkable —
 constants (D2, 100%) and weakened conditions (D4, 100%) — and weakest on ordering (D5,
 33%) and error handling (D6, 33%), which need the model to reason about sequence rather
 than to compare a value.
+
+### Do the rule-id comments leak the answer?
+
+The host projects annotate code with the rule it implements (`# R12`, `R09 - ...`), which
+real code does not. To test whether that inflates the results, every detector was re-run
+on copies of the code with the ids removed and the explanations kept
+(`STRIP_RULE_IDS=true RESULTS_DIR=results_noids specdrift run ...`; see `bench/ablate.py`).
+Single run each, compared with run 1 above:
+
+| Detector | Recall with ids | Recall without | False-alarm rate with | Without |
+| --- | ---: | ---: | ---: | ---: |
+| specguard | 0.54 | 0.58 | 0.63 | 0.67 |
+| wholefile | 0.17 | 0.20 | 0.04 | 0.00 |
+| keyword | 0.08 | 0.20 | 0.37 | 1.00 |
+
+**The LLM detectors do not depend on the annotations.** Specguard's recall moved by 0.04,
+well inside its interval, and its retrieval misses went from 11 to 9. **The keyword baseline
+does:** without ids it flags every negative control, because a `# R12` comment used to make
+a rule stating 12 look satisfied. Its original numbers partly reflect that artefact.
 
 ### The false alarms are worth reading
 
@@ -116,8 +190,9 @@ LLM_API_KEY=sk-...
 ```
 
 Then `pip install -e ".[llm]"` and re-run. Responses are cached on the content of the
-question, so only the chunks a case actually changed cost a call: a full 86-case run is
-414 calls, not 1146.
+question, so only the chunks a case actually changed cost a call. The recorded specguard
+run asked 1146 questions and made 252 calls, with 894 answered from a warm cache. A cold
+cache costs all 1146, and repeat runs (`--run 2` and up) bypass the cache on purpose.
 
 ## How a case is built
 
@@ -175,8 +250,10 @@ false-alarm rate.
 - A drift case is a **true positive** only when the detector flags the rule the
   injection targeted. A lucky flag on an unrelated rule earns nothing and is counted
   separately as a spurious flag.
-- D8 cases name no rule, because no rule authorises the added behaviour; any drift flag
-  on the case counts.
+- Some D8 cases name no rule, because no rule authorises the added behaviour. There a flag
+  counts only if it was raised on the planted code (the detector retrieved the gold symbol,
+  or cited its file); a flag raised elsewhere is spurious, like any other off-target flag.
+  A detector that reports neither retrieval nor evidence gets the benefit of the doubt.
 - **Any** drift flag on a negative control is a false alarm.
 - `UNCERTAIN` counts as "not flagged". In Review 3 it becomes the abstention route.
 - A miss is attributed to **retrieval** when the injected chunk was never shown, and to
@@ -220,7 +297,7 @@ projects/                   library, wallet, ratelimiter  (spec.md + src/ + test
 cases/                      one YAML manifest per project, plus built.jsonl
 web/                        Vite + React + Tailwind dashboard
 results/ cache/ work/       generated, git-ignored
-tests/                      the framework's own tests (104, none call a model)
+tests/                      the framework's own tests (162, none call a model)
 ```
 
 ## Commands
@@ -228,8 +305,10 @@ tests/                      the framework's own tests (104, none call a model)
 | Command | What it does |
 | --- | --- |
 | `specdrift build [--project P] [--case ID]` | Materialise and validate cases. A filtered build updates only those rows. |
-| `specdrift run --detector X [--project P] [--limit N] [--run K]` | Write `results/X/verdicts.jsonl`. `--run K` for K>1 bypasses the cache. |
+| `specdrift run --detector X [--project P] [--limit N] [--run K] [--repeat N]` | Write `results/X/verdicts.jsonl` (later runs: `verdicts.runK.jsonl`). `--run K` for K>1 bypasses the cache; `--repeat N` makes N consecutive runs. |
 | `specdrift score --detector X\|all` | Write `metrics.json` and `per_category.csv`. |
+| `specdrift stability --detector X` | Mean, run-to-run spread and bootstrap 95% CIs over every stored run. |
+| `specdrift oracles` | Check each escaping drift case against its oracle test. |
 | `specdrift report` | Render `results/report.html` and `report.md`. |
 | `specdrift retrieval-eval` | Stage 1 Recall@1/3/5 against the gold chunk. |
 | `specdrift check <dir> [--diff-from REF]` | Live check of a working directory. Exits 1 on drift. |
@@ -238,15 +317,40 @@ tests/                      the framework's own tests (104, none call a model)
 ## Tests
 
 ```bash
-pytest                      # the framework: 104 tests
+pytest                      # the framework: 162 tests
 pytest projects/library     # a host project's own suite
 ```
 
-No test in `tests/` ever calls a model; the fake is scripted with canned JSON.
+No test in `tests/` ever calls a model; the fake is scripted with canned JSON. CI
+(`.github/workflows/ci.yml`) runs `ruff check`, `mypy`, `pytest` and the web typecheck/build.
+
+## Running the API safely
+
+`specdrift serve` binds to `127.0.0.1`. The routes that spend LLM money or store uploads
+(`/api/check`, `/api/sweep`, `/api/uploads*`, `/api/reload`) are guarded by settings in `.env`:
+
+| Setting | Default | Effect |
+| --- | --- | --- |
+| `API_TOKEN` | empty (open) | When set, those routes need `Authorization: Bearer <token>` or `X-API-Token`. |
+| `API_RATE_LIMIT_PER_MIN` | 30 | Per-client limit on those routes; 0 turns it off. |
+| `UPLOAD_TTL_HOURS` | 24 | Stored uploads older than this are deleted on the next upload. |
+| `DEMO_PACING` | true | Paces the live-check stream so cached answers are watchable; set false for scripts. |
+
+Archive uploads are capped while streaming (1.5 MB). **Uploaded code and specs are sent to
+the configured LLM provider when checked**; upload responses carry an `X-Data-Notice`
+header saying so.
+
+## Reproducing the numbers
+
+`results/` is git-ignored because it is regenerated, so the numbers above are frozen in
+`results-snapshot/`: metrics, stability intervals, oracle verdicts and every verdict file
+(annotated and rule-id-stripped). Re-score without a model key by copying a detector's
+`verdicts.jsonl` into `results/<detector>/` and running `specdrift score`. Runs made before
+the embedder was recorded in `run.json` used the local hashing embedder.
 
 ## Not built yet
 
 Deferred by design, each with a slot in the code: the adversarial second pass
 (`verify/adversary`), the reverse-direction authorisation pass, the Semcheck baseline,
-repeated runs with variance, calibration and an abstention threshold, and seven more
-host projects.
+calibration and an abstention threshold, a per-rule whole-file baseline (to separate
+retrieval from prompt shape), and seven more host projects.

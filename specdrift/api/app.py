@@ -7,12 +7,13 @@ import json
 from datetime import date
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi import Depends, FastAPI, HTTPException, Query, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from specdrift.api.guard import DATA_NOTICE, make_guard, prune_uploads, read_capped
 from specdrift.api.models import (
     CaseDetail,
     CaseList,
@@ -55,6 +56,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         allow_headers=["*"],
     )
 
+    guard = make_guard(settings)
     store = Store(settings)
     app.state.store = store
     app.state.settings = settings
@@ -333,11 +335,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             spec_path=record.spec_path,
         )
 
-    @app.post("/api/uploads", response_model=UploadOut)
-    def create_upload(body: UploadIn) -> UploadOut:
+    @app.post("/api/uploads", response_model=UploadOut, dependencies=[Depends(guard)])
+    def create_upload(body: UploadIn, response: Response) -> UploadOut:
         """Save a pasted spec and Python files, then return the rules the checker will use."""
         from specdrift.intake import IntakeError, materialize_files
 
+        prune_uploads(settings)
+        response.headers["X-Data-Notice"] = DATA_NOTICE
         try:
             record = materialize_files(
                 settings,
@@ -349,14 +353,16 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             raise HTTPException(422, str(exc)) from exc
         return _upload_out(record)
 
-    @app.post("/api/uploads/archive", response_model=UploadOut)
-    async def create_upload_archive(request: Request, name: str = Query("upload")) -> UploadOut:
+    @app.post("/api/uploads/archive", response_model=UploadOut, dependencies=[Depends(guard)])
+    async def create_upload_archive(
+        request: Request, response: Response, name: str = Query("upload")
+    ) -> UploadOut:
         """Save a zip (``spec.md`` plus ``.py`` files) sent as the raw request body."""
         from specdrift.intake import MAX_TOTAL_BYTES, IntakeError, materialize_zip
 
-        data = await request.body()
-        if len(data) > MAX_TOTAL_BYTES:
-            raise HTTPException(413, "The archive is larger than 1.5 MB.")
+        data = await read_capped(request, MAX_TOTAL_BYTES)
+        prune_uploads(settings)
+        response.headers["X-Data-Notice"] = DATA_NOTICE
         try:
             record = materialize_zip(settings, name, data)
         except IntakeError as exc:
@@ -374,7 +380,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     # --------------------------------------------------------------- check
 
-    @app.post("/api/check")
+    @app.post("/api/check", dependencies=[Depends(guard)])
     async def check(request: CheckRequest) -> StreamingResponse:
         target = _resolve_check_target(request)
 
@@ -419,7 +425,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                     # finish before anyone can watch it. Pace the reveal so each check
                     # is visibly its own step. An uncached model call is slower than
                     # this anyway, so it costs a real run nothing.
-                    await asyncio.sleep(0.28)
+                    if settings.demo_pacing:
+                        await asyncio.sleep(0.28)
 
             _, summary_payload = await future
             yield _sse("summary", summary_payload)
@@ -432,7 +439,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     # ---------------------------------------------------------------- sweep
 
-    @app.post("/api/sweep")
+    @app.post("/api/sweep", dependencies=[Depends(guard)])
     async def sweep() -> StreamingResponse:
         """Check one representative case of every drift category, category by category."""
         from specdrift.live import run_sweep, sweep_cases
@@ -508,7 +515,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 yield _sse(event, payload)
                 # Paced so each category reads as its own step rather than a blur;
                 # cached answers make the real work almost instantaneous.
-                await asyncio.sleep(0.75 if event == "case_result" else 0.35)
+                if settings.demo_pacing:
+                    await asyncio.sleep(0.75 if event == "case_result" else 0.35)
 
             rows = await future
             yield _sse(
@@ -547,7 +555,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     # -------------------------------------------------------------- reload
 
-    @app.post("/api/reload")
+    @app.post("/api/reload", dependencies=[Depends(guard)])
     def reload_store() -> dict:
         store.reload()
         return {
@@ -570,14 +578,16 @@ class SPAStaticFiles(StaticFiles):
     """
 
     async def get_response(self, path: str, scope):
+        # A mistyped API route must stay a 404 for clients, not turn into the web page.
+        is_api = path == "api" or path.startswith("api/")
         try:
             response = await super().get_response(path, scope)
         except StarletteHTTPException as exc:
-            if exc.status_code != 404:
+            if exc.status_code != 404 or is_api:
                 raise
             return await super().get_response("index.html", scope)
 
-        if response.status_code == 404:
+        if response.status_code == 404 and not is_api:
             return await super().get_response("index.html", scope)
         return response
 

@@ -135,11 +135,12 @@ def build_report(settings: Settings, cases: list[CaseResult], verdicts_by_detect
     by_id = {case.case_id: case for case in cases}
     comparison = []
     for cat in ALL_CATEGORIES:
-        row = {
+        by_detector: dict[str, float | None] = {}
+        row: dict = {
             "category": cat,
             "name": CATEGORY_NAMES[cat],
             "is_drift": cat in DRIFT_CATEGORIES,
-            "by_detector": {},
+            "by_detector": by_detector,
         }
         for name, payload in scored.items():
             entry = payload["metrics"]["per_category"].get(cat)

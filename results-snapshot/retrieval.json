@@ -1,0 +1,92 @@
+{
+  "embedder": "local-hashing-2048",
+  "n_rule_queries": 64,
+  "overall": {
+    "recall@1": 0.2656,
+    "recall@3": 0.7812,
+    "recall@5": 0.9219
+  },
+  "per_category": {
+    "D1": {
+      "n": 12,
+      "recall@1": 0.25,
+      "recall@3": 0.8333,
+      "recall@5": 1.0
+    },
+    "D2": {
+      "n": 9,
+      "recall@1": 0.0,
+      "recall@3": 0.6667,
+      "recall@5": 0.8889
+    },
+    "D3": {
+      "n": 8,
+      "recall@1": 0.0,
+      "recall@3": 0.5,
+      "recall@5": 0.75
+    },
+    "D4": {
+      "n": 8,
+      "recall@1": 0.0,
+      "recall@3": 1.0,
+      "recall@5": 1.0
+    },
+    "D5": {
+      "n": 6,
+      "recall@1": 0.8333,
+      "recall@3": 1.0,
+      "recall@5": 1.0
+    },
+    "D6": {
+      "n": 6,
+      "recall@1": 0.0,
+      "recall@3": 0.6667,
+      "recall@5": 1.0
+    },
+    "D7": {
+      "n": 6,
+      "recall@1": 0.5,
+      "recall@3": 0.8333,
+      "recall@5": 1.0
+    },
+    "D8": {
+      "n": 3,
+      "recall@1": 0.0,
+      "recall@3": 0.3333,
+      "recall@5": 0.3333
+    },
+    "D9": {
+      "n": 6,
+      "recall@1": 1.0,
+      "recall@3": 1.0,
+      "recall@5": 1.0
+    }
+  },
+  "misses": [
+    {
+      "case_id": "library-D2-03",
+      "rule_id": "R06",
+      "gold_symbol": "<module>"
+    },
+    {
+      "case_id": "library-D8-02",
+      "rule_id": "R09",
+      "gold_symbol": "LibraryService.return_book"
+    },
+    {
+      "case_id": "ratelimiter-D3-02",
+      "rule_id": "R12",
+      "gold_symbol": "RateLimiter._reject"
+    },
+    {
+      "case_id": "wallet-D3-01",
+      "rule_id": "R07",
+      "gold_symbol": "WalletService.transfer"
+    },
+    {
+      "case_id": "wallet-D8-02",
+      "rule_id": "R11",
+      "gold_symbol": "WalletService.transfer"
+    }
+  ]
+}

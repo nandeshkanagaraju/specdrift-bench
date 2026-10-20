@@ -13,3 +13,9 @@ cases/built.jsonl
 web/node_modules/
 web/dist/
 .DS_Store
+
+# Generated artefacts
+web/tsconfig.tsbuildinfo
+results_noids/
+examples/*.pdf
+examples/*.png

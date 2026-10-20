@@ -17,6 +17,22 @@ from specdrift.verify.verifier import verify_rule
 NAME = "specguard"
 
 
+def excerpt_for(
+    rule: Rule,
+    ranked: dict,
+    by_id: dict[str, Chunk],
+    chunks: list[Chunk],
+) -> tuple[list[Chunk], int]:
+    """The chunks shown to the model for one rule: its top hits plus the constant context.
+
+    Returns (chunks, number_of_retrieved_hits) so callers can report how much of the
+    excerpt was retrieved and how much was added as context.
+    """
+    top = [by_id[hit.chunk_id] for hit in ranked[rule.id] if hit.chunk_id in by_id]
+    retrieved = len(top)
+    return add_constant_context(top, chunks), retrieved
+
+
 class SpecGuard:
     """Chunk the workspace, rank chunks per rule, then verify each rule against its top-k."""
 
@@ -49,8 +65,7 @@ class SpecGuard:
 
         verdicts: list[Verdict] = []
         for rule in rules:
-            top = [by_id[hit.chunk_id] for hit in ranked[rule.id] if hit.chunk_id in by_id]
-            top = add_constant_context(top, chunks)
+            top, _ = excerpt_for(rule, ranked, by_id, chunks)
             verdicts.append(
                 verify_rule(rule, top, self.llm, self.cache, case_id, self.name, run)
             )

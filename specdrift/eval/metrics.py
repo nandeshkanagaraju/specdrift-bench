@@ -1,8 +1,8 @@
 """Score a detector's verdicts against the case labels.
 
 The positive class is DRIFT. A drift case counts as caught only when the detector flags
-the rule the injection actually targeted, so a lucky flag on an unrelated rule earns
-nothing. Every flag on a negative control is a false alarm, weighted exactly as heavily
+the rule the injection actually targeted (or, for rule-less D8 creep, flags while
+looking at the planted code), so a lucky flag on an unrelated rule earns nothing. Every flag on a negative control is a false alarm, weighted exactly as heavily
 as a miss.
 """
 
@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 from collections import Counter, defaultdict
+from pathlib import PurePosixPath
 
 from specdrift.bench.schema import (
     ALL_CATEGORIES,
@@ -34,6 +35,20 @@ def group_verdicts(verdicts: list[Verdict]) -> dict[str, list[Verdict]]:
     return grouped
 
 
+def _localised(case: CaseResult, verdict: Verdict) -> bool:
+    """Did a flag on a rule-less case point at the planted code, not somewhere else?
+
+    Prefers what the detector was shown (its retrieved chunks), then the file it cited.
+    A detector that reports neither cannot be checked, so its flag is given the benefit
+    of the doubt rather than failed for a stage it does not have.
+    """
+    if verdict.retrieved_chunks and case.gold_symbol:
+        return any(matches_gold(chunk, case.gold_symbol) for chunk in verdict.retrieved_chunks)
+    if verdict.evidence.file and case.file:
+        return PurePosixPath(case.file).name == PurePosixPath(verdict.evidence.file).name
+    return True
+
+
 def case_outcome(case: CaseResult, verdicts: list[Verdict]) -> dict:
     """Decide TP / FN / FP / TN for one case, and say why a miss happened."""
     flagged = [v for v in verdicts if v.flags_drift]
@@ -43,11 +58,12 @@ def case_outcome(case: CaseResult, verdicts: list[Verdict]) -> dict:
         if case.target_rules:
             on_target = [v for v in flagged if v.rule_id in case.target_rules]
         else:
-            # D8 scope creep names no rule: any drift flag on the case counts.
-            on_target = flagged
+            # D8 scope creep names no rule, so no flag can match by rule id. A flag counts
+            # only if it was raised on the planted code; flags raised elsewhere are spurious.
+            on_target = [v for v in flagged if _localised(case, v)]
 
         caught = bool(on_target)
-        spurious = [v for v in flagged if v.rule_id not in case.target_rules]
+        spurious = [v for v in flagged if v not in on_target]
 
         attribution = ""
         if not caught:
@@ -113,6 +129,9 @@ def score(
     precision = _safe_div(tp, tp + fp)
     recall = _safe_div(tp, tp + fn)
     f1 = round(2 * precision * recall / (precision + recall), 4) if precision + recall else 0.0
+    spurious_flags = sum(len(row["spurious_rules"]) for row in outcomes)
+    # Strict precision also charges flags on non-target rules of drift cases as false positives.
+    strict_precision = _safe_div(tp, tp + fp + spurious_flags)
 
     per_category: dict[str, dict] = {}
     for cat in ALL_CATEGORIES:
@@ -150,6 +169,7 @@ def score(
         "counts": {"TP": tp, "FN": fn, "FP": fp, "TN": tn},
         "overall": {
             "precision": precision,
+            "strict_precision": strict_precision,
             "recall": recall,
             "f1": f1,
             "false_alarm_rate": _safe_div(fp, len(negatives)),
@@ -181,7 +201,7 @@ def format_scores(report: dict) -> str:
     lines += [
         "-" * len(header),
         f"TP {counts['TP']}  FN {counts['FN']}  FP {counts['FP']}  TN {counts['TN']}",
-        f"precision {overall['precision']:.2f}   recall {overall['recall']:.2f}   "
+        f"precision {overall['precision']:.2f} (strict {overall['strict_precision']:.2f})   recall {overall['recall']:.2f}   "
         f"F1 {overall['f1']:.2f}   false-alarm rate {overall['false_alarm_rate']:.2f}",
         f"uncertain {overall['uncertain_rate']:.2f} of all verdicts   "
         f"spurious rule flags {overall['spurious_rule_flags']}",

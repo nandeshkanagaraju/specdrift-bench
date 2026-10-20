@@ -151,3 +151,12 @@ def test_a_persistent_provider_error_becomes_uncertain(monkeypatch):
     assert verdict.verdict == "UNCERTAIN"
     assert verdict.parse_error is True
     assert "provider error" in verdict.violated_clause
+
+
+def test_to_verdict_tolerates_line_ranges_as_strings():
+    from specdrift.verify.verifier import to_verdict
+
+    payload = {"verdict": "COMPLIANT", "evidence": {"file": "a.py", "start_line": "41-44", "end_line": "n/a"}}
+    verdict = to_verdict(payload, "c1", "R01", "specguard")
+    assert verdict.evidence.start_line == 41
+    assert verdict.evidence.end_line == 0

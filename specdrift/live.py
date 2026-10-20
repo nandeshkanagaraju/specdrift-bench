@@ -93,7 +93,8 @@ def check_project(
                 chunks = narrowed
                 scope_note = f"{len(relative)} file(s) changed since {diff_from}"
 
-    from specdrift.retrieval.retriever import add_constant_context, retrieve
+    from specdrift.retrieval.retriever import retrieve
+    from specdrift.verify.engine import excerpt_for
 
     emit("stage", {"stage": "rank", "state": "running"})
     ranked = retrieve(rules, chunks, detector.embedder, k=settings.top_k)
@@ -112,9 +113,7 @@ def check_project(
     for rule in rules:
         emit("rule_start", {"rule_id": rule.id, "text": rule.text})
 
-        top = [by_id[hit.chunk_id] for hit in ranked[rule.id] if hit.chunk_id in by_id]
-        retrieved = len(top)
-        top = add_constant_context(top, chunks)
+        top, retrieved = excerpt_for(rule, ranked, by_id, chunks)
 
         from specdrift.verify.verifier import verify_rule
 
@@ -202,7 +201,8 @@ def run_sweep(
     click. A D8 case names no rule -- nothing authorises the added behaviour -- so for
     those every rule is verified and any drift flag counts.
     """
-    from specdrift.retrieval.retriever import add_constant_context, retrieve
+    from specdrift.retrieval.retriever import retrieve
+    from specdrift.verify.engine import excerpt_for
     from specdrift.verify.verifier import verify_rule
 
     emit = progress or (lambda event, payload: None)
@@ -224,8 +224,7 @@ def run_sweep(
         for rule in rules:
             if rule.id not in wanted:
                 continue
-            top = [by_id[hit.chunk_id] for hit in ranked[rule.id] if hit.chunk_id in by_id]
-            top = add_constant_context(top, chunks)
+            top, _ = excerpt_for(rule, ranked, by_id, chunks)
             verdict = verify_rule(
                 rule, top, detector.llm, detector.cache, case.case_id, detector.name
             )

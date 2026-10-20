@@ -13,6 +13,8 @@ def client(settings):
     settings.results_dir = REPO_ROOT / "results"
     settings.work_dir = REPO_ROOT / "work"
     settings.cases_dir = REPO_ROOT / "cases"
+    settings.api_rate_limit_per_min = 0      # these tests are not about throttling
+    settings.demo_pacing = False
     return TestClient(create_app(settings))
 
 
@@ -137,3 +139,25 @@ def test_check_on_a_drifted_case_reports_drift(client):
 
 def test_check_on_an_unknown_project_is_404(client):
     assert client.post("/api/check", json={"project": "nope"}).status_code == 404
+
+
+def test_sweep_streams_one_result_per_category_then_finishes(client):
+    with client.stream("POST", "/api/sweep") as response:
+        assert response.status_code == 200
+        body = "".join(response.iter_text())
+    assert "event: case_start" in body
+    assert "event: case_result" in body
+
+
+def test_spa_fallback_serves_index_for_client_side_routes(settings, tmp_path, monkeypatch):
+    from specdrift.api import app as app_module
+
+    dist = tmp_path / "dist"
+    dist.mkdir()
+    (dist / "index.html").write_text("<html>spa</html>")
+    monkeypatch.setattr(app_module, "WEB_DIST", dist)
+    settings.api_rate_limit_per_min = 0
+    spa = TestClient(app_module.create_app(settings))
+
+    assert "spa" in spa.get("/explorer").text            # a router-only path
+    assert spa.get("/api/nope").status_code == 404        # API misses stay 404s, not index.html

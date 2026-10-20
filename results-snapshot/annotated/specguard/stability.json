@@ -1,0 +1,196 @@
+{
+  "detector": "specguard",
+  "runs": [
+    1,
+    2,
+    3
+  ],
+  "n_boot": 2000,
+  "cases_scored": 86,
+  "per_run": [
+    {
+      "run": 1,
+      "counts": {
+        "FN": 27,
+        "TP": 32,
+        "TN": 10,
+        "FP": 17
+      },
+      "precision": 0.6531,
+      "recall": 0.5424,
+      "f1": 0.5926,
+      "false_alarm_rate": 0.6296
+    },
+    {
+      "run": 2,
+      "counts": {
+        "FN": 27,
+        "TP": 32,
+        "TN": 9,
+        "FP": 18
+      },
+      "precision": 0.64,
+      "recall": 0.5424,
+      "f1": 0.5872,
+      "false_alarm_rate": 0.6667
+    },
+    {
+      "run": 3,
+      "counts": {
+        "FN": 27,
+        "TP": 32,
+        "TN": 9,
+        "FP": 18
+      },
+      "precision": 0.64,
+      "recall": 0.5424,
+      "f1": 0.5872,
+      "false_alarm_rate": 0.6667
+    }
+  ],
+  "overall": {
+    "precision": {
+      "mean": 0.6443,
+      "run_std": 0.0062,
+      "ci95": [
+        0.5076,
+        0.7708
+      ]
+    },
+    "recall": {
+      "mean": 0.5424,
+      "run_std": 0.0,
+      "ci95": [
+        0.4098,
+        0.6604
+      ]
+    },
+    "f1": {
+      "mean": 0.589,
+      "run_std": 0.0025,
+      "ci95": [
+        0.4698,
+        0.6841
+      ]
+    },
+    "false_alarm_rate": {
+      "mean": 0.6543,
+      "run_std": 0.0175,
+      "ci95": [
+        0.4691,
+        0.8333
+      ]
+    }
+  },
+  "per_category": {
+    "D1": {
+      "metric": "recall",
+      "n": 8,
+      "mean": 0.2917,
+      "ci95": [
+        0.0833,
+        0.5417
+      ]
+    },
+    "D2": {
+      "metric": "recall",
+      "n": 9,
+      "mean": 1.0,
+      "ci95": [
+        1.0,
+        1.0
+      ]
+    },
+    "D3": {
+      "metric": "recall",
+      "n": 6,
+      "mean": 0.3333,
+      "ci95": [
+        0.0,
+        0.6667
+      ]
+    },
+    "D4": {
+      "metric": "recall",
+      "n": 6,
+      "mean": 1.0,
+      "ci95": [
+        1.0,
+        1.0
+      ]
+    },
+    "D5": {
+      "metric": "recall",
+      "n": 6,
+      "mean": 0.3333,
+      "ci95": [
+        0.0,
+        0.6667
+      ]
+    },
+    "D6": {
+      "metric": "recall",
+      "n": 6,
+      "mean": 0.3333,
+      "ci95": [
+        0.0,
+        0.6667
+      ]
+    },
+    "D7": {
+      "metric": "recall",
+      "n": 6,
+      "mean": 0.6111,
+      "ci95": [
+        0.2778,
+        0.9444
+      ]
+    },
+    "D8": {
+      "metric": "recall",
+      "n": 6,
+      "mean": 0.1667,
+      "ci95": [
+        0.0,
+        0.5
+      ]
+    },
+    "D9": {
+      "metric": "recall",
+      "n": 6,
+      "mean": 0.6667,
+      "ci95": [
+        0.3333,
+        1.0
+      ]
+    },
+    "N1": {
+      "metric": "false_alarm_rate",
+      "n": 3,
+      "mean": 0.6667,
+      "ci95": [
+        0.0,
+        1.0
+      ]
+    },
+    "N2": {
+      "metric": "false_alarm_rate",
+      "n": 18,
+      "mean": 0.6667,
+      "ci95": [
+        0.4444,
+        0.8889
+      ]
+    },
+    "N3": {
+      "metric": "false_alarm_rate",
+      "n": 6,
+      "mean": 0.6111,
+      "ci95": [
+        0.2778,
+        0.9444
+      ]
+    }
+  },
+  "flip_rate": 0.0465
+}

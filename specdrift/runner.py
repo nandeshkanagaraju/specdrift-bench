@@ -11,12 +11,24 @@ from specdrift.config import Settings
 from specdrift.registry import build_detector
 
 
-def verdicts_path(settings: Settings, detector: str) -> Path:
-    return settings.detector_dir(detector) / "verdicts.jsonl"
+def verdicts_path(settings: Settings, detector: str, run: int = 1) -> Path:
+    """Run 1 keeps the historical name; later repeats are stored beside it, never over it."""
+    name = "verdicts.jsonl" if run == 1 else f"verdicts.run{run}.jsonl"
+    return settings.detector_dir(detector) / name
 
 
-def load_verdicts(settings: Settings, detector: str) -> list[Verdict]:
-    path = verdicts_path(settings, detector)
+def available_runs(settings: Settings, detector: str) -> list[int]:
+    """Run numbers that have a verdicts file on disk, ascending."""
+    runs = [1] if verdicts_path(settings, detector).exists() else []
+    for path in settings.detector_dir(detector).glob("verdicts.run*.jsonl"):
+        suffix = path.name[len("verdicts.run") : -len(".jsonl")]
+        if suffix.isdigit():
+            runs.append(int(suffix))
+    return sorted(set(runs))
+
+
+def load_verdicts(settings: Settings, detector: str, run: int = 1) -> list[Verdict]:
+    path = verdicts_path(settings, detector, run)
     if not path.exists():
         return []
     return [
@@ -42,6 +54,10 @@ def run_detector(
     detector = build_detector(name, settings)
     usable = [case for case in cases if case.status == "valid" and case.workspace]
     progress = progress and sys.stdout.isatty()
+    if settings.strip_rule_ids:
+        from specdrift.bench.ablate import stripped_workspace
+
+        usable = [stripped_workspace(case, settings) for case in usable]
 
     all_verdicts: list[Verdict] = []
     for index, case in enumerate(usable, start=1):
@@ -55,7 +71,7 @@ def run_detector(
     written = all_verdicts
     if merge:
         touched = {case.case_id for case in usable}
-        kept = [v for v in load_verdicts(settings, name) if v.case_id not in touched]
+        kept = [v for v in load_verdicts(settings, name, run) if v.case_id not in touched]
         if kept:
             order = {case.case_id: index for index, case in enumerate(cases)}
             written = sorted(
@@ -63,7 +79,7 @@ def run_detector(
                 key=lambda v: (order.get(v.case_id, 1 << 30), v.case_id, v.rule_id),
             )
 
-    out = verdicts_path(settings, name)
+    out = verdicts_path(settings, name, run)
     out.parent.mkdir(parents=True, exist_ok=True)
     with out.open("w", encoding="utf-8") as fh:
         for verdict in written:
@@ -79,6 +95,10 @@ def run_detector(
         "cache_hits": getattr(cache, "hits", 0),
         "llm_calls": getattr(cache, "misses", 0),
         "run": run,
+        "embedder": settings.embed_backend if name == "specguard" else "n/a",
+        "embed_model": settings.embed_model if settings.embed_backend != "local" else "local-hashing-tfidf",
+        "strip_rule_ids": settings.strip_rule_ids,
     }
-    (settings.detector_dir(name) / "run.json").write_text(json.dumps(stats, indent=2))
+    stats_name = "run.json" if run == 1 else f"run{run}.json"
+    (settings.detector_dir(name) / stats_name).write_text(json.dumps(stats, indent=2))
     return all_verdicts, stats

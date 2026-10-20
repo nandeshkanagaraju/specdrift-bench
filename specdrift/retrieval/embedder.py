@@ -122,7 +122,7 @@ class SentenceTransformerEmbedder:
         return self._model
 
     def _cache_path(self, text: str) -> Path:
-        key = hashlib.sha256(f"{self.name}\x00{text}".encode("utf-8")).hexdigest()
+        key = hashlib.sha256(f"{self.name}\x00{text}".encode()).hexdigest()
         return self.cache_dir / f"{key}.json"
 
     def encode(self, texts: list[str]) -> np.ndarray:

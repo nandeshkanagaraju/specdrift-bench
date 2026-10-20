@@ -11,7 +11,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    model_config = SettingsConfigDict(env_file=REPO_ROOT / ".env", extra="ignore")
 
     # Stage 2 verification.
     llm_provider: str = "fake"          # fake | openai | anthropic
@@ -28,6 +28,18 @@ class Settings(BaseSettings):
     embed_backend: str = "local"        # local | sentence-transformers
     embed_model: str = "BAAI/bge-small-en-v1.5"
     top_k: int = 3
+
+    # Ablation: score detectors on code with the rule-id annotations removed. Pair it with
+    # RESULTS_DIR so the ablated results do not overwrite the annotated ones.
+    strip_rule_ids: bool = False
+
+    # API protection. A token is optional (empty = open, fine on 127.0.0.1); the rate limit
+    # applies to the endpoints that spend LLM money or write uploads. 0 disables it.
+    api_token: str = ""
+    api_rate_limit_per_min: int = 30
+    upload_ttl_hours: float = 24.0
+    # The live-check stream is paced so cached answers stay watchable; turn off for scripts.
+    demo_pacing: bool = True
 
     # Paths, all relative to the repository root.
     projects_dir: Path = REPO_ROOT / "projects"

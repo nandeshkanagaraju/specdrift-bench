@@ -1,0 +1,54 @@
+{
+  "library-D5-01": {
+    "status": "confirmed",
+    "detail": "1 failed in 0.02s"
+  },
+  "library-D8-01": {
+    "status": "confirmed",
+    "detail": "1 failed in 0.02s"
+  },
+  "library-D8-02": {
+    "status": "confirmed",
+    "detail": "1 failed in 0.02s"
+  },
+  "library-D9-02": {
+    "status": "waived",
+    "detail": "R13 asks for rounding to 2 decimal places and names no rounding mode, and 0.50 x whole days is always exactly 2 dp, so half-up and truncation return the same value for every input the service can produce. The patch changes the code but not any behaviour the spec constrains."
+  },
+  "ratelimiter-D1-02": {
+    "status": "confirmed",
+    "detail": "1 failed in 0.02s"
+  },
+  "ratelimiter-D2-03": {
+    "status": "confirmed",
+    "detail": "1 failed in 0.02s"
+  },
+  "ratelimiter-D8-01": {
+    "status": "confirmed",
+    "detail": "1 failed in 0.02s"
+  },
+  "ratelimiter-D8-02": {
+    "status": "confirmed",
+    "detail": "1 failed in 0.02s"
+  },
+  "ratelimiter-D9-02": {
+    "status": "confirmed",
+    "detail": "1 failed in 0.02s"
+  },
+  "wallet-D5-01": {
+    "status": "confirmed",
+    "detail": "1 failed in 0.02s"
+  },
+  "wallet-D8-01": {
+    "status": "confirmed",
+    "detail": "1 failed in 0.02s"
+  },
+  "wallet-D8-02": {
+    "status": "confirmed",
+    "detail": "1 failed in 0.02s"
+  },
+  "wallet-D9-02": {
+    "status": "confirmed",
+    "detail": "1 failed in 0.02s"
+  }
+}

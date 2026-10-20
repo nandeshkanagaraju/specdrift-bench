@@ -1,0 +1,10 @@
+{
+  "detector": "specguard",
+  "model": "gpt-4o-mini",
+  "cases": 86,
+  "verdicts": 1146,
+  "verdicts_this_run": 1146,
+  "cache_hits": 752,
+  "llm_calls": 394,
+  "run": 1
+}

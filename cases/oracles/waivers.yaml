@@ -1,0 +1,7 @@
+# Drift cases for which no oracle test can exist, with the reason. A waiver is a finding:
+# the case is not independently confirmed as a spec violation.
+library-D9-02: >-
+  R13 asks for rounding to 2 decimal places and names no rounding mode, and
+  0.50 x whole days is always exactly 2 dp, so half-up and truncation return the same value
+  for every input the service can produce. The patch changes the code but not any behaviour
+  the spec constrains.
