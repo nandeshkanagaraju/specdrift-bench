@@ -24,10 +24,11 @@ ABSTRACT = (
     "construct 86 validated cases by injecting faults into three working Python projects "
     "governed by 40 numbered rules. Every case records whether the host project's own "
     "tests still pass: 22 percent of injected drift escapes testing, and unauthorised "
-    "scope creep escapes it in every case. Evaluating a two-stage detector with "
+    "scope creep escapes it in every case; oracle tests confirm twelve of the thirteen "
+    "escaping cases. Evaluating a two-stage detector with "
     "independently instrumented retrieval and verification stages, we find that "
-    "retrieval raises recall from 0.17 to 0.58 and the false-alarm rate from 0.04 to "
-    "0.63, and that the false alarms surviving an evidence-citation requirement are "
+    "retrieval raises recall from 0.17 to 0.54 (interval 0.41 to 0.66) and the "
+    "false-alarm rate from 0.04 to 0.63, and that the false alarms surviving an evidence-citation requirement are "
     "confidently wrong rather than unsupported."
 )
 
@@ -213,16 +214,15 @@ BODY = [
  "codebase and specification into a single prompt and asks for a verdict on every rule "
  "at once, which isolates the contribution of retrieval because it differs from "
  "SpecGuard in that respect alone. Responses are cached on a hash of the question, so a "
- "full 86-case SpecGuard run costs 414 model calls rather than the 1,146 rule-case pairs "
- "it covers; temperature is fixed at zero and retrieval ties break by chunk identifier."),
+ "recorded SpecGuard run made 252 model calls for the 1,146 rule-case pairs it covers; temperature is fixed at zero and retrieval ties break by chunk identifier."),
 ("Body Text",
  "The positive class is drift, and scoring is stricter than conventional binary "
  "classification in one respect that matters for trustworthiness. A drift case is a true "
  "positive only when the detector flags one of the rules the injection actually "
  "targeted; a flag landing on an unrelated rule earns nothing and is tallied separately "
  "as spurious, because a detector that is right by accident offers a reviewer nothing to "
- "act on. D8 cases name no target rule, since no rule authorises the added behaviour, so "
- "any flag counts. Any flag on a negative control is a false alarm, reported alongside "
+ "act on. D8 cases name no target rule, so a flag counts only if raised on the planted "
+ "code. Strict precision additionally charges every spurious flag. Any flag on a negative control is a false alarm, reported alongside "
  "precision rather than folded into it. UNCERTAIN counts as not flagged, so the evidence "
  "gate can only cost recall. Each miss is attributed: if the injected chunk was never "
  "retrieved the miss belongs to retrieval, and if it was retrieved and the verdict was "
@@ -230,10 +230,9 @@ BODY = [
 
 ("Heading 1", "Results"),
 ("Body Text",
- "Results come from a single run of each detector over all 86 cases with gpt-4o-mini at "
- "temperature zero, supplemented by retrieval and keyword measurements reproduced for "
- "this paper. They are preliminary at n equal to 1, and are reported because their "
- "shape, not their precision, is the finding."),
+ "SpecGuard was run three times over all 86 cases with gpt-4o-mini at temperature zero, "
+ "the baselines once; tables show run 1 and intervals are bootstrap 95 percent intervals "
+ "over cases pooling all runs."),
 ("Body Text",
  "Stage 1 in isolation, across 64 rule queries with a gold symbol, achieves Recall@1 of "
  "0.27, Recall@3 of 0.78 and Recall@5 of 0.92. At the operating point used throughout, "
@@ -244,25 +243,27 @@ BODY = [
  "retrieval ranks code by similarity to a rule, and code that no rule authorises is by "
  "construction similar to no rule. Omitted checks, at 0.50, are second weakest for the "
  "related reason that deleted code leaves nothing behind to retrieve."),
-("TABLE", "End-to-End Detector Comparison (n = 1, Temperature 0)", [
-    ["Detector", "P", "R", "F1", "FAR", "Unc.", "Calls"],
-    ["SpecGuard", "0.67", "0.58", "0.62", "0.63", "0.06", "252"],
-    ["Whole-file", "0.91", "0.17", "0.29", "0.04", "0.01", "86"],
-    ["Keyword", "0.33", "0.08", "0.14", "0.37", "0.00", "0"],
-], [0.85, 0.35, 0.35, 0.35, 0.45, 0.45, 0.45]),
+("TABLE", "End-to-End Detector Comparison (Run 1, Temperature 0)", [
+    ["Detector", "P", "SP", "R", "F1", "FAR", "Unc.", "Calls"],
+    ["SpecGuard", "0.65", "0.29", "0.54", "0.59", "0.63", "0.06", "252"],
+    ["Whole-file", "0.91", "0.83", "0.17", "0.29", "0.04", "0.01", "86"],
+    ["Keyword", "0.33", "0.16", "0.08", "0.14", "0.37", "0.00", "0"],
+], [0.80, 0.30, 0.30, 0.30, 0.30, 0.36, 0.36, 0.36]),
 ("FIGURE", "fig1.png",
- "End-to-end detector comparison. The two LLM-based detectors fail in opposite "
- "directions: retrieval buys recall and pays for it in false alarms."),
+ "End-to-end detector comparison; bars are run 1, whiskers 95% bootstrap intervals. "
+ "The two LLM-based detectors fail in opposite directions: retrieval buys recall and "
+ "pays for it in false alarms."),
 ("Body Text",
  "Table III and Fig. 1 give the end-to-end comparison, and the contrast between the two "
  "LLM-based detectors is the clearest result in the paper, because they differ only in "
  "whether a retrieval stage is present. Retrieval more than triples recall, from 0.17 to "
- "0.58: showing the model a short, relevant excerpt is what lets it see a violation at "
+ "0.54, its interval of 0.41 to 0.66 clear of the baseline's 0.08 to 0.27: showing the model a short, relevant excerpt is what lets it see a violation at "
  "all. The same intervention raises the false-alarm rate from 0.04 to 0.63, so SpecGuard "
  "flags nearly two thirds of the untouched and semantics-preserving controls. Whole-file "
- "prompting is quiet, precise and largely blind, missing five of the nine drift "
- "categories outright. The keyword baseline establishes the floor at recall 0.08 and "
- "false-alarm rate 0.37, both deaf and noisy, with 18 spurious flags and zero recall on "
+ "prompting is quiet, precise and largely blind, missing four of the nine drift "
+ "categories outright. Strict precision for SpecGuard is only 0.29 against 0.65, most "
+ "flags on drifted cases landing on the wrong rule. The keyword baseline establishes the floor at recall 0.08 and "
+ "false-alarm rate 0.37, both deaf and noisy, with 17 spurious flags and zero recall on "
  "weakened conditions, sequence violations, error-handling drift, comment decoys and "
  "output contract drift."),
 ("Body Text",
@@ -313,9 +314,11 @@ BODY = [
  "Several limits bound these conclusions. Cases are synthetic injections rather than "
  "drift observed in the wild, which buys rule-level ground truth at the cost of realism. "
  "Three host projects, 40 rules and one language limit generalisation. Detector results "
- "come from a single run of one model at temperature zero, so no variance is reported; "
- "the differences between detectors are large enough that their direction is unlikely to "
- "reverse, but their magnitudes are provisional. Retrieval results use a deterministic "
+ "come from three runs of one model for SpecGuard and one for the baselines; recall was "
+ "identical across runs, so the wide intervals reflect the 86-case sample. Stripping the "
+ "rule-id annotations from the host code leaves the LLM detectors unchanged but raises "
+ "the keyword false-alarm rate from 0.37 to 1.00, and a rounding-mode case is the one of "
+ "thirteen escaping drift cases that oracle tests could not confirm. Retrieval results use a deterministic "
  "local hashing embedder rather than a trained sentence encoder [10], so Stage 1 numbers "
  "are a lower bound. Finally, requiring a flag to name the targeted rule is stricter "
  "than case-level detection and depresses recall relative to evaluations that count any "
@@ -327,7 +330,7 @@ BODY = [
  "SpecDrift-Bench measures what the drift-detection literature has reported around: not "
  "how many issues a checker raises, but how many it misses, how many it invents, and in "
  "which categories. On 86 validated cases the answer for a retrieval-augmented LLM "
- "detector is a recall of 0.58 bought at a false-alarm rate of 0.63, with the remaining "
+ "detector is a recall of 0.54 bought at a false-alarm rate of 0.63, with the remaining "
  "false alarms confidently argued rather than unsupported. Twenty-two percent of the "
  "injected drift passes the host projects' own tests, and unauthorised scope creep "
  "passes them always, so the problem the detector addresses is real even though the "
@@ -339,7 +342,7 @@ BODY = [
  "reverse-direction authorisation pass will iterate over code looking for an authorising "
  "rule, rather than over rules looking for code, which is the only way to lift D8 "
  "retrieval above 0.33. Repeated runs across model scales, with Semcheck added as a "
- "third baseline, will replace single-run point estimates with variance. And confidence "
+ "third baseline, will extend the repeated-run intervals to every detector. And confidence "
  "calibration will be measured to derive the abstention threshold deployment requires. "
  "The benchmark will be expanded to ten host projects and approximately 250 cases over "
  "the same taxonomy. The framework, case manifests, host projects and evaluation harness "

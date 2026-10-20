@@ -16,6 +16,15 @@ folds into a sentence, and Discussion, Threats to Validity and Conclusion each
 lose roughly half their length. Both tables of results and the detector-comparison
 figure are unchanged.
 
+## The PDFs are out of date
+
+The `.docx` files and `build/fig1.png` were rebuilt with the corrected numbers (recall
+0.54, strict precision, three-run intervals, ablation, oracle result). The two `.pdf`
+renders were **not** regenerated, because they come from LibreOffice and it was not
+available where the edit was made; they still show the earlier figures. Re-render both
+before circulating them, and check the page counts: the added sentences may push the
+six-page variant over six or the four-page variant over four.
+
 ## Confirm before submitting
 
 - **Affiliations and e-mail addresses** were inferred from the register numbers on
@@ -31,10 +40,16 @@ figure are unchanged.
 | Test-escape rates (Table III) | the `escapes_tests` label the builder writes per case |
 | Recall@1/3/5 (Fig. 1) | `specdrift retrieval-eval`, local hashing embedder, k = 5 |
 | Keyword baseline row and per-category recall | `specdrift run --detector keyword` then `specdrift score` |
-| SpecGuard and whole-file rows (Table IV, Fig. 2) | the `gpt-4o-mini` run reported in the root `README.md` |
+| SpecGuard and whole-file rows (Table IV, Fig. 2) | run 1 of the `gpt-4o-mini` runs frozen in `../results-snapshot/annotated/` |
+| Strict precision (SP column) | `strict_precision` in each detector's `metrics.json`; off-target flags counted as false positives |
+| 95% intervals, run-to-run spread, 5% outcome flips | `specdrift stability`, saved as `stability.json` beside each detector's metrics |
+| Rule-id ablation (Section VII) | `../results-snapshot/no-rule-ids/` |
+| Oracle confirmation (12 of 13) | `specdrift oracles`, saved as `../results-snapshot/oracles.json` |
 
-The SpecGuard and whole-file figures need an API key to reproduce; everything else
-runs offline.
+The bars in Fig. 2 are run 1; the whiskers are the bootstrap intervals, hard-coded in
+`build/figs.py` from the snapshot. Re-score any of it without a key by copying a
+detector's `verdicts.jsonl` into `results/<detector>/` and running `specdrift score`; only
+regenerating the verdicts needs an API key.
 
 ## Rebuilding
 
