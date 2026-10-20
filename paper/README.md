@@ -19,7 +19,8 @@ figure are unchanged.
 ## The PDFs are out of date
 
 The `.docx` files and `build/fig1.png` were rebuilt with the corrected numbers (recall
-0.54, strict precision, three-run intervals, ablation, oracle result). The two `.pdf`
+0.54, strict precision, three-run intervals, ablation, oracle result, reverse pass). The
+reverse-pass additions grew the six-page text by about 11% and the four-page text by about 7%. The two `.pdf`
 renders were **not** regenerated, because they come from LibreOffice and it was not
 available where the edit was made; they still show the earlier figures. Re-render both
 before circulating them, and check the page counts: the added sentences may push the
@@ -44,6 +45,7 @@ six-page variant over six or the four-page variant over four.
 | Strict precision (SP column) | `strict_precision` in each detector's `metrics.json`; off-target flags counted as false positives |
 | 95% intervals, run-to-run spread, 5% outcome flips | `specdrift stability`, saved as `stability.json` beside each detector's metrics |
 | Rule-id ablation (Section VII) | `../results-snapshot/no-rule-ids/` |
+| Reverse-pass rows of Table IV, D8 recall 0.17 to 0.78, 0.07 false-alarm rate | `../results-snapshot/annotated/reverse/` and `specguard-reverse/` (three runs each); the Calls figure for Both is 252 + 74, the cold-cache calls of the two passes |
 | Oracle confirmation (12 of 13) | `specdrift oracles`, saved as `../results-snapshot/oracles.json` |
 
 The bars in Fig. 2 are run 1; the whiskers are the bootstrap intervals, hard-coded in

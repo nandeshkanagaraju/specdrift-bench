@@ -36,7 +36,9 @@ ABSTRACT = (
     "against keyword-matching and whole-file-prompting baselines. Retrieval raises recall "
     "from 0.17 to 0.54 (95 percent interval 0.41 to 0.66 over three runs) but raises the "
     "false-alarm rate from 0.04 to 0.63, and the "
-    "surviving false alarms are confidently wrong rather than unsupported. We conclude "
+    "surviving false alarms are confidently wrong rather than unsupported. A reverse-direction "
+    "pass that audits code against the rules recovers the scope creep retrieval cannot see, "
+    "raising recall on it from 0.17 to 0.78. We conclude "
     "that evidence citation alone cannot make an LLM conformance judge trustworthy and "
     "that its counterexamples must be executed."
 )
@@ -97,7 +99,9 @@ BODY = [
 ("bullet list",
  "SpecGuard, a two-stage detector whose rule-retrieval and semantic-verification stages "
  "are instrumented independently, so that every miss is attributed either to the code "
- "never being shown or to the model reading it wrongly."),
+ "never being shown or to the model reading it wrongly, together with a reverse-direction "
+ "pass that audits every function against the whole specification for behaviour no rule "
+ "authorises."),
 ("bullet list",
  "An evaluation protocol in which a drift flag counts only when it names the rule the "
  "injection targeted, and in which every flag on a negative control is a false alarm "
@@ -285,6 +289,25 @@ BODY = [
  "states that a possible risk is not a violation. An evidence gate is then applied "
  "mechanically outside the model: a DRIFT verdict lacking either a quoted clause or a "
  "concrete counterexample is downgraded to UNCERTAIN before it reaches the scorer."),
+("Heading 2", "The Reverse-Direction Pass"),
+("Body Text",
+ "Retrieval cannot see unauthorised scope creep, for the structural reason discussed with "
+ "the retrieval results. The reverse pass inverts the direction. For every function and "
+ "method it shows the model the entire rule list with that one excerpt and asks whether "
+ "everything the function does is described by, or presupposed by, some rule. The model "
+ "must first name the rules the function serves; a function that serves a rule and adds "
+ "nothing is authorised, including the helpers and accessors a rule's behaviour depends "
+ "on, and the absence of a check is explicitly not a finding."),
+("Body Text",
+ "Two mechanical safeguards mirror the evidence gate. An UNAUTHORISED finding must quote, "
+ "verbatim, the code that carries out the extra behaviour; a quote absent from the "
+ "function is downgraded to UNCERTAIN, and the quote's true line numbers become the "
+ "evidence. And a function byte-identical to one already reported on the pristine "
+ "project is treated as accepted, as a static-analysis baseline file would, because real "
+ "specifications omit things and the checker would otherwise report the same gap on every "
+ "case. On the three pristine projects the first wording of the prompt flagged 11 of 31 "
+ "functions and the second flagged 3, mostly on the ground that a method had no checks; "
+ "the prompt was adjusted once on that evidence and not on the D8 cases."),
 ("Heading 2", "Baselines"),
 ("Body Text",
  "The keyword baseline tokenises each rule and searches all source text, including "
@@ -318,7 +341,10 @@ BODY = [
 ("bullet list",
  "D8 cases name no target rule, since no rule authorises the added behaviour, so a "
  "drift flag counts as a catch only if it was raised while the detector was shown the "
- "planted code, or cites its file; a flag raised elsewhere is spurious."),
+ "planted code, or cites its file; a flag raised elsewhere is spurious. A reverse-direction "
+ "finding names no rule and is treated alike: it counts on a D8 case when raised on the "
+ "planted code, is spurious on any other drift case, and is a false alarm on a negative "
+ "control."),
 ("bullet list",
  "Precision is reported twice: conventionally, over false alarms on negative controls, "
  "and strictly, which additionally charges every spurious flag as a false positive."),
@@ -357,9 +383,9 @@ BODY = [
 ("Body Text",
  "The weakest category is D8 at 0.33, and the reason is structural rather than "
  "incidental. Retrieval ranks code by similarity to a rule; code that no rule authorises "
- "is, by construction, similar to no rule. Reverse-direction drift will need an "
+ "is, by construction, similar to no rule. Reverse-direction drift therefore needs an "
  "authorisation pass that iterates over code looking for rules, rather than over rules "
- "looking for code. Omitted checks at 0.50 are the second weakest, for the related "
+ "looking for code, which is what the reverse pass described earlier does. Omitted checks at 0.50 are the second weakest, for the related "
  "reason that deleted code leaves nothing behind to retrieve."),
 ("Heading 2", "Detector Comparison"),
 ("Body Text",
@@ -369,6 +395,8 @@ BODY = [
     ["SpecGuard", "0.65", "0.29", "0.54", "0.59", "0.63", "0.06", "252"],
     ["Whole-file", "0.91", "0.83", "0.17", "0.29", "0.04", "0.01", "86"],
     ["Keyword", "0.33", "0.16", "0.08", "0.14", "0.37", "0.00", "0"],
+    ["Reverse", "0.67", "0.27", "0.07", "0.12", "0.07", "0.00", "74"],
+    ["Both", "0.66", "0.28", "0.59", "0.62", "0.67", "0.03", "326"],
 ], [0.80, 0.30, 0.30, 0.30, 0.30, 0.36, 0.36, 0.36]),
 ("FIGURE", "fig1.png",
  "End-to-end detector comparison; bars are run 1, whiskers 95% bootstrap intervals. "
@@ -410,6 +438,20 @@ BODY = [
  "about the order in which operations occur and about which exception propagates, rather "
  "than to compare a stated literal against a written one. The gradient is from "
  "comparison to reasoning, and it is steep."),
+("Heading 2", "Scope Creep and the Reverse Pass"),
+("Body Text",
+ "Table IV also reports the reverse pass, and Both is SpecGuard plus the reverse pass. "
+ "Over three runs the reverse pass catches scope creep (D8) in 0.78 of cases, interval "
+ "0.44 to 1.00, against 0.17 (0.00 to 0.50) for forward SpecGuard, and on its own it is "
+ "quiet: a false-alarm rate of 0.07 (0.00 to 0.17), two false alarms on 27 controls in "
+ "run 1, both on benign-decoy controls whose planted comment makes ordinary code look "
+ "suspicious. Its overall recall is 0.08 because it looks for one category only. Combined "
+ "with SpecGuard it lifts overall recall from 0.54 to 0.61 (0.48 to 0.73), but the "
+ "intervals overlap and the false-alarm rate stays SpecGuard's, since the forward pass "
+ "supplies almost all of it. With six D8 cases the two D8 intervals touch between 0.44 "
+ "and 0.50, so the gain is suggestive rather than conclusive. In run 1 the pass missed "
+ "two of the six: a new method the model judged authorised, and an exemption for some "
+ "clients hidden inside an existing method."),
 ("Heading 2", "The False Alarms Are Confidently Wrong"),
 ("Body Text",
  "The evidence gate works as designed and does not solve the problem. Requiring a quoted "
@@ -488,7 +530,11 @@ BODY = [
  "that baseline's numbers are partly an artefact of the annotations. Drift labels are "
  "checked for the cases that matter: oracle tests confirm twelve of the thirteen "
  "escaping cases, and the thirteenth, a change of rounding mode the specification does "
- "not constrain, is retained as unconfirmed. Retrieval results use a deterministic local hashing embedder rather than "
+ "not constrain, is retained as unconfirmed. The reverse pass's prompt was adjusted once "
+ "after observing what it flagged on the three pristine projects, which also supply the D8 "
+ "cases, so its numbers are likely optimistic until a fourth project confirms them; it "
+ "audits functions and methods only, so creep expressed as a module-level constant is out "
+ "of reach. Retrieval results use a deterministic local hashing embedder rather than "
  "a trained sentence encoder [8], [9], so Stage 1 numbers are a lower bound."),
 ("Body Text",
  "Conclusion validity. Scoring requires a flag to name the targeted rule, which is "
@@ -507,18 +553,19 @@ BODY = [
  "false alarms confidently argued rather than unsupported. Twenty-two percent of the "
  "injected drift passes the host projects' own tests, and unauthorised scope creep "
  "passes them always, so the problem the detector addresses is real even though the "
- "detector is not yet trustworthy."),
+ "detector is not yet trustworthy. A reverse pass from code to rules recovers the scope "
+ "creep that retrieval structurally cannot see, lifting D8 recall from 0.17 to 0.78, "
+ "though on six cases."),
 ("Body Text",
- "Four extensions are scheduled, each with a slot already present in the framework. An "
+ "Three extensions are scheduled, each with a slot already present in the framework. An "
  "adversarial second pass will execute the counterexample attached to every drift "
  "verdict and retain the verdict only if the code behaves as alleged, which directly "
- "targets the failure characterised in Section VI-D. A reverse-direction authorisation "
- "pass will iterate over code looking for an authorising rule, rather than over rules "
- "looking for code, which is the only way to lift D8 retrieval above 0.33. Repeated runs "
+ "targets the failure characterised in Section VI-D. Repeated runs "
  "across model scales, with Semcheck added as a third baseline, will extend the "
  "repeated-run intervals to every detector. And confidence calibration will be measured to derive "
  "the abstention threshold that deployment requires. The benchmark will be expanded to "
- "ten host projects and approximately 250 cases over the same taxonomy."),
+ "ten host projects and approximately 250 cases over the same taxonomy, which will also "
+ "test the reverse pass on a project it was not tuned on."),
 ("Body Text",
  "The framework, the case manifests, the host projects and the evaluation harness are "
  "available at [12]."),
