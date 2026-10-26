@@ -437,3 +437,175 @@ def test_every_new_patch_still_compiles_on_a_realistic_module():
                     bad.append((cand.operator, cand.line))
     assert not bad, bad
     assert Path(REPO_ROOT / "pyproject.toml").exists()
+
+
+# ---------------------------------------------------------------- operators added after the iniconfig pilot
+
+
+@pytest.mark.parametrize(
+    ("source", "operator", "expected"),
+    [
+        ("def f(a, strict=True):\n    pass\n", "flip_bool_arg", [["def f(a, strict=False):"]]),
+        ("def f(*, flag=False):\n    pass\n", "flip_bool_arg", [["def f(*, flag=True):"]]),
+        ("def f(\n    x: bool = True,\n):\n    pass\n", "flip_bool_arg", [["    x: bool = False,"]]),
+        ("run(a, check=True)\n", "flip_bool_arg", [["run(a, check=False)"]]),
+        ("sorted(items, key=len)\n", "drop_key_arg", [["sorted(items)"]]),
+        ("x = sorted(items, key=len, reverse=True)\n", "drop_key_arg", [["x = sorted(items, reverse=True)"]]),
+        ("max(a, b, key=abs)\n", "drop_key_arg", [["max(a, b)"]]),
+        ("for n in sorted(self.d, key=self.lineof):  # type: ignore\n    pass\n", "drop_key_arg",
+         [["for n in sorted(self.d):  # type: ignore"]]),
+        ("x = line[1:-1]\n", "shift_slice", [["x = line[2:-1]"], ["x = line[1:-2]"]]),
+        ("x = s[:3]\n", "shift_slice", [["x = s[:4]"]]),
+        ("x = s[0:]\n", "shift_slice", [["x = s[1:]"]]),
+    ],
+)
+def test_each_iniconfig_operator_makes_the_edit_it_describes(source, operator, expected):
+    assert edits(source, operator) == expected
+
+
+@pytest.mark.parametrize(
+    ("source", "operator"),
+    [
+        ("x = f(a=1)\n", "flip_bool_arg"),                          # a number is the `constant` operator's
+        ("x = f(a=None)\n", "flip_bool_arg"),
+        ("x = f(a=flag)\n", "flip_bool_arg"),
+        ("def f(a=(True, 1)):\n    pass\n", "flip_bool_arg"),        # only a bare boolean, not one inside a tuple
+        ("def f(a):\n    pass\n", "flip_bool_arg"),
+        ('x = f("é", ok=True)\n', "flip_bool_arg"),                  # column arithmetic is unsafe on non-ASCII lines
+        ("sorted(items)\n", "drop_key_arg"),
+        ("foo(items, key=len)\n", "drop_key_arg"),                  # only functions where `key` is a sort key
+        ("items.sort(key=len)\n", "drop_key_arg"),                  # nothing before it to cut the comma from
+        ("sorted(\n    items, key=len\n)\n", "drop_key_arg"),       # a call spanning lines is left alone
+        ('sorted(["é"], key=len)\n', "drop_key_arg"),
+        ("x = s[a:b]\n", "shift_slice"),
+        ("x = s[::2]\n", "shift_slice"),                             # the step is not a boundary
+        ("x = s[i]\n", "shift_slice"),                               # an index, not a slice
+        ("x = s[True:]\n", "shift_slice"),
+        ('x = s[1:"é"]\n', "shift_slice"),
+    ],
+)
+def test_iniconfig_operators_leave_alone_what_they_should(source, operator):
+    assert edits(source, operator) == []
+
+
+def test_iniconfig_operators_are_filed_under_the_categories_they_belong_to():
+    source = "def f(a=True):\n    return sorted(a, key=len)[1:]\n"
+    cats = {c.operator: c.category for c in candidates_for(source)}
+    assert cats["flip_bool_arg"] == "D2" and cats["drop_key_arg"] == "D3" and cats["shift_slice"] == "D1"
+
+
+def test_flip_bool_arg_names_the_parameter_or_keyword_it_changes():
+    def described(source):
+        return sorted(c.description for c in candidates_for(source) if c.operator == "flip_bool_arg")
+
+    assert described("def f(a, b=1, strict=True, *, flag=False):\n    pass\n") == [
+        "the default of `flag` becomes True", "the default of `strict` becomes False"]
+    assert described("run(a, check=True)\n") == ["`check=` becomes False"]
+
+
+def test_every_iniconfig_patch_applies_and_compiles():
+    source = "def f(a, strict=True):\n    items = sorted(a, key=len)\n    return items[1:-1], strict\n"
+    seen = set()
+    for cand in candidates_for(source):
+        if cand.operator in {"flip_bool_arg", "drop_key_arg", "shift_slice"}:
+            find, replace = make_patch(source, cand)
+            compile(apply_patch(source, find, replace), "m.py", "exec")
+            seen.add(cand.operator)
+    assert seen == {"flip_bool_arg", "drop_key_arg", "shift_slice"}
+
+
+# ---------------------------------------------------------------- pytest ids with spaces
+
+
+def test_a_failure_in_a_test_whose_id_has_spaces_is_a_kill_not_a_crash():
+    out = ("FAILED testing/test_iniconfig.py::test_tokenize[assignment in value] - AssertionError: assert [] == "
+           "[PL(0, None, 'value', ['x = 3'])]\n1 failed in 0.03s\n")
+    run = inject.classify_run(1, out, "")
+    assert run.status == "killed"
+    assert run.test == "testing/test_iniconfig.py::test_tokenize[assignment in value]"
+    assert run.message.startswith("AssertionError: assert [] ==")
+
+
+@pytest.mark.parametrize(
+    ("line", "test", "message"),
+    [
+        # The exact lines pytest 9.1 printed for a unittest `self.subTest` and for the `subtests` fixture.
+        ("SUBFAILED[case 2] test_unit.py::T::test_sub - AssertionError: 2 == 2",
+         "test_unit.py::T::test_sub", "AssertionError: 2 == 2"),
+        ("SUBFAILED(n=2) test_unit.py::T::test_sub_kwargs - AssertionError: 2 == 2",
+         "test_unit.py::T::test_sub_kwargs", "AssertionError: 2 == 2"),
+        ("SUBFAILED[case 2] (n=2) test_sub.py::test_with_subtests - AssertionError: two is wrong",
+         "test_sub.py::test_with_subtests", "AssertionError: two is wrong"),
+        ("SUBFAILED[a - b] (n=(1, 2)) tests/test_data.py::TestData::test_valid[x y] - AssertionError: no",
+         "tests/test_data.py::TestData::test_valid[x y]", "AssertionError: no"),
+    ],
+)
+def test_a_failed_subtest_is_a_kill_even_though_its_parent_test_passes(line, test, message):
+    run = inject.classify_run(1, line + "\n2 failed, 54 passed, 514 subtests passed in 0.16s\n", "")
+    assert (run.status, run.test, run.message) == ("killed", test, message)
+
+
+def test_a_subtest_that_fails_with_a_crash_error_is_still_a_crash():
+    line = "SUBFAILED[case 2] tests/test_data.py::TestData::test_valid - NameError: name 'x' is not defined\n"
+    assert inject.classify_run(1, line, "").status == "crash"
+
+
+def test_the_summary_line_alone_is_still_unparseable():
+    assert inject.classify_run(1, "2 failed, 54 passed, 514 subtests passed in 0.16s\n", "").status == "crash"
+
+
+def test_ids_without_spaces_and_without_a_message_still_parse():
+    plain = inject.classify_run(1, "FAILED tests/test_a.py::test_x - assert 1 == 2\n", "")
+    assert (plain.status, plain.test, plain.message) == ("killed", "tests/test_a.py::test_x", "assert 1 == 2")
+    bare = inject.classify_run(1, "FAILED tests/test_a.py::test_x\n", "")
+    assert (bare.status, bare.test, bare.message) == ("killed", "tests/test_a.py::test_x", "")
+
+
+def test_genuine_crashes_are_still_crashes():
+    named = inject.classify_run(
+        1, "FAILED tests/test_a.py::test_x[a b] - UnboundLocalError: cannot access local variable 'sources'\n", "")
+    assert named.status == "crash" and named.test == "tests/test_a.py::test_x[a b]"
+    assert inject.classify_run(1, "1 failed in 0.03s\n", "").status == "crash"           # nothing to parse
+    assert inject.classify_run(2, "FAILED tests/test_a.py::test_x - assert 1 == 2\n", "").status == "crash"
+    assert inject.classify_run(0, "", "").status == "passed"
+
+
+def test_a_collection_error_with_no_test_id_is_a_crash():
+    out = "FAILED tests/test_a.py - ImportError: cannot import name 'x'\n"
+    run = inject.classify_run(1, out, "")
+    assert run.status == "crash" and run.message.startswith("ImportError")
+
+
+def test_the_injector_kills_a_mutant_on_a_project_whose_failing_test_has_spaces_in_its_id(tmp_path):
+    root = tmp_path / "p"
+    (root / "src").mkdir(parents=True)
+    (root / "tests").mkdir()
+    (root / "src" / "m.py").write_text("def double(x):\n    return x * 2\n")
+    (root / "tests" / "test_m.py").write_text(
+        "import pytest\nfrom m import double\n\n\n"
+        "@pytest.mark.parametrize('x', [3], ids=['a case with spaces'])\n"
+        "def test_double(x):\n    assert double(x) == 6\n"
+    )
+    mutants, _ = inject_project(root, "p", per_operator=50)
+
+    assert mutants and {m.status for m in mutants} == {"killed"}
+    assert all("a case with spaces" in m.failing_test for m in mutants)
+
+
+def test_the_injector_kills_a_mutant_on_a_project_whose_tests_use_unittest_subtests(tmp_path):
+    root = tmp_path / "p"
+    (root / "src").mkdir(parents=True)
+    (root / "tests").mkdir()
+    (root / "src" / "m.py").write_text("def double(x):\n    return x * 2\n")
+    (root / "tests" / "test_m.py").write_text(
+        "import unittest\nfrom m import double\n\n\n"
+        "class T(unittest.TestCase):\n"
+        "    def test_double(self):\n"
+        "        for n in (3, 4):\n"
+        "            with self.subTest(msg=f'case {n}'):\n"
+        "                self.assertEqual(double(n), n * 2)\n"
+    )
+    mutants, _ = inject_project(root, "p", per_operator=50)
+
+    assert mutants and {m.status for m in mutants} == {"killed"}
+    assert all(m.failing_test.endswith("T::test_double") for m in mutants)

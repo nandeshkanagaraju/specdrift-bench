@@ -1,51 +1,126 @@
 # Runbook: from a mix to a measured comparison
 
-Everything on the Mac is tested; the Kaggle step has only had its tokenisation and masking logic tested (no GPU here).
+Tested on the Mac: the export, the verdict parser shared with the gate, the gate logic, the Hugging Face provider (against fakes), the
+held-out runner (with the offline stand-in) and the whole comparison report. **Not run anywhere yet:** the Kaggle notebook's GPU paths
+(model loading, training, generation) and the Hugging Face provider against a real model. Expect to fix a first-run problem or two.
+
 Do the human spot-check (`docs/pilot-spot-check.md`) before treating any number from this path as a result.
 
 ## 1. Export (Mac)
 
 ```
-.venv/bin/specdrift data-sft data/mix/<name>          # writes data/mix/<name>/sft/{train,val}.jsonl, sft.json
+.venv/bin/specdrift data-sft data/mix/<name>
+# writes data/mix/<name>/sft/{train,val}.chat.jsonl (messages), {train,val}.jsonl (system/prompt/completion text),
+# {train,val}.index.jsonl (label, category, project: metadata, never shown to the model) and sft.json (stats)
 ```
 
-Re-runs the frozen-test-set check, then refuses (exit 1) any example whose own completion, read by the production
-parser, would not give its label (for example a DRIFT without a counterexample, which the verifier would downgrade).
-Prompt = `SYSTEM_PROMPT` + `build_user_prompt` at `PROMPT_VERSION` v1; change the prompt and you must re-export.
+Loss must be computed on the completion (assistant message) only. Token counts in `sft.json` are an estimate (no tokenizer offline).
 
-## 2. Train (Kaggle, GPU T4 x2 or P100)
+## 2. Train and gate (Kaggle, GPU T4 x2 or P100)
 
-Upload `data/mix/<name>/sft/` and `scripts/kaggle_train_qlora.py` as one private dataset. In a notebook:
+Upload `data/mix/<name>/sft/` and `scripts/kaggle/train_qlora.py` as one private dataset. In a notebook:
 
 ```
 !pip install -q peft bitsandbytes "transformers>=4.45" accelerate
-!python kaggle_train_qlora.py --data /kaggle/input/<dataset>/sft --out /kaggle/working/p0 --limit 2000 --epochs 1
+!python train_qlora.py --data /kaggle/input/<dataset>/sft --out /kaggle/working/p0 --limit 2000 --epochs 1
 ```
 
-P0 is the go/no-go (section 11 of the training spec). Then run M1 without `--limit`, `--epochs 2`.
-Download `/kaggle/working/<run>/adapter` (tens of MB) and `run.json` (loss log). Training drops, never truncates, examples over
-`--max-len` tokens and prints how many.
+The script trains Qwen2.5-Coder-1.5B-Instruct (QLoRA, fp16, r=16, alpha=32, dropout 0.05, all linear layers, LR 2e-4 cosine, effective
+batch 16, checkpoint every 200 steps under `--out`), then runs the **gate** on the validation split with the same weights, adapter off
+versus on, and writes `go_no_go.json`:
 
-## 3. Evaluate the same 86 cases (Mac with a GPU, or Kaggle)
+- GO only if the fine-tuned model's false-alarm rate on clean validation examples is strictly lower than the untuned model's,
+  with at least 30 clean examples, and its recall has not fallen by more than 0.05 (a model that never says DRIFT has no false alarms).
+  The recall condition and both thresholds are my addition to the spec's "beat the untuned 1.5B on validation false-alarm rate";
+  change `--max-recall-drop` / `--min-negatives` if you disagree (1.0 switches the recall guard off).
+- Exit code 0 on GO, 2 on NO_GO. A session that dies can continue with `--resume`, or re-run just the gate with `--skip-train --adapter <dir>`.
+- The 7B run (`--base Qwen/Qwen2.5-Coder-7B-Instruct --go-file <p0>/go_no_go.json`) refuses to start without a GO written by a 1.5B run.
+- The only secret is an optional `HF_TOKEN` in Kaggle Secrets; nothing is read from arguments or files.
 
-Install `torch transformers peft bitsandbytes` where you evaluate. One results directory per model, so runs never overwrite each other;
-the model name (including the adapter) is part of the response-cache key.
+Download `<out>/adapter` (tens of MB), `run.json` (loss log) and `go_no_go.json`.
+
+## 3. Compare (Mac with a GPU, or Kaggle)
+
+Copy `scripts/compare_arms.example.json`, fill the `<<placeholders>>` (stronger zero-shot model id, adapter path). Install
+`torch transformers peft bitsandbytes` where the Hugging Face arms run.
 
 ```
-# baseline already in results/ (gpt-4o-mini)
-RESULTS_DIR=results_qwen_base LLM_PROVIDER=huggingface LLM_MODEL=Qwen/Qwen2.5-Coder-1.5B-Instruct \
-  specdrift run --detector specguard --repeat 3
-RESULTS_DIR=results_qwen_m1   LLM_PROVIDER=huggingface LLM_MODEL=Qwen/Qwen2.5-Coder-1.5B-Instruct LLM_ADAPTER=/path/to/adapter \
-  specdrift run --detector specguard --repeat 3
-RESULTS_DIR=results_qwen_m1 specdrift score --detector specguard
-RESULTS_DIR=results_qwen_m1 specdrift stability --detector specguard
+python scripts/compare_models.py run    --arms my_arms.json --out results_compare             # prints the plan, runs nothing
+python scripts/compare_models.py run    --arms my_arms.json --out results_compare --execute   # 3 runs per arm
+python scripts/compare_models.py report --arms my_arms.json --out results_compare             # comparison.md and comparison.json
 ```
 
-Compare per model: recall, strict precision, false-alarm rate, UNCERTAIN rate, with the bootstrap CIs from `stability`.
-H1 holds only if the false-alarm interval for M1 lies below gpt-4o-mini's at equal or better recall. Report the table either way.
+Each arm runs `specdrift run --repeat 3` on the 86 cases and, for specguard arms, `specdrift heldout --repeat 3` on the `examples/`
+projects, with `RESULTS_DIR=<out>/<arm>`. An arm may set `results_dir` to reuse existing results instead of re-running (use it for the
+current gpt-4o-mini results). Arms can only override `LLM_PROVIDER, LLM_MODEL, LLM_ADAPTER, LLM_BASE_URL, LLM_MAX_TOKENS, EMBED_*, TOP_K`;
+API keys stay in `.env`. Arms answered by the offline stand-in are labelled FAKE in the report.
 
-## 4. Still open
+The report has, per arm: recall, precision, strict precision, false-alarm rate, UNCERTAIN rate and ECE with bootstrap 95% CIs; per-category
+recall / false-alarm rate; the abstention coverage-against-accuracy curve; a paired difference against the baseline arm (what H1 asks);
+and the test-2 table. Its last section lists the caveats to quote with any number.
 
-- The `examples/` projects (test-2) need oracles before they can score the model.
-- A stronger zero-shot comparison model needs an API key; the base-Qwen row is the untuned open model.
-- Scale the data first (8 more verified repos, generator that is not gpt-4o-mini); the pilot mix has 414 training examples and is a rehearsal.
+## 4. The first real run: mixes, launch order, stop rules (26 Oct 2026)
+
+**Update, 26 Oct (later):** `data/mix/main-v2` supersedes `main-v1` as the main mix. It adds iniconfig and tomli, was built after the token limit
+went to 2,048 and after two classifier fixes (test ids with spaces, pytest-9 `SUBFAILED` subtest lines), and has **828 train / 162 val** examples
+(289 / 456 / 83 DRIFT / COMPLIANT / UNCERTAIN; synthetic part from semver, voluptuous, iniconfig and tomli; largest project 21%).
+`data/mix/main-v3` adds colorama and supersedes `main-v2`: **1,028 train / 162 val** (360 / 565 / 103 DRIFT / COMPLIANT / UNCERTAIN; five synthetic
+libraries; largest project 16%). `data/mix/main-v4` adds flashtext and xmltodict and supersedes it: **1,404 train / 162 val**
+(492 / 772 / 140; seven synthetic libraries; no project above 15%), but flashtext's and xmltodict's longest functions are mostly missing because their
+examples exceeded the then-current 2,048-token limit (196 rejected). **The validator limit is now 3,072** (`MAX_TOKENS`; the notebook's `--max-len` default
+matches, and the 7B M2 run uses `--max-len 1536`), so iniconfig, tomli, flashtext and xmltodict must be re-run to recover those examples (colorama had no
+rejections), and schema and tabulate are new. **Those runs are done and `data/mix/main-v5` supersedes `main-v4`: 1,788 train / 162 val** (625 / 984 / 179
+DRIFT / COMPLIANT / UNCERTAIN; nine synthetic libraries plus Stage A; no project above 18% of a label; no example over 3,072 tokens; leakage check clean;
+SFT export in `main-v5/sft`; validation is still the single project `cachetools`). tabulate is the weak contributor (10 of 20 rules with a DRIFT
+example, 42 examples) because `tabulate()` itself is about 750 lines and is rejected for length.
+**`data/mix/main-v6` adds pyflakes (the last repo) and supersedes `main-v5`: 1,921 train / 162 val**, same label shares, ten synthetic libraries, no project
+above 19% of a label, leakage check clean, no example over 3,072 tokens, SFT export in `main-v6/sft`. pyflakes has 18 of 20 rules with a DRIFT example
+(R03 `isPythonFile` and R04 `iterSourceCode` have none: the R03 oracle cannot tell `"~"` from `"~x"` for a nonexistent file). R0 should use `main-v6`.
+semver, cachetools and voluptuous were generated under the old limit and classifier and have not been re-run.
+
+**The ablation mixes and size-matched controls were rebuilt on the `main-v6` pool** (same `data-mix` flags as the `main-v1` versions, 26 Oct 2026).
+Validation project is `cachetools`. Every mix is exported with `data-sft` under `data/mix/<name>/sft/`; none has an example over 3,072 tokens.
+The older `main-v1-*` mixes are superseded and should not be trained on.
+
+| mix | train / val | pairs with | question |
+|---|---|---|---|
+| `main-v6` | 1,921 / 162 | | the main model |
+| `main-v6-nopaper` | 1,281 / 108 | `main-v6-n1281` (random subsample of main-v6, 384 paper) | H3: does Stage A help? (same n) |
+| `main-v6-noN23` | 912 / 81 | `main-v6-n912` | H2: do N2/N3 hard negatives cut false alarms? (same n) |
+| `main-v6-heldout` | 1,514 / 127 | `main-v6-n1514` | does it hold up when the benchmark-overlapping families (`rename_local`, `extract_temp`, `decoy_comment`, `decoy_docstring`) are held out of training? |
+
+Checked on the built files: `nopaper` has no Stage A examples, `noN23` has none of its nine excluded operators, `heldout` has none of its four, and each
+control has the size of its partner. The ablations shrink the data a lot (N2/N3 are most of the synthetic COMPLIANT examples), so compare each only with its
+size-matched control, never with `main-v6`. **Gate every arm on the same validation set**: `--gate-data data/mix/main-v6/sft`. Gate numbers from different
+validation sets are not comparable. The three controls share the 162-example validation set; the ablation mixes have smaller ones (108, 81, 127), so the
+gate must always point at `main-v6/sft`, not at the arm's own `sft/`.
+
+**Launch order**
+
+1. **R0, the pilot**: `main-v6`, seed 17, 2 epochs, `--gate-data data/mix/main-v6/sft`. About 1,921 / batch-size optimiser steps per epoch (the old
+   52-step figure was for the 414-example `main-v1`; recompute from your batch size and check whether the 200-step checkpoint is now reached).
+   Read `go_no_go.json`.
+2. **R1, evaluate R0 on the 86 cases**: untuned Qwen and R0, one run each (`"runs": 1` in the arms file; greedy decoding is deterministic, repeating it
+   only burns GPU). Time `specdrift run --detector specguard --limit 5` first: each case is about 13 separate generations, and the full 86 cases may take
+   hours per arm (an estimate, not measured). The gpt-4o-mini arm reuses `results/`.
+3. **R1b, seed noise**: `main-v6` again with seeds 18 and 19 (train and gate only). This gives the spread any ablation difference has to beat.
+4. **R2, ablations**, one seed each, in this order: `n912` then `noN23` (H2), `n1281` then `nopaper` (H3), `n1514` then `heldout` (all `main-v6-` prefixed), every one
+   gated on `data/mix/main-v6/sft`. Evaluate on the 86 cases only for pairs whose gate result is not NO_GO.
+5. Only after a GO and a clean R1: the 7B pilot, and scaling the data.
+
+**Stop, and do not launch the next step, if:**
+
+- **S1**: R0's gate says NO_GO. Read the reasons first; one of them is a floor effect (the untuned model raised no false alarm, usually because it cannot produce valid JSON).
+- **S2**: R0's tuned `unparseable_rate` is above 0.05. The output format was not learned (too few steps or a data problem), and every other number is then meaningless.
+- **S3**: R0's tuned validation recall is below 0.15 (collapse to "COMPLIANT"). A lower false-alarm rate bought that way is not an improvement.
+- **S4**: after R1, the tuned arm's false-alarm rate on the 86 cases is not below the untuned Qwen's. Ablating a model that shows no effect measures noise.
+- **S5**: after R1b, the false-alarm rate on validation differs by more than 0.10 between seeds. 89 clean examples resolve about that much, so smaller ablation gaps cannot be read.
+- **S6**: any `data-mix`, `data-sft` or `data-check` run reports a leakage violation. Nothing goes to Kaggle until it is clean.
+
+These thresholds are my proposals, not results; change them before launching, not after seeing the numbers.
+
+## 5. Still open
+
+- `examples/expected.json` has ground truth for 3 of the 4 test-2 projects; `clinic-desk` has none, and none of it has oracle tests behind it.
+- Data scaling is done (`main-v6`, 1,921 training examples from ten libraries plus Stage A). Validation is still the single project `cachetools`.
+- A stronger zero-shot comparison model needs an API key and a choice of model.

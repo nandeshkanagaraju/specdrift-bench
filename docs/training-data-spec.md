@@ -207,7 +207,7 @@ Calibration: fit the `UNCERTAIN` threshold and a temperature on val only. Freeze
 ## 8. Validator (`specdrift data validate`, to be written)
 
 Per example: JSON parses; `target` matches the `Verdict` schema; `violated_clause` is a substring of the rule; evidence lines fall in a
-chunk; DRIFT has a non-empty counterexample; token length of prompt + target is at most 1,536 (drop or truncate chunks otherwise);
+chunk; DRIFT has a non-empty counterexample; token length of prompt + target is at most 3,072 (raised from 1,536 to 2,048 and then to 3,072 on 26 Oct 2026: iniconfig and tomli lost 142 examples to the first cap and flashtext and xmltodict lost 196 more to the second, mostly the long core functions; examples over the limit are dropped, never truncated);
 `label` agrees with `provenance.label_method`; no secrets (scan for `sk-`, `AKIA`, private keys). Emit counts by source, category, label and split.
 
 ## 9. Models and training (Kaggle)
@@ -216,7 +216,7 @@ chunk; DRIFT has a non-empty counterexample; token length of prompt + target is 
 | --- | --- | --- | --- |
 | P0 | Qwen2.5-Coder-1.5B-Instruct | QLoRA, 1 epoch on 2k examples | Pipeline smoke test; go/no-go |
 | M1 | Qwen2.5-Coder-1.5B-Instruct | QLoRA, full mix | Main small model |
-| M2 | Qwen2.5-Coder-7B-Instruct | QLoRA, full mix, max length 1,536, fp16 | Main model if M1 shows signal |
+| M2 | Qwen2.5-Coder-7B-Instruct | QLoRA, full mix, `--max-len 1536` (smaller than the 3,072 data limit, so the longer examples are dropped at train time), fp16 | Main model if M1 shows signal |
 | Ablations | M1 config | drop Stage A; drop Stage C; no abstention examples; retriever frozen vs fine-tuned | H2, H3 |
 
 Settings to start from: LoRA r=16, alpha=32, dropout 0.05, all linear layers; LR 2e-4 with cosine decay; effective batch 16;

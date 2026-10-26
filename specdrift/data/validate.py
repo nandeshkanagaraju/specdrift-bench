@@ -8,7 +8,12 @@ import re
 from specdrift.data.schema import TrainingExample
 from specdrift.verify.prompts import SYSTEM_PROMPT, build_user_prompt
 
-MAX_TOKENS = 1536
+# Raised from 1,536 to 2,048 after iniconfig and tomli (142 examples of 1,540 to 2,650 tokens were being discarded), then to
+# 3,072 after flashtext and xmltodict: their 130-170 line core functions (`extract_keywords`, `replace_keywords`, `parse`,
+# `_emit`) give examples of about 3,000 tokens, so a lower cap removed exactly the algorithmic rules. 3,072 recovers 121 of
+# the 196 examples lost at 2,048. It is sized for a 1.5B QLoRA run on a T4 with gradient checkpointing; a 7B run must pass a
+# smaller --max-len and will drop the long ones at train time.
+MAX_TOKENS = 3072
 CHARS_PER_TOKEN = 3.5       # a rough, deliberately pessimistic estimate; no tokenizer is needed here
 _SECRET_RE = re.compile(r"sk-[A-Za-z0-9_-]{20,}|AKIA[0-9A-Z]{16}|-----BEGIN [A-Z ]*PRIVATE KEY-----")
 

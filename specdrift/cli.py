@@ -148,6 +148,30 @@ def stability(
 
 
 @app.command()
+def heldout(
+    project: list[str] = typer.Option([], "--project", help="Only this examples/ project (repeatable)."),
+    run_index: int = typer.Option(1, "--run", help="Run number; >1 bypasses the cache."),
+    repeat: int = typer.Option(1, "--repeat", min=1, help="Run this many consecutive runs from --run."),
+) -> None:
+    """Check the unseen examples/ projects (test-2) and store per-run verdicts; ground truth is examples/expected.json."""
+    from specdrift.eval.heldout import load_expected, run_heldout, unscored_projects
+
+    settings = get_settings()
+    if settings.llm_provider == "fake":
+        typer.secho("note: LLM_PROVIDER=fake - the offline stand-in is answering, not a model.", fg=typer.colors.YELLOW)
+    skipped = unscored_projects(load_expected())
+    if skipped:
+        typer.echo(f"not scored (no entry in examples/expected.json): {', '.join(skipped)}")
+    for current in range(run_index, run_index + repeat):
+        try:
+            _, stats = run_heldout(settings, current, project or None)
+        except ValueError as exc:
+            typer.echo(f"cannot run: {exc}")
+            raise typer.Exit(code=1) from exc
+        typer.echo(f"run {current}: {stats['verdicts']} verdicts over {', '.join(stats['projects'])}  model={stats['model']}")
+
+
+@app.command()
 def score(
     detector: str = typer.Option("specguard", help="Detector to score, or 'all'."),
 ) -> None:
@@ -656,7 +680,7 @@ def data_mix(
 @app.command("data-sft")
 def data_sft(
     mix_dir: str = typer.Argument(..., help="A directory written by `data-mix` (train.jsonl, val.jsonl)."),
-    out: str = typer.Option("", help="Where to write train.jsonl, val.jsonl and sft.json (default: <mix_dir>/sft)."),
+    out: str = typer.Option("", help="Where to write <split>.chat.jsonl, <split>.jsonl, <split>.index.jsonl and sft.json (default: <mix_dir>/sft)."),
 ) -> None:
     """Export a mix as exact prompt/completion records for fine-tuning (docs/training-data-spec.md, section 9)."""
     import json as _json
@@ -670,7 +694,8 @@ def data_sft(
         run_checks,
         verify_frozen,
     )
-    from specdrift.data.sft import export, summarise, write_sft
+    from specdrift.data.sft import LOSS_NOTE, TOKEN_METHOD, export, summarise, write_sft
+    from specdrift.verify.prompts import PROMPT_VERSION
 
     source = Path(mix_dir).expanduser()
     source = source if source.is_absolute() else REPO_ROOT / source
@@ -694,17 +719,23 @@ def data_sft(
 
     target = Path(out).expanduser() if out else source / "sft"
     target = target if target.is_absolute() else REPO_ROOT / target
-    summary: dict = {}
+    summary: dict = {"prompt_version": PROMPT_VERSION, "loss": LOSS_NOTE, "token_method": TOKEN_METHOD}
     for split, examples in pools.items():
-        records, refused = export(examples)
-        write_sft(records, target / f"{split}.jsonl")
-        summary[split] = summarise(records) | {"refused": len(refused)}
-        typer.echo(f"{split:<6}{len(records):>6} records   {summary[split]['labels']}   refused: {len(refused)}")
+        kept, refused = export(examples)
+        write_sft(kept, target, split)
+        summary[split] = summarise(kept, len(refused))
+        info = summary[split]
+        typer.echo(f"{split:<6}{info['examples']:>6} examples   {info['labels']}   refused: {len(refused)}")
+        typer.echo(f"      tokens (estimate) {info['approx_tokens']}   over {info['over_limit']['limit']}: "
+                   f"{info['over_limit']['count']} ({info['over_limit']['share']:.1%})")
+        typer.echo(f"      categories {info['categories']}")
         for example_id, reason in refused[:5]:
             typer.echo(f"  refused {example_id}: {reason}")
     (target / "sft.json").write_text(_json.dumps(summary, indent=1, sort_keys=True) + "\n", encoding="utf-8")
+    typer.echo(f"prompt version {PROMPT_VERSION}. {LOSS_NOTE}")
+    typer.echo(f"token counts are an {TOKEN_METHOD}")
     typer.echo(f"wrote {target}")
-    if any(info["refused"] for info in summary.values()):
+    if any(summary[s]["refused"] for s in pools):
         raise typer.Exit(code=1)
 
 

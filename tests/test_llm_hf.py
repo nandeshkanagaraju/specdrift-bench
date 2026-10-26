@@ -1,6 +1,10 @@
+import subprocess
+import sys
 import types
 
-from specdrift.config import Settings
+import pytest
+
+from specdrift.config import REPO_ROOT, Settings
 from specdrift.verify import llm as llm_module
 from specdrift.verify.llm import build_llm
 
@@ -66,3 +70,21 @@ def test_build_llm_routes_huggingface_with_the_adapter(monkeypatch):
 
     assert isinstance(adapter, llm_module.HuggingFaceLLM)
     assert made["args"] == ("Qwen/base", "a/b", 50, True)
+
+
+def test_importing_the_provider_module_needs_no_torch():
+    code = (
+        "import sys\n"
+        "for name in ('torch', 'transformers', 'peft', 'bitsandbytes'):\n"
+        "    sys.modules[name] = None\n"          # None makes `import name` raise ImportError
+        "import specdrift.verify.llm as m\n"
+        "assert m.HuggingFaceLLM and m.FakeLLM\n"
+    )
+    result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, cwd=REPO_ROOT)
+    assert result.returncode == 0, result.stderr
+
+
+def test_a_missing_torch_gives_an_install_hint_not_a_bare_import_error(monkeypatch):
+    monkeypatch.setitem(sys.modules, "torch", None)
+    with pytest.raises(llm_module.LLMError, match="pip install torch transformers peft bitsandbytes"):
+        llm_module.HuggingFaceLLM("Qwen/base")

@@ -18,7 +18,7 @@ from specdrift.data.assemble import (
 )
 from specdrift.data.inject import Mutant, inject_project
 from specdrift.data.schema import Provenance, Target, TrainingExample
-from specdrift.data.validate import approx_tokens, problems, shown_end
+from specdrift.data.validate import MAX_TOKENS, approx_tokens, problems, shown_end
 from specdrift.spec.parser import load_project_rules
 
 runner = CliRunner()
@@ -360,7 +360,16 @@ def test_the_validator_accepts_a_good_example_and_names_each_defect():
     secret = good_drift().chunks[0].model_copy(update={"source": "def f(x):\n    k = 'sk-" + "a" * 30 + "'\n"})
     assert any("secret" in p for p in bad(chunks=[secret]))
     huge = good_drift().chunks[0].model_copy(update={"source": "x = 1\n" * 2000, "end_line": 2000})
-    assert approx_tokens(good_drift(chunks=[huge])) > 1536 and any("tokens" in p for p in bad(chunks=[huge]))
+    assert approx_tokens(good_drift(chunks=[huge])) > MAX_TOKENS and any("tokens" in p for p in bad(chunks=[huge]))
+    # The limit is a boundary, so test both sides of it: just under is accepted, just over is refused.
+    def with_lines(n):
+        return good_drift(chunks=[good_drift().chunks[0].model_copy(update={"source": "x = 1\n" * n, "end_line": n})])
+
+    n = 1
+    while approx_tokens(with_lines(n)) <= MAX_TOKENS:
+        n += 1
+    assert not any("tokens" in p for p in problems(with_lines(n - 1)))
+    assert any("tokens" in p for p in problems(with_lines(n)))
 
 
 # ---------------------------------------------------------------- the command line

@@ -38,8 +38,9 @@ def check_project(
     settings: Settings,
     diff_from: str | None = None,
     progress: Progress | None = None,
+    run: int = 1,
 ) -> tuple[list[Verdict], dict]:
-    """Check a workspace rule by rule.
+    """Check a workspace rule by rule. `run` > 1 bypasses the cache, as in `specdrift run --run`.
 
     `progress` is called as the run happens, so a caller streaming to a UI can show
     each stage finishing and each rule resolving instead of one silent wait. It is
@@ -117,7 +118,7 @@ def check_project(
 
         from specdrift.verify.verifier import verify_rule
 
-        verdict = verify_rule(rule, top, detector.llm, detector.cache, "live", detector.name)
+        verdict = verify_rule(rule, top, detector.llm, detector.cache, "live", detector.name, run=run)
         verdicts.append(verdict)
         emit("verdict", verdict)
         emit(

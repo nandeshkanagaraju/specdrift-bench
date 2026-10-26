@@ -1,0 +1,36 @@
+{
+  "baseline": "gpt-4o-mini-zero-shot",
+  "arms": [
+    {
+      "name": "gpt-4o-mini-zero-shot",
+      "detector": "specguard",
+      "env": {"LLM_PROVIDER": "openai", "LLM_MODEL": "gpt-4o-mini"}
+    },
+    {
+      "name": "keyword-baseline",
+      "detector": "keyword",
+      "env": {}
+    },
+    {
+      "name": "stronger-zero-shot",
+      "detector": "specguard",
+      "env": {"LLM_PROVIDER": "openai", "LLM_MODEL": "<<choose a stronger model>>"}
+    },
+    {
+      "name": "qwen2.5-coder-1.5b-untuned",
+      "detector": "specguard",
+      "runs": 1,
+      "env": {"LLM_PROVIDER": "huggingface", "LLM_MODEL": "Qwen/Qwen2.5-Coder-1.5B-Instruct"}
+    },
+    {
+      "name": "qwen2.5-coder-1.5b-sft",
+      "detector": "specguard",
+      "runs": 1,
+      "env": {
+        "LLM_PROVIDER": "huggingface",
+        "LLM_MODEL": "Qwen/Qwen2.5-Coder-1.5B-Instruct",
+        "LLM_ADAPTER": "<<path to the downloaded adapter folder>>"
+      }
+    }
+  ]
+}

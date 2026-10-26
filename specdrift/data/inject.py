@@ -2,9 +2,10 @@
 
 Operators map onto the benchmark's categories (docs/training-data-spec.md, section 5):
 
-    D1  boundary shift        < <-> <=, > <-> >=
-    D2  value / constant      a number or string becomes a different one, + <-> -
-    D3  omitted check / step  an `if ...: raise` guard, or a simple statement, is deleted (or becomes `pass`)
+    D1  boundary shift        < <-> <=, > <-> >=, an integer slice bound moves by one
+    D2  value / constant      a number or string becomes a different one, + <-> -, a boolean argument flips
+    D3  omitted check / step  an `if ...: raise` guard, or a simple statement, is deleted (or becomes `pass`);
+                              the `key=` of a sort is removed
     D4  weakened condition    and <-> or, == <-> !=, `not x` -> `x`, is <-> is not, in <-> not in, `if x` -> `if not (x)`
     D5  sequence violation    two adjacent statements swap places, or a call's first two arguments do
     D6  error-handling drift  `raise X` raises a different exception class
@@ -64,7 +65,15 @@ CRASH_ERRORS = ("NameError", "UnboundLocalError", "SyntaxError", "IndentationErr
                 "ModuleNotFoundError")
 
 _BOUNDARY = {"<": "<=", "<=": "<", ">": ">=", ">=": ">"}
-_FAILED_RE = re.compile(r"^FAILED\s+(?P<test>\S+)(?:\s+-\s+(?P<message>.*))?$", re.MULTILINE)
+# A parametrized test id may contain spaces ("test_tokenize[assignment in value]"), so the id runs up to the first
+# " - " (or the end of the line) and not to the first space. A path with no "::" falls back to the old form.
+# pytest 9 reports a failing subtest (unittest `self.subTest`, or the `subtests` fixture) as
+# "SUBFAILED[case 2] (n=2) path::Class::test - message" and the parent test itself passes, so there is no
+# FAILED line at all; the bracketed description and the parenthesised parameters are skipped.
+_FAILED_RE = re.compile(
+    r"^(?:FAILED|SUBFAILED(?:\[.*?\])?(?:\s*\(.*?\))?)\s+(?P<test>\S+::.+?|\S+)(?:\s+-\s+(?P<message>.*))?$",
+    re.MULTILINE,
+)
 
 
 class Mutant(BaseModel):
@@ -291,8 +300,93 @@ def statement_candidates(source: str) -> list[Candidate]:
 _NO_SWAP = {"isinstance", "issubclass", "getattr", "hasattr", "setattr", "range", "slice", "enumerate", "zip", "format"}
 
 
+_KEY_CALLS = {"sorted", "min", "max", "sort", "nsmallest", "nlargest"}
+
+
+def _call_name(node: ast.Call) -> str:
+    return node.func.id if isinstance(node.func, ast.Name) else getattr(node.func, "attr", "")
+
+
+def _int_bound(node: ast.expr | None) -> int | None:
+    """The value of a slice bound written as an integer literal (`1`, `-1`); None for anything else."""
+    def plain_int(n: ast.expr) -> bool:
+        return isinstance(n, ast.Constant) and isinstance(n.value, int) and not isinstance(n.value, bool)
+
+    if node is not None and plain_int(node):
+        return node.value  # type: ignore[attr-defined]
+    if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.USub) and plain_int(node.operand):
+        return -node.operand.value  # type: ignore[attr-defined]
+    return None
+
+
+def argument_candidates(source: str) -> list[Candidate]:
+    """Edits to arguments that the token and statement operators cannot reach.
+
+    The iniconfig pilot had 7 of 20 rules with no DRIFT example because no operator touched what they cite:
+    a boolean default or keyword (`strip_inline_comments=True`), the `key=` of a sort, a slice bound (`line[1:-1]`).
+
+        flip_bool_arg   D2  a boolean parameter default or keyword argument becomes its opposite
+        drop_key_arg    D3  `key=...` is removed from sorted / min / max / sort / nsmallest / nlargest
+        shift_slice     D1  an integer slice bound moves one step further from zero
+    """
+    lines = source.splitlines()
+    found: list[Candidate] = []
+
+    def spliced(node: ast.expr, new: str) -> list[str] | None:
+        """The node's line with the node's text replaced; None if it spans lines or the line is not ASCII."""
+        if node.lineno != node.end_lineno or node.end_col_offset is None:
+            return None
+        text = lines[node.lineno - 1]
+        if not text.isascii():
+            return None
+        return [text[: node.col_offset] + new + text[node.end_col_offset:]]
+
+    def flip(value: ast.expr | None, what: str) -> None:
+        if isinstance(value, ast.Constant) and isinstance(value.value, bool):
+            new = "False" if value.value else "True"
+            edit = spliced(value, new)
+            if edit:
+                found.append(Candidate("D2", "flip_bool_arg", value.lineno, value.lineno, edit, f"{what} becomes {new}"))
+
+    for node in ast.walk(ast.parse(source)):
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            spec = node.args
+            positional = spec.posonlyargs + spec.args
+            for arg, default in zip(positional[len(positional) - len(spec.defaults):], spec.defaults, strict=True):
+                flip(default, f"the default of `{arg.arg}`")
+            for kwonly, kw_default in zip(spec.kwonlyargs, spec.kw_defaults, strict=True):
+                flip(kw_default, f"the default of `{kwonly.arg}`")
+        elif isinstance(node, ast.Call):
+            for kw in node.keywords:
+                if kw.arg:
+                    flip(kw.value, f"`{kw.arg}=`")
+            text = lines[node.lineno - 1] if node.lineno == node.end_lineno else ""
+            for kw in node.keywords:
+                if (kw.arg != "key" or _call_name(node) not in _KEY_CALLS or not text or not text.isascii()
+                        or kw.end_col_offset is None):
+                    continue
+                others: list[ast.expr | ast.keyword] = [*node.args, *node.keywords]
+                before = [n.end_col_offset for n in others
+                          if n is not kw and n.end_col_offset is not None and n.end_col_offset <= kw.col_offset]
+                if before:
+                    found.append(Candidate("D3", "drop_key_arg", node.lineno, node.lineno,
+                                           [text[: max(before)] + text[kw.end_col_offset:]],
+                                           f"`{_call_name(node)}` loses its `key=` argument"))
+        elif isinstance(node, ast.Subscript) and isinstance(node.slice, ast.Slice):
+            for which, bound in (("lower", node.slice.lower), ("upper", node.slice.upper)):
+                number = _int_bound(bound)
+                if bound is None or number is None:
+                    continue
+                shifted = number + 1 if number >= 0 else number - 1
+                edit = spliced(bound, str(shifted))
+                if edit:
+                    found.append(Candidate("D1", "shift_slice", bound.lineno, bound.lineno, edit,
+                                           f"the {which} slice bound {number} becomes {shifted}"))
+    return found
+
+
 def candidates_for(source: str) -> list[Candidate]:
-    return token_candidates(source) + statement_candidates(source)
+    return token_candidates(source) + statement_candidates(source) + argument_candidates(source)
 
 
 # --------------------------------------------------------------------------- patches
@@ -386,15 +480,20 @@ def run_pytest(
     except subprocess.TimeoutExpired:
         return PytestRun("timeout", message="suite exceeded the time limit", sandboxed=sandboxed)
 
-    if proc.returncode == 0:
-        return PytestRun("passed", sandboxed=sandboxed, output=proc.stdout)
-    failed = _FAILED_RE.search(proc.stdout)
+    return classify_run(proc.returncode, proc.stdout, proc.stderr, sandboxed)
+
+
+def classify_run(returncode: int, stdout: str, stderr: str, sandboxed: bool = False) -> PytestRun:
+    """passed, killed (an assertion failed) or crash (the code no longer loads, or pytest itself failed)."""
+    if returncode == 0:
+        return PytestRun("passed", sandboxed=sandboxed, output=stdout)
+    failed = _FAILED_RE.search(stdout)
     test = failed["test"] if failed else ""
     message = (failed["message"] or "").strip() if failed else ""
-    if proc.returncode != 1 or not failed or message.startswith(CRASH_ERRORS):
-        tail = (proc.stdout + proc.stderr).strip().splitlines()
-        return PytestRun("crash", test, message or (tail[-1] if tail else "no output"), sandboxed, proc.stdout)
-    return PytestRun("killed", test, message, sandboxed, proc.stdout)
+    if returncode != 1 or not failed or message.startswith(CRASH_ERRORS):
+        tail = (stdout + stderr).strip().splitlines()
+        return PytestRun("crash", test, message or (tail[-1] if tail else "no output"), sandboxed, stdout)
+    return PytestRun("killed", test, message, sandboxed, stdout)
 
 
 def run_suite(workdir: Path, timeout: float, mode: SandboxMode) -> tuple[Status | Literal["passed"], str, str, bool]:

@@ -88,8 +88,14 @@ class HuggingFaceLLM:
         self._model, self._tokenizer = _loaded or self._load(load_in_4bit)
 
     def _load(self, load_in_4bit: bool) -> tuple:
-        import torch
-        from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+        try:
+            import torch
+            from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+        except ImportError as exc:
+            raise LLMError(
+                "LLM_PROVIDER=huggingface needs torch, transformers, peft and bitsandbytes "
+                f"(pip install torch transformers peft bitsandbytes): {exc}"
+            ) from exc
 
         quant = BitsAndBytesConfig(
             load_in_4bit=True, bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype=torch.float16,
