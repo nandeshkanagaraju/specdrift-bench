@@ -1,0 +1,144 @@
+{
+  "rules": [
+    {
+      "text": "`loads` MUST raise `TOMLDecodeError` for a line that starts with a character that cannot begin a statement.",
+      "section": "Syntax errors",
+      "symbols": ["loads"],
+      "grounding": "documented",
+      "evidence": {"file": "src/tomli/_parser.py", "quote": "elif char != \"#\":"}
+    },
+    {
+      "text": "`loads` MUST raise `TOMLDecodeError` when a statement is followed by anything other than a newline or the end of the document.",
+      "section": "Syntax errors",
+      "symbols": ["loads"],
+      "grounding": "code",
+      "evidence": {"file": "src/tomli/_parser.py", "quote": "if char != \"\\n\":"}
+    },
+    {
+      "text": "`loads` MUST raise `TOMLDecodeError` for an array whose elements are not separated by commas.",
+      "section": "Syntax errors",
+      "symbols": ["parse_array"],
+      "grounding": "code",
+      "evidence": {"file": "src/tomli/_parser.py", "quote": "raise TOMLDecodeError(\"Unclosed array\", src, pos)"}
+    },
+    {
+      "text": "`loads` MUST raise `TOMLDecodeError` for a basic string that has no closing quote.",
+      "section": "Syntax errors",
+      "symbols": ["parse_basic_str"],
+      "grounding": "code",
+      "evidence": {"file": "src/tomli/_parser.py", "quote": "raise TOMLDecodeError(\"Unterminated string\", src, pos) from None"}
+    },
+    {
+      "text": "`loads` MUST raise `TOMLDecodeError` when a key is defined twice in the same table.",
+      "section": "Duplicates",
+      "symbols": ["key_value_rule"],
+      "grounding": "code",
+      "evidence": {"file": "src/tomli/_parser.py", "quote": "if key_stem in nest:"}
+    },
+    {
+      "text": "`loads` MUST raise `TOMLDecodeError` when the same table header appears twice.",
+      "section": "Duplicates",
+      "symbols": ["create_dict_rule"],
+      "grounding": "code",
+      "evidence": {"file": "src/tomli/_parser.py", "quote": "if out.flags.is_(key, Flags.EXPLICIT_NEST) or out.flags.is_(key, Flags.FROZEN):"}
+    },
+    {
+      "text": "`loads` MUST raise `TOMLDecodeError` for a repeated key inside one inline table.",
+      "section": "Duplicates",
+      "symbols": ["parse_inline_table"],
+      "grounding": "code",
+      "evidence": {"file": "src/tomli/_parser.py", "quote": "raise TOMLDecodeError(f\"Duplicate inline table key {key_stem!r}\", src, pos)"}
+    },
+    {
+      "text": "`loads` MUST raise `TOMLDecodeError` when a key is added to an inline table after its definition.",
+      "section": "Inline tables",
+      "symbols": ["key_value_rule"],
+      "grounding": "code",
+      "evidence": {"file": "src/tomli/_parser.py", "quote": "if out.flags.is_(abs_key_parent, Flags.FROZEN):"}
+    },
+    {
+      "text": "`loads` MUST raise `TypeError` when its argument is not a `str`.",
+      "section": "Arguments",
+      "symbols": ["loads"],
+      "grounding": "code",
+      "evidence": {"file": "src/tomli/_parser.py", "quote": "raise TypeError("}
+    },
+    {
+      "text": "`load` MUST raise `TypeError` for a file object opened in text mode.",
+      "section": "Arguments",
+      "symbols": ["load"],
+      "grounding": "documented",
+      "evidence": {"file": "src/tomli/_parser.py", "quote": "raise TypeError("}
+    },
+    {
+      "text": "`loads` MUST read `\\r\\n` line endings as `\\n`.",
+      "section": "Arguments",
+      "symbols": ["loads"],
+      "grounding": "code",
+      "evidence": {"file": "src/tomli/_parser.py", "quote": "src = __s.replace(\"\\r\\n\", \"\\n\")"}
+    },
+    {
+      "text": "`loads` MUST convert a TOML float with `parse_float` when one is given.",
+      "section": "Floats",
+      "symbols": ["match_to_number"],
+      "grounding": "documented",
+      "evidence": {"file": "src/tomli/_re.py", "quote": "return parse_float(match.group())"}
+    },
+    {
+      "text": "`loads` MUST raise `ValueError` when `parse_float` returns a `dict` or a `list`.",
+      "section": "Floats",
+      "symbols": ["make_safe_parse_float"],
+      "grounding": "documented",
+      "evidence": {"file": "src/tomli/_parser.py", "quote": "raise ValueError(\"parse_float must not return dicts or lists\")"}
+    },
+    {
+      "text": "`loads` MUST read `0x`, `0o` and `0b` prefixed integers in base 16, 8 and 2.",
+      "section": "Integers",
+      "symbols": ["match_to_number"],
+      "grounding": "code",
+      "evidence": {"file": "src/tomli/_re.py", "quote": "return int(match.group(), 0)"}
+    },
+    {
+      "text": "`loads` MUST read `\\u` followed by four hex digits as one Unicode character.",
+      "section": "String escapes",
+      "symbols": ["parse_basic_str_escape"],
+      "grounding": "code",
+      "evidence": {"file": "src/tomli/_parser.py", "quote": "if escape_id == \"\\\\u\":"}
+    },
+    {
+      "text": "`loads` MUST raise `TOMLDecodeError` for a `\\u` escape that names a surrogate code point.",
+      "section": "String escapes",
+      "symbols": ["is_unicode_scalar_value"],
+      "grounding": "code",
+      "evidence": {"file": "src/tomli/_parser.py", "quote": "return (0 <= codepoint <= 55295) or (57344 <= codepoint <= 1114111)"}
+    },
+    {
+      "text": "`loads` MUST read a date-time that ends in `Z` as a UTC time.",
+      "section": "Dates and times",
+      "symbols": ["match_to_datetime"],
+      "grounding": "code",
+      "evidence": {"file": "src/tomli/_re.py", "quote": "elif zulu_time:"}
+    },
+    {
+      "text": "`loads` MUST give a date-time with a `-` offset a negative UTC offset.",
+      "section": "Dates and times",
+      "symbols": ["cached_tz"],
+      "grounding": "code",
+      "evidence": {"file": "src/tomli/_re.py", "quote": "sign = 1 if sign_str == \"+\" else -1"}
+    },
+    {
+      "text": "`loads` MUST add a new table to the list for each `[[name]]` header.",
+      "section": "Arrays of tables",
+      "symbols": ["NestedDict.append_nest_to_list"],
+      "grounding": "documented",
+      "evidence": {"file": "src/tomli/_parser.py", "quote": "list_.append({})"}
+    },
+    {
+      "text": "`TOMLDecodeError` MUST count `lineno` from 1.",
+      "section": "Error position",
+      "symbols": ["TOMLDecodeError.__init__"],
+      "grounding": "code",
+      "evidence": {"file": "src/tomli/_parser.py", "quote": "lineno = doc.count(\"\\n\", 0, pos) + 1"}
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+R01:
+  symbols:
+  - AnsiFore
+  oracle:
+  - oracles/test_r01.py
+R02:
+  symbols:
+  - AnsiBack
+  oracle:
+  - oracles/test_r02.py
+R03:
+  symbols:
+  - AnsiStyle
+  oracle:
+  - oracles/test_r03.py
+R04:
+  symbols:
+  - AnsiFore
+  oracle:
+  - oracles/test_r04.py
+R05:
+  symbols:
+  - AnsiCursor.POS
+  oracle:
+  - oracles/test_r05.py
+R06:
+  symbols:
+  - clear_screen
+  oracle:
+  - oracles/test_r06.py
+R07:
+  symbols:
+  - set_title
+  oracle:
+  - oracles/test_r07.py
+R08:
+  symbols:
+  - AnsiToWin32.write
+  oracle:
+  - oracles/test_r08.py
+R09:
+  symbols:
+  - AnsiToWin32.__init__
+  oracle:
+  - oracles/test_r09.py
+R10:
+  symbols:
+  - AnsiToWin32.should_wrap
+  oracle:
+  - oracles/test_r10.py
+R11:
+  symbols:
+  - AnsiToWin32.reset_all
+  oracle:
+  - oracles/test_r11.py
+R12:
+  symbols:
+  - AnsiToWin32.write
+  oracle:
+  - oracles/test_r12.py
+R13:
+  symbols:
+  - AnsiToWin32.extract_params
+  oracle:
+  - oracles/test_r13.py
+R14:
+  symbols:
+  - AnsiToWin32.extract_params
+  oracle:
+  - oracles/test_r14.py
+R15:
+  symbols:
+  - AnsiToWin32.extract_params
+  oracle:
+  - oracles/test_r15.py
+R16:
+  symbols:
+  - init
+  oracle:
+  - oracles/test_r16.py
+R17:
+  symbols:
+  - wrap_stream
+  oracle:
+  - oracles/test_r17.py
+R18:
+  symbols:
+  - WinTerm.get_attrs
+  oracle:
+  - oracles/test_r18.py
+R19:
+  symbols:
+  - WinTerm.set_attrs
+  oracle:
+  - oracles/test_r19.py
+R20:
+  symbols:
+  - WinTerm.set_attrs
+  oracle:
+  - oracles/test_r20.py

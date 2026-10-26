@@ -1,0 +1,144 @@
+{
+  "rules": [
+    {
+      "text": "`Fore.RED` MUST be the ANSI escape sequence `ESC[31m`.",
+      "section": "Color codes",
+      "symbols": ["AnsiFore"],
+      "grounding": "code",
+      "evidence": {"file": "colorama/ansi.py", "quote": "RED             = 31"}
+    },
+    {
+      "text": "`Back.RED` MUST be the ANSI escape sequence `ESC[41m`.",
+      "section": "Color codes",
+      "symbols": ["AnsiBack"],
+      "grounding": "code",
+      "evidence": {"file": "colorama/ansi.py", "quote": "RED             = 41"}
+    },
+    {
+      "text": "`Style.RESET_ALL` MUST be the ANSI escape sequence `ESC[0m`.",
+      "section": "Color codes",
+      "symbols": ["AnsiStyle"],
+      "grounding": "code",
+      "evidence": {"file": "colorama/ansi.py", "quote": "RESET_ALL = 0"}
+    },
+    {
+      "text": "`Fore.RESET` MUST be the ANSI escape sequence `ESC[39m`.",
+      "section": "Color codes",
+      "symbols": ["AnsiFore"],
+      "grounding": "code",
+      "evidence": {"file": "colorama/ansi.py", "quote": "RESET           = 39"}
+    },
+    {
+      "text": "`Cursor.POS` MUST place the row before the column in the sequence it returns.",
+      "section": "Cursor and screen",
+      "symbols": ["AnsiCursor.POS"],
+      "grounding": "code",
+      "evidence": {"file": "colorama/ansi.py", "quote": "return CSI + str(y) + ';' + str(x) + 'H'"}
+    },
+    {
+      "text": "`clear_screen` MUST clear the whole screen when called without a mode.",
+      "section": "Cursor and screen",
+      "symbols": ["clear_screen"],
+      "grounding": "code",
+      "evidence": {"file": "colorama/ansi.py", "quote": "def clear_screen(mode=2):"}
+    },
+    {
+      "text": "`set_title` MUST wrap the title in an operating-system-command sequence that ends with the bell character.",
+      "section": "Cursor and screen",
+      "symbols": ["set_title"],
+      "grounding": "code",
+      "evidence": {"file": "colorama/ansi.py", "quote": "return OSC + '2;' + title + BEL"}
+    },
+    {
+      "text": "`AnsiToWin32.write` MUST remove ANSI color sequences from the text when `strip` is true.",
+      "section": "Stripping",
+      "symbols": ["AnsiToWin32.write"],
+      "grounding": "documented",
+      "evidence": {"file": "colorama/ansitowin32.py", "quote": "if self.strip or self.convert:"}
+    },
+    {
+      "text": "`AnsiToWin32` MUST strip ANSI sequences by default when the wrapped stream is not a terminal.",
+      "section": "Stripping",
+      "symbols": ["AnsiToWin32.__init__"],
+      "grounding": "documented",
+      "evidence": {"file": "colorama/ansitowin32.py", "quote": "strip = need_conversion or not have_tty"}
+    },
+    {
+      "text": "`AnsiToWin32.should_wrap` MUST be true when any of `convert`, `strip` or `autoreset` is true.",
+      "section": "Stripping",
+      "symbols": ["AnsiToWin32.should_wrap"],
+      "grounding": "code",
+      "evidence": {"file": "colorama/ansitowin32.py", "quote": "return self.convert or self.strip or self.autoreset"}
+    },
+    {
+      "text": "`AnsiToWin32.reset_all` MUST write the reset-all sequence to a stream that is not being stripped.",
+      "section": "Reset",
+      "symbols": ["AnsiToWin32.reset_all"],
+      "grounding": "code",
+      "evidence": {"file": "colorama/ansitowin32.py", "quote": "elif not self.strip and not self.stream.closed:"}
+    },
+    {
+      "text": "`AnsiToWin32.write` MUST reset the colors after each write when `autoreset` is true.",
+      "section": "Reset",
+      "symbols": ["AnsiToWin32.write"],
+      "grounding": "documented",
+      "evidence": {"file": "colorama/ansitowin32.py", "quote": "if self.autoreset:"}
+    },
+    {
+      "text": "`AnsiToWin32.extract_params` MUST default a missing cursor position parameter to 1.",
+      "section": "Parameters",
+      "symbols": ["AnsiToWin32.extract_params"],
+      "grounding": "code",
+      "evidence": {"file": "colorama/ansitowin32.py", "quote": "while len(params) < 2:"}
+    },
+    {
+      "text": "`AnsiToWin32.extract_params` MUST default the parameters of the `J`, `K` and `m` commands to 0.",
+      "section": "Parameters",
+      "symbols": ["AnsiToWin32.extract_params"],
+      "grounding": "code",
+      "evidence": {"file": "colorama/ansitowin32.py", "quote": "if command in 'JKm':"}
+    },
+    {
+      "text": "`AnsiToWin32.extract_params` MUST default the parameters of the `A`, `B`, `C` and `D` commands to 1.",
+      "section": "Parameters",
+      "symbols": ["AnsiToWin32.extract_params"],
+      "grounding": "code",
+      "evidence": {"file": "colorama/ansitowin32.py", "quote": "elif command in 'ABCD':"}
+    },
+    {
+      "text": "`init` MUST raise `ValueError` when `wrap` is false and another option is true.",
+      "section": "Initialisation",
+      "symbols": ["init"],
+      "grounding": "code",
+      "evidence": {"file": "colorama/initialise.py", "quote": "if not wrap and any([autoreset, convert, strip]):"}
+    },
+    {
+      "text": "`wrap_stream` MUST return the stream itself when `wrap` is false.",
+      "section": "Initialisation",
+      "symbols": ["wrap_stream"],
+      "grounding": "code",
+      "evidence": {"file": "colorama/initialise.py", "quote": "if wrap:"}
+    },
+    {
+      "text": "`WinTerm.get_attrs` MUST combine the foreground, the background times 16 and the style into one attribute value.",
+      "section": "Windows attributes",
+      "symbols": ["WinTerm.get_attrs"],
+      "grounding": "code",
+      "evidence": {"file": "colorama/winterm.py", "quote": "return self._fore + self._back * 16 + (self._style | self._light)"}
+    },
+    {
+      "text": "`WinTerm.set_attrs` MUST read the background color from bits 4 to 6 of the attribute value.",
+      "section": "Windows attributes",
+      "symbols": ["WinTerm.set_attrs"],
+      "grounding": "code",
+      "evidence": {"file": "colorama/winterm.py", "quote": "self._back = (value >> 4) & 7"}
+    },
+    {
+      "text": "`WinTerm.set_attrs` MUST read the foreground color from the low 3 bits of the attribute value.",
+      "section": "Windows attributes",
+      "symbols": ["WinTerm.set_attrs"],
+      "grounding": "code",
+      "evidence": {"file": "colorama/winterm.py", "quote": "self._fore = value & 7"}
+    }
+  ]
+}

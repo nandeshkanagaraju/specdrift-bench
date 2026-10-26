@@ -1,0 +1,144 @@
+{
+  "rules": [
+    {
+      "text": "`check` MUST return the number of warnings it found in the source.",
+      "section": "API",
+      "symbols": ["check"],
+      "grounding": "documented",
+      "evidence": {"file": "pyflakes/api.py", "quote": "return len(w.messages)"}
+    },
+    {
+      "text": "`check` MUST report a syntax error to the reporter and return 1 for source that does not parse.",
+      "section": "API",
+      "symbols": ["check"],
+      "grounding": "code",
+      "evidence": {"file": "pyflakes/api.py", "quote": "reporter.syntaxError(filename, e.args[0], e.lineno, e.offset, e.text)"}
+    },
+    {
+      "text": "`isPythonFile` MUST return `False` for a filename that ends with `~`.",
+      "section": "API",
+      "symbols": ["isPythonFile"],
+      "grounding": "code",
+      "evidence": {"file": "pyflakes/api.py", "quote": "if filename.endswith(\"~\"):"}
+    },
+    {
+      "text": "`iterSourceCode` MUST yield a path that is not a directory unchanged.",
+      "section": "API",
+      "symbols": ["iterSourceCode"],
+      "grounding": "documented",
+      "evidence": {"file": "pyflakes/api.py", "quote": "yield path"}
+    },
+    {
+      "text": "`Reporter.flake` MUST write the message to the warning stream followed by a newline.",
+      "section": "Reporter",
+      "symbols": ["Reporter.flake"],
+      "grounding": "code",
+      "evidence": {"file": "pyflakes/reporter.py", "quote": "self._stdout.write('\\n')"}
+    },
+    {
+      "text": "`Reporter.unexpectedError` MUST write the filename and the message, separated by a colon, to the error stream.",
+      "section": "Reporter",
+      "symbols": ["Reporter.unexpectedError"],
+      "grounding": "code",
+      "evidence": {"file": "pyflakes/reporter.py", "quote": "self._stderr.write(f\"{filename}: {msg}\\n\")"}
+    },
+    {
+      "text": "`Reporter.syntaxError` MUST write the filename, line number, column and message to the error stream, leaving out the column when the offset is `None`.",
+      "section": "Reporter",
+      "symbols": ["Reporter.syntaxError"],
+      "grounding": "code",
+      "evidence": {"file": "pyflakes/reporter.py", "quote": "self._stderr.write('%s:%d:%d: %s\\n' %"}
+    },
+    {
+      "text": "`Checker` MUST report a `return` statement that is outside a function.",
+      "section": "Control flow",
+      "symbols": ["Checker.RETURN"],
+      "grounding": "code",
+      "evidence": {"file": "pyflakes/checker.py", "quote": "self.report(messages.ReturnOutsideFunction, node)"}
+    },
+    {
+      "text": "`Checker` MUST report a `yield` expression that is outside a function.",
+      "section": "Control flow",
+      "symbols": ["Checker.YIELD"],
+      "grounding": "code",
+      "evidence": {"file": "pyflakes/checker.py", "quote": "self.report(messages.YieldOutsideFunction, node)"}
+    },
+    {
+      "text": "`Checker` MUST report a `continue` statement that is not inside a loop.",
+      "section": "Control flow",
+      "symbols": ["Checker.CONTINUE"],
+      "grounding": "code",
+      "evidence": {"file": "pyflakes/checker.py", "quote": "self.report(messages.ContinueOutsideLoop, node)"}
+    },
+    {
+      "text": "`Checker` MUST report a `break` statement that is not inside a loop.",
+      "section": "Control flow",
+      "symbols": ["Checker.CONTINUE"],
+      "grounding": "code",
+      "evidence": {"file": "pyflakes/checker.py", "quote": "self.report(messages.BreakOutsideLoop, node)"}
+    },
+    {
+      "text": "`Checker` MUST report an `assert` whose test is a non-empty tuple.",
+      "section": "Statement checks",
+      "symbols": ["Checker.ASSERT"],
+      "grounding": "code",
+      "evidence": {"file": "pyflakes/checker.py", "quote": "self.report(messages.AssertTuple, node)"}
+    },
+    {
+      "text": "`Checker` MUST report an `if` whose test is a non-empty tuple.",
+      "section": "Statement checks",
+      "symbols": ["Checker.IF"],
+      "grounding": "code",
+      "evidence": {"file": "pyflakes/checker.py", "quote": "self.report(messages.IfTuple, node)"}
+    },
+    {
+      "text": "`Checker` MUST report `raise NotImplemented`.",
+      "section": "Statement checks",
+      "symbols": ["Checker.RAISE"],
+      "grounding": "code",
+      "evidence": {"file": "pyflakes/checker.py", "quote": "self.report(messages.RaiseNotImplemented, node)"}
+    },
+    {
+      "text": "`Checker` MUST report an f-string that has no placeholders.",
+      "section": "Statement checks",
+      "symbols": ["Checker.JOINEDSTR"],
+      "grounding": "code",
+      "evidence": {"file": "pyflakes/checker.py", "quote": "self.report(messages.FStringMissingPlaceholders, node)"}
+    },
+    {
+      "text": "`Checker` MUST report an `is` or `is not` comparison against a constant that is not a singleton.",
+      "section": "Statement checks",
+      "symbols": ["Checker.COMPARE"],
+      "grounding": "code",
+      "evidence": {"file": "pyflakes/checker.py", "quote": "self.report(messages.IsLiteral, node)"}
+    },
+    {
+      "text": "`Checker` MUST report each occurrence of a dict key that is repeated with different values.",
+      "section": "Statement checks",
+      "symbols": ["Checker.DICT"],
+      "grounding": "code",
+      "evidence": {"file": "pyflakes/checker.py", "quote": "messages.MultiValueRepeatedKeyLiteral,"}
+    },
+    {
+      "text": "`Checker` MUST report an argument name that is repeated in a function definition.",
+      "section": "Statement checks",
+      "symbols": ["Checker.LAMBDA"],
+      "grounding": "code",
+      "evidence": {"file": "pyflakes/checker.py", "quote": "self.report(messages.DuplicateArgument, node, arg)"}
+    },
+    {
+      "text": "`Checker` MUST report an imported name that is never used.",
+      "section": "Names",
+      "symbols": ["Checker.checkDeadScopes"],
+      "grounding": "code",
+      "evidence": {"file": "pyflakes/checker.py", "quote": "messages.UnusedImport,"}
+    },
+    {
+      "text": "`Checker` MUST report a name that is used but not defined, unless a `NameError` handler protects it.",
+      "section": "Names",
+      "symbols": ["Checker.handleNodeLoad"],
+      "grounding": "code",
+      "evidence": {"file": "pyflakes/checker.py", "quote": "self.report(messages.UndefinedName, node, name)"}
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+R01:
+  symbols:
+  - KeywordProcessor.__setitem__
+  oracle:
+  - oracles/test_r01.py
+R02:
+  symbols:
+  - KeywordProcessor.__setitem__
+  oracle:
+  - oracles/test_r02.py
+R03:
+  symbols:
+  - KeywordProcessor.__setitem__
+  oracle:
+  - oracles/test_r03.py
+R04:
+  symbols:
+  - KeywordProcessor.add_keywords_from_dict
+  oracle:
+  - oracles/test_r04.py
+R05:
+  symbols:
+  - KeywordProcessor.add_keywords_from_list
+  oracle:
+  - oracles/test_r05.py
+R06:
+  symbols:
+  - KeywordProcessor.__setitem__
+  oracle:
+  - oracles/test_r06.py
+R07:
+  symbols:
+  - KeywordProcessor.__contains__
+  oracle:
+  - oracles/test_r07.py
+R08:
+  symbols:
+  - KeywordProcessor.__getitem__
+  oracle:
+  - oracles/test_r08.py
+R09:
+  symbols:
+  - KeywordProcessor.get_all_keywords
+  oracle:
+  - oracles/test_r09.py
+R10:
+  symbols:
+  - KeywordProcessor.__delitem__
+  oracle:
+  - oracles/test_r10.py
+R11:
+  symbols:
+  - KeywordProcessor.__delitem__
+  oracle:
+  - oracles/test_r11.py
+R12:
+  symbols:
+  - KeywordProcessor.__delitem__
+  oracle:
+  - oracles/test_r12.py
+R13:
+  symbols:
+  - KeywordProcessor.__iter__
+  oracle:
+  - oracles/test_r13.py
+R14:
+  symbols:
+  - KeywordProcessor.extract_keywords
+  oracle:
+  - oracles/test_r14.py
+R15:
+  symbols:
+  - KeywordProcessor.extract_keywords
+  oracle:
+  - oracles/test_r15.py
+R16:
+  symbols:
+  - KeywordProcessor.extract_keywords
+  oracle:
+  - oracles/test_r16.py
+R17:
+  symbols:
+  - KeywordProcessor.extract_keywords
+  oracle:
+  - oracles/test_r17.py
+R18:
+  symbols:
+  - KeywordProcessor.get_next_word
+  oracle:
+  - oracles/test_r18.py
+R19:
+  symbols:
+  - KeywordProcessor.replace_keywords
+  oracle:
+  - oracles/test_r19.py
+R20:
+  symbols:
+  - KeywordProcessor.replace_keywords
+  oracle:
+  - oracles/test_r20.py

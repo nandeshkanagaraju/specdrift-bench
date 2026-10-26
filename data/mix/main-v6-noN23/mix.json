@@ -1,0 +1,215 @@
+{
+ "config": {
+  "exclude_operators": [
+   "rename_local",
+   "swap_compare_sides",
+   "not_eq",
+   "expand_augassign",
+   "extract_temp",
+   "reorder_assignments",
+   "decoy_comment",
+   "decoy_docstring",
+   "decoy_dead_branch"
+  ],
+  "exclude_sources": [],
+  "max_group_share": 0.6,
+  "max_per_rule": 6,
+  "paper_share": 0.3,
+  "seed": 17,
+  "shares": {
+   "COMPLIANT": 0.55,
+   "DRIFT": 0.35,
+   "UNCERTAIN": 0.1
+  },
+  "total": 0,
+  "val_fraction": 0.2,
+  "val_projects": [
+   "cachetools"
+  ]
+ },
+ "input_examples": 3510,
+ "inputs": {
+  "data/pilot/cachetools.benign.stage_b.jsonl": "0dd823f10515bf27",
+  "data/pilot/cachetools.focus3.stage_b.jsonl": "570ad6442df4b454",
+  "data/pilot/colorama.benign.stage_b.jsonl": "cc5d4cabdc635cb7",
+  "data/pilot/colorama.focus.stage_b.jsonl": "15f79a488570f655",
+  "data/pilot/flashtext.benign.stage_b.jsonl": "9524b7427e46adee",
+  "data/pilot/flashtext.focus.stage_b.jsonl": "2ba04e2fae0709a4",
+  "data/pilot/iniconfig.benign.stage_b.jsonl": "2cbd5a76e255126b",
+  "data/pilot/iniconfig.focus.stage_b.jsonl": "69c9bd45249befcf",
+  "data/pilot/pyflakes.benign.stage_b.jsonl": "6a4f73a4f9f990b4",
+  "data/pilot/pyflakes.focus.stage_b.jsonl": "8e0b8329f76df62b",
+  "data/pilot/schema.benign.stage_b.jsonl": "2f4ef48faa837b2c",
+  "data/pilot/schema.focus.stage_b.jsonl": "63a82e8bca47541f",
+  "data/pilot/semver.benign.stage_b.jsonl": "184976d1336e94ea",
+  "data/pilot/semver.focus3.stage_b.jsonl": "23b83b15d76bc640",
+  "data/pilot/tabulate.benign.stage_b.jsonl": "1af0ce4dad9e9f0c",
+  "data/pilot/tabulate.focus.stage_b.jsonl": "b3048fd3b1129710",
+  "data/pilot/tomli.benign.stage_b.jsonl": "2655fb3c890e134d",
+  "data/pilot/tomli.focus.stage_b.jsonl": "90753de661f56b92",
+  "data/pilot/voluptuous.benign.stage_b.jsonl": "06780ac4a653b4b3",
+  "data/pilot/voluptuous.focus3.stage_b.jsonl": "9ca613df7267e2c2",
+  "data/pilot/xmltodict.benign.stage_b.jsonl": "9401a17d91215414",
+  "data/pilot/xmltodict.focus.stage_b.jsonl": "a07f3f3870d34bef",
+  "data/stage_a.jsonl": "00245901cd0d55ae"
+ },
+ "skipped": {
+  "excluded operator": 928,
+  "same content as an earlier example": 184,
+  "same example in two inputs": 216
+ },
+ "splits": {
+  "train": {
+   "after_cap": {
+    "paper": {
+     "COMPLIANT": 624,
+     "DRIFT": 372
+    },
+    "synth": {
+     "COMPLIANT": 335,
+     "DRIFT": 482,
+     "UNCERTAIN": 163
+    }
+   },
+   "available": {
+    "COMPLIANT": 972,
+    "DRIFT": 890,
+    "UNCERTAIN": 163
+   },
+   "binding_label": {
+    "paper": "COMPLIANT",
+    "synth": "COMPLIANT"
+   },
+   "categories": {
+    "D1": 11,
+    "D2": 39,
+    "D3": 48,
+    "D4": 67,
+    "D5": 15,
+    "D6": 11,
+    "D9": 22,
+    "N1": 121,
+    "abstain:dropped_chunk": 58,
+    "abstain:retrieval_miss": 33,
+    "hardneg:wrong_rule": 213,
+    "paper:correct": 167,
+    "paper:excess logic": 10,
+    "paper:function misuse": 5,
+    "paper:missing logic": 24,
+    "paper:operator misuse": 22,
+    "paper:value misuse": 22,
+    "paper:variable misuse": 24
+   },
+   "dropped_sources": [],
+   "examples": 912,
+   "groups": {
+    "colorama": 76,
+    "flashtext": 68,
+    "iniconfig": 75,
+    "paper:humaneval": 133,
+    "paper:mbpp": 132,
+    "paper:quixbugs": 9,
+    "pyflakes": 55,
+    "schema": 61,
+    "semver": 49,
+    "tabulate": 31,
+    "tomli": 68,
+    "voluptuous": 82,
+    "xmltodict": 73
+   },
+   "label_shares": {
+    "COMPLIANT": 0.549,
+    "DRIFT": 0.351,
+    "UNCERTAIN": 0.1
+   },
+   "labels": {
+    "COMPLIANT": 501,
+    "DRIFT": 320,
+    "UNCERTAIN": 91
+   },
+   "largest_group_share": {
+    "COMPLIANT": 0.16167664670658682,
+    "DRIFT": 0.1625,
+    "UNCERTAIN": 0.10989010989010989
+   },
+   "rules_with_drift": 127,
+   "sources": {
+    "hardneg": 349,
+    "paper": 274,
+    "synth": 289
+   }
+  },
+  "val": {
+   "after_cap": {
+    "paper": {
+     "COMPLIANT": 50,
+     "DRIFT": 26
+    },
+    "synth": {
+     "COMPLIANT": 30,
+     "DRIFT": 38,
+     "UNCERTAIN": 12
+    }
+   },
+   "available": {
+    "COMPLIANT": 80,
+    "DRIFT": 65,
+    "UNCERTAIN": 12
+   },
+   "binding_label": {
+    "paper": "COMPLIANT",
+    "synth": "COMPLIANT"
+   },
+   "categories": {
+    "D1": 2,
+    "D2": 4,
+    "D3": 5,
+    "D4": 4,
+    "D5": 2,
+    "D9": 2,
+    "N1": 16,
+    "abstain:dropped_chunk": 6,
+    "abstain:retrieval_miss": 2,
+    "hardneg:wrong_rule": 14,
+    "paper:correct": 15,
+    "paper:excess logic": 1,
+    "paper:missing logic": 2,
+    "paper:operator misuse": 2,
+    "paper:value misuse": 3,
+    "paper:variable misuse": 1
+   },
+   "dropped_sources": [],
+   "examples": 81,
+   "groups": {
+    "cachetools": 57,
+    "paper:humaneval": 11,
+    "paper:mbpp": 11,
+    "paper:quixbugs": 2
+   },
+   "label_shares": {
+    "COMPLIANT": 0.556,
+    "DRIFT": 0.346,
+    "UNCERTAIN": 0.099
+   },
+   "labels": {
+    "COMPLIANT": 45,
+    "DRIFT": 28,
+    "UNCERTAIN": 8
+   },
+   "largest_group_share": {
+    "COMPLIANT": 0.6666666666666666,
+    "DRIFT": 0.6785714285714286,
+    "UNCERTAIN": 1.0
+   },
+   "rules_with_drift": 14,
+   "sources": {
+    "hardneg": 31,
+    "paper": 24,
+    "synth": 26
+   }
+  }
+ },
+ "val_projects": [
+  "cachetools"
+ ]
+}

@@ -1,0 +1,97 @@
+{
+ "loss": "Compute loss on the completion (assistant message) only; the prompt tokens are context.",
+ "prompt_version": "v1",
+ "token_method": "estimate: characters / 3.5 over system + user + completion; no tokenizer was available offline, and the chat template adds roughly 10 to 20 tokens per example on top",
+ "train": {
+  "approx_tokens": {
+   "max": 3072,
+   "mean": 994.7,
+   "median": 699,
+   "p95": 2961
+  },
+  "categories": {
+   "D1": 14,
+   "D2": 62,
+   "D3": 76,
+   "D4": 125,
+   "D5": 24,
+   "D6": 21,
+   "D9": 31,
+   "N1": 121,
+   "N2": 119,
+   "N3": 125,
+   "abstain:dropped_chunk": 99,
+   "abstain:retrieval_miss": 53,
+   "hardneg:wrong_rule": 190,
+   "paper:correct": 277,
+   "paper:excess logic": 16,
+   "paper:function misuse": 5,
+   "paper:missing logic": 37,
+   "paper:operator misuse": 40,
+   "paper:value misuse": 39,
+   "paper:variable misuse": 40
+  },
+  "examples": 1514,
+  "labels": {
+   "COMPLIANT": 832,
+   "DRIFT": 530,
+   "UNCERTAIN": 152
+  },
+  "over_limit": {
+   "count": 0,
+   "limit": 3072,
+   "share": 0.0
+  },
+  "refused": 0,
+  "sources": {
+   "hardneg": 585,
+   "paper": 454,
+   "synth": 475
+  }
+ },
+ "val": {
+  "approx_tokens": {
+   "max": 1119,
+   "mean": 581.6,
+   "median": 552,
+   "p95": 813
+  },
+  "categories": {
+   "D1": 5,
+   "D2": 7,
+   "D3": 7,
+   "D4": 6,
+   "D5": 2,
+   "D9": 3,
+   "N1": 15,
+   "N2": 7,
+   "N3": 12,
+   "abstain:dropped_chunk": 9,
+   "abstain:retrieval_miss": 4,
+   "hardneg:wrong_rule": 12,
+   "paper:correct": 23,
+   "paper:excess logic": 2,
+   "paper:missing logic": 2,
+   "paper:operator misuse": 3,
+   "paper:value misuse": 4,
+   "paper:variable misuse": 4
+  },
+  "examples": 127,
+  "labels": {
+   "COMPLIANT": 69,
+   "DRIFT": 45,
+   "UNCERTAIN": 13
+  },
+  "over_limit": {
+   "count": 0,
+   "limit": 3072,
+   "share": 0.0
+  },
+  "refused": 0,
+  "sources": {
+   "hardneg": 49,
+   "paper": 38,
+   "synth": 40
+  }
+ }
+}

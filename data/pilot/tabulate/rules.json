@@ -1,0 +1,144 @@
+{
+  "rules": [
+    {
+      "text": "`tabulate` MUST align numeric columns with `numalign` and all other columns with `stralign`.",
+      "section": "Column alignment",
+      "symbols": ["tabulate"],
+      "grounding": "documented",
+      "evidence": {"file": "tabulate/__init__.py", "quote": "aligns = [numalign if ct in [int, float] else stralign for ct in coltypes]"}
+    },
+    {
+      "text": "`tabulate` MUST pad numbers aligned as `decimal` so that their decimal points line up.",
+      "section": "Column alignment",
+      "symbols": ["_align_column_choose_padfn"],
+      "grounding": "documented",
+      "evidence": {"file": "tabulate/__init__.py", "quote": "maxdecimals = max(decimals)"}
+    },
+    {
+      "text": "`tabulate` MUST replace a `None` value with `missingval`.",
+      "section": "Missing values",
+      "symbols": ["_format"],
+      "grounding": "documented",
+      "evidence": {"file": "tabulate/__init__.py", "quote": "return missingval"}
+    },
+    {
+      "text": "`tabulate` MUST format float values with `floatfmt`, which defaults to `g`.",
+      "section": "Number formatting",
+      "symbols": ["_format"],
+      "grounding": "documented",
+      "evidence": {"file": "tabulate/__init__.py", "quote": "return format(float(val), floatfmt)"}
+    },
+    {
+      "text": "`tabulate` MUST format integer values with `intfmt`.",
+      "section": "Number formatting",
+      "symbols": ["_format"],
+      "grounding": "documented",
+      "evidence": {"file": "tabulate/__init__.py", "quote": "return format(val, intfmt)"}
+    },
+    {
+      "text": "`tabulate` MUST treat a string that looks like a whole number as an integer.",
+      "section": "Number parsing",
+      "symbols": ["_type"],
+      "grounding": "documented",
+      "evidence": {"file": "tabulate/__init__.py", "quote": "return int"}
+    },
+    {
+      "text": "`tabulate` MUST keep the original text of a column when number parsing is disabled for it with `disable_numparse`.",
+      "section": "Number parsing",
+      "symbols": ["tabulate"],
+      "grounding": "documented",
+      "evidence": {"file": "tabulate/__init__.py", "quote": "numparses = _expand_numparse(disable_numparse, len(cols))"}
+    },
+    {
+      "text": "`tabulate` MUST use the keys of a dict of columns as the headers when `headers=\"keys\"`.",
+      "section": "Input data",
+      "symbols": ["_normalize_tabular_data"],
+      "grounding": "documented",
+      "evidence": {"file": "tabulate/__init__.py", "quote": "headers = list(map(str, keys))"}
+    },
+    {
+      "text": "`tabulate` MUST take the headers from the first row, leaving it out of the data, when `headers=\"firstrow\"`.",
+      "section": "Input data",
+      "symbols": ["_normalize_tabular_data"],
+      "grounding": "documented",
+      "evidence": {"file": "tabulate/__init__.py", "quote": "rows = rows[1:]"}
+    },
+    {
+      "text": "`tabulate` MUST build the columns of a list of dicts from the keys in first-seen order, with a missing key giving a `None` cell.",
+      "section": "Input data",
+      "symbols": ["_normalize_tabular_data"],
+      "grounding": "documented",
+      "evidence": {"file": "tabulate/__init__.py", "quote": "rows = [[row.get(k) for k in keys] for row in rows]"}
+    },
+    {
+      "text": "`tabulate` MUST prepend a row-index column when `showindex=\"always\"`.",
+      "section": "Row index",
+      "symbols": ["_normalize_tabular_data"],
+      "grounding": "documented",
+      "evidence": {"file": "tabulate/__init__.py", "quote": "elif showindex == \"always\" or (_bool(showindex) and not showindex_is_a_str):"}
+    },
+    {
+      "text": "`tabulate` MUST raise `ValueError` when an explicit `showindex` sequence does not have one value per row.",
+      "section": "Row index",
+      "symbols": ["_prepend_row_index"],
+      "grounding": "code",
+      "evidence": {"file": "tabulate/__init__.py", "quote": "\"index must be as long as the number of data rows: \""}
+    },
+    {
+      "text": "`tabulate` MUST raise `TypeError` when the tabular data is not iterable.",
+      "section": "Input data",
+      "symbols": ["_normalize_tabular_data"],
+      "grounding": "code",
+      "evidence": {"file": "tabulate/__init__.py", "quote": "raise TypeError(err_msg) from e"}
+    },
+    {
+      "text": "`tabulate` MUST return an empty string for a table that has no headers and no rows.",
+      "section": "Edge cases",
+      "symbols": ["_format_table"],
+      "grounding": "code",
+      "evidence": {"file": "tabulate/__init__.py", "quote": "else:  # a completely empty table"}
+    },
+    {
+      "text": "`tabulate` MUST draw a horizontal line in place of a row that is `SEPARATING_LINE`.",
+      "section": "Separating lines",
+      "symbols": ["_format_table"],
+      "grounding": "documented",
+      "evidence": {"file": "tabulate/__init__.py", "quote": "if _is_separating_line(row):"}
+    },
+    {
+      "text": "`simple_separated_format` MUST return a format whose header and data rows join the cells with the given separator.",
+      "section": "Custom formats",
+      "symbols": ["simple_separated_format"],
+      "grounding": "documented",
+      "evidence": {"file": "tabulate/__init__.py", "quote": "headerrow=DataRow(\"\", separator, \"\"),"}
+    },
+    {
+      "text": "The `pipe` format MUST mark a right-aligned or decimal-aligned column with a trailing colon in its header line.",
+      "section": "Formats",
+      "symbols": ["_pipe_segment_with_colons"],
+      "grounding": "documented",
+      "evidence": {"file": "tabulate/__init__.py", "quote": "return (\"-\" * (w - 1)) + \":\""}
+    },
+    {
+      "text": "`tabulate` MUST apply a single integer `maxcolwidths` to every column.",
+      "section": "Wrapping",
+      "symbols": ["tabulate"],
+      "grounding": "documented",
+      "evidence": {"file": "tabulate/__init__.py", "quote": "maxcolwidths = _expand_iterable(maxcolwidths, num_cols, maxcolwidths)"}
+    },
+    {
+      "text": "`tabulate` MUST let `colalign` override the alignment of an individual column.",
+      "section": "Column alignment",
+      "symbols": ["tabulate"],
+      "grounding": "documented",
+      "evidence": {"file": "tabulate/__init__.py", "quote": "aligns[idx] = align"}
+    },
+    {
+      "text": "The `html` format MUST escape the cell text.",
+      "section": "Formats",
+      "symbols": ["_html_row_with_attrs"],
+      "grounding": "documented",
+      "evidence": {"file": "tabulate/__init__.py", "quote": "\"<{0}{1}>{2}</{0}>\".format(celltag, alignment.get(a, \"\"), htmlescape(c))"}
+    }
+  ]
+}
