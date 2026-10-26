@@ -1,0 +1,184 @@
+{
+ "config": {
+  "exclude_operators": [],
+  "exclude_sources": [],
+  "max_group_share": 0.6,
+  "max_per_rule": 6,
+  "paper_share": 0.3,
+  "seed": 17,
+  "shares": {
+   "COMPLIANT": 0.55,
+   "DRIFT": 0.35,
+   "UNCERTAIN": 0.1
+  },
+  "total": 0,
+  "val_fraction": 0.2,
+  "val_projects": [
+   "cachetools"
+  ]
+ },
+ "input_examples": 2010,
+ "inputs": {
+  "data/pilot/cachetools.benign.stage_b.jsonl": "0dd823f10515bf27",
+  "data/pilot/cachetools.focus3.stage_b.jsonl": "570ad6442df4b454",
+  "data/pilot/semver.benign.stage_b.jsonl": "184976d1336e94ea",
+  "data/pilot/semver.focus3.stage_b.jsonl": "23b83b15d76bc640",
+  "data/pilot/voluptuous.benign.stage_b.jsonl": "06780ac4a653b4b3",
+  "data/pilot/voluptuous.focus3.stage_b.jsonl": "9ca613df7267e2c2",
+  "data/stage_a.jsonl": "00245901cd0d55ae"
+ },
+ "skipped": {
+  "same content as an earlier example": 140,
+  "same example in two inputs": 62
+ },
+ "splits": {
+  "train": {
+   "after_cap": {
+    "paper": {
+     "COMPLIANT": 624,
+     "DRIFT": 372
+    },
+    "synth": {
+     "COMPLIANT": 181,
+     "DRIFT": 114,
+     "UNCERTAIN": 46
+    }
+   },
+   "available": {
+    "COMPLIANT": 994,
+    "DRIFT": 506,
+    "UNCERTAIN": 46
+   },
+   "binding_label": {
+    "paper": "COMPLIANT",
+    "synth": "DRIFT"
+   },
+   "categories": {
+    "D1": 9,
+    "D2": 20,
+    "D3": 10,
+    "D4": 49,
+    "D5": 1,
+    "D6": 5,
+    "D9": 3,
+    "N1": 21,
+    "N2": 45,
+    "N3": 50,
+    "abstain:dropped_chunk": 31,
+    "abstain:retrieval_miss": 10,
+    "hardneg:wrong_rule": 36,
+    "paper:correct": 76,
+    "paper:excess logic": 4,
+    "paper:function misuse": 4,
+    "paper:missing logic": 11,
+    "paper:operator misuse": 10,
+    "paper:value misuse": 9,
+    "paper:variable misuse": 10
+   },
+   "dropped_sources": [],
+   "examples": 414,
+   "groups": {
+    "paper:humaneval": 58,
+    "paper:mbpp": 57,
+    "paper:quixbugs": 9,
+    "semver": 135,
+    "voluptuous": 155
+   },
+   "label_shares": {
+    "COMPLIANT": 0.551,
+    "DRIFT": 0.35,
+    "UNCERTAIN": 0.099
+   },
+   "labels": {
+    "COMPLIANT": 228,
+    "DRIFT": 145,
+    "UNCERTAIN": 41
+   },
+   "largest_group_share": {
+    "COMPLIANT": 0.3333333333333333,
+    "DRIFT": 0.4,
+    "UNCERTAIN": 0.5121951219512195
+   },
+   "rules_with_drift": 29,
+   "sources": {
+    "hardneg": 159,
+    "paper": 124,
+    "synth": 131
+   }
+  },
+  "val": {
+   "after_cap": {
+    "paper": {
+     "COMPLIANT": 50,
+     "DRIFT": 26
+    },
+    "synth": {
+     "COMPLIANT": 89,
+     "DRIFT": 38,
+     "UNCERTAIN": 19
+    }
+   },
+   "available": {
+    "COMPLIANT": 178,
+    "DRIFT": 65,
+    "UNCERTAIN": 19
+   },
+   "binding_label": {
+    "paper": "COMPLIANT",
+    "synth": "DRIFT"
+   },
+   "categories": {
+    "D1": 8,
+    "D2": 9,
+    "D3": 7,
+    "D4": 9,
+    "D5": 2,
+    "D9": 3,
+    "N1": 8,
+    "N2": 18,
+    "N3": 22,
+    "abstain:dropped_chunk": 13,
+    "abstain:retrieval_miss": 3,
+    "hardneg:wrong_rule": 11,
+    "paper:correct": 30,
+    "paper:excess logic": 2,
+    "paper:missing logic": 2,
+    "paper:operator misuse": 6,
+    "paper:value misuse": 4,
+    "paper:variable misuse": 5
+   },
+   "dropped_sources": [],
+   "examples": 162,
+   "groups": {
+    "cachetools": 113,
+    "paper:humaneval": 21,
+    "paper:mbpp": 26,
+    "paper:quixbugs": 2
+   },
+   "label_shares": {
+    "COMPLIANT": 0.549,
+    "DRIFT": 0.352,
+    "UNCERTAIN": 0.099
+   },
+   "labels": {
+    "COMPLIANT": 89,
+    "DRIFT": 57,
+    "UNCERTAIN": 16
+   },
+   "largest_group_share": {
+    "COMPLIANT": 0.6629213483146067,
+    "DRIFT": 0.6666666666666666,
+    "UNCERTAIN": 1.0
+   },
+   "rules_with_drift": 14,
+   "sources": {
+    "hardneg": 61,
+    "paper": 49,
+    "synth": 52
+   }
+  }
+ },
+ "val_projects": [
+  "cachetools"
+ ]
+}

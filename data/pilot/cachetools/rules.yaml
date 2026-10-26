@@ -1,0 +1,96 @@
+R01:
+  symbols:
+  - Cache.__init__
+  oracle:
+  - oracles/test_r01.py
+R02:
+  symbols:
+  - Cache.__setitem__
+  oracle:
+  - oracles/test_r02.py
+R03:
+  symbols:
+  - Cache.__setitem__
+  oracle:
+  - oracles/test_r03.py
+R04:
+  symbols:
+  - Cache.__setitem__
+  oracle:
+  - oracles/test_r04.py
+R05:
+  symbols:
+  - Cache.pop
+  oracle:
+  - oracles/test_r05.py
+R06:
+  symbols:
+  - Cache.setdefault
+  oracle:
+  - oracles/test_r06.py
+R07:
+  symbols:
+  - Cache.clear
+  oracle:
+  - oracles/test_r07.py
+R08:
+  symbols:
+  - FIFOCache.popitem
+  oracle:
+  - oracles/test_r08.py
+R09:
+  symbols:
+  - FIFOCache.__setitem__
+  oracle:
+  - oracles/test_r09.py
+R10:
+  symbols:
+  - LRUCache.__getitem__
+  oracle:
+  - oracles/test_r10.py
+R11:
+  symbols:
+  - LFUCache.popitem
+  oracle:
+  - oracles/test_r11.py
+R12:
+  symbols:
+  - LRUCache.popitem
+  oracle:
+  - oracles/test_r12.py
+R13:
+  symbols:
+  - TTLCache.__contains__
+  oracle:
+  - oracles/test_r13.py
+R14:
+  symbols:
+  - TTLCache.__getitem__
+  oracle:
+  - oracles/test_r14.py
+R15:
+  symbols:
+  - TTLCache.expire
+  oracle:
+  - oracles/test_r15.py
+R16:
+  symbols:
+  - hashkey
+  oracle:
+  - oracles/test_r16.py
+R17:
+  symbols:
+  - hashkey
+  - <module>
+  oracle:
+  - oracles/test_r17.py
+R18:
+  symbols:
+  - typedkey
+  oracle:
+  - oracles/test_r18.py
+R19:
+  symbols:
+  - methodkey
+  oracle:
+  - oracles/test_r19.py

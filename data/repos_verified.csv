@@ -1,0 +1,31 @@
+repo,url,sha,licence,stars,loc,tests,verdict,reason,description
+martinblech/xmltodict,https://github.com/martinblech/xmltodict,6e29fba282e68631034dd2722a413b4e35276584,MIT,5760,581,134,accepted,,Python module that makes working with XML feel like you are working with JSON
+vi3k6i5/flashtext,https://github.com/vi3k6i5/flashtext,f49274459bc9879789c6e6bb64bf05af755de0b3,MIT,5706,666,39,accepted,,Extract Keywords from sentence or Replace keywords in sentences.
+tartley/colorama,https://github.com/tartley/colorama,841634ed2a0da5d5ac2d867db533da8131266cb2,BSD-3-Clause,3796,659,38,accepted,,Simple cross-platform colored terminal text in Python
+keleshev/schema,https://github.com/keleshev/schema,310a1239b62f500284ce3bd91b7dabf70467f23e,MIT,2942,799,124,accepted,,Schema validation just got Pythonic
+tkem/cachetools,https://github.com/tkem/cachetools,6f23e2a7b75a42d30cb9d890ab3ca4059ee01bfd,MIT,2790,1314,366,accepted,,Extensible memoizing collections and decorators
+astanin/python-tabulate,https://github.com/astanin/python-tabulate,268615a5c27dc40e5c22454c07b44d5c50410da0,MIT,2587,2496,315,accepted,,"Pretty-print tabular data in Python, a library and a command-line utility. Repository migrated from "
+alecthomas/voluptuous,https://github.com/alecthomas/voluptuous,44593ce7c330faf9418252c4b5448f4736144a7f,BSD-3-Clause,1853,2637,181,accepted,,"CONTRIBUTIONS ONLY: Voluptuous, despite the name, is a Python data validation library."
+PyCQA/pyflakes,https://github.com/PyCQA/pyflakes,f0a8b98156ba1645a45bc7d77dcfe79dbbf11f10,MIT,1463,2172,760,accepted,,A simple program which checks Python source files for errors
+hukkin/tomli,https://github.com/hukkin/tomli,43a86ade8b795c6ef9b4ec53372a607cd1ed426f,MIT,575,718,17,accepted,,A lil' TOML parser
+python-semver/python-semver,https://github.com/python-semver/python-semver,9ef41316dbe85f7d0fae6e396c45a1bbf69ebb29,BSD-3-Clause,526,1266,490,accepted,,Python package to work with Semantic Versioning (https://semver.org/)
+pytest-dev/iniconfig,https://github.com/pytest-dev/iniconfig,316fbfaf2752d89326e1e75b45cd070f5b5ace9a,MIT,63,331,54,accepted,,
+jd/tenacity,https://github.com/jd/tenacity,32ac68f0941319c0d2f4fb927f96e4ee29bb46c6,Apache-2.0,8811,1681,0,rejected,round 1: tests crash: 1 error in 0.10s,Retrying library for Python
+kennethreitz/records,https://github.com/kennethreitz/records,ea4273695cee6da42edf1cb294d1f2a4505470fc,ISC,7215,389,0,rejected,round 1: tests crash: E   ModuleNotFoundError: No module named 'tablib',SQL for Humans™
+facebook/PathPicker,https://github.com/facebook/PathPicker,c1dd1f7fc4dae5aa807218cf086942f1c9241783,MIT,5236,2012,0,rejected,round 1: tests killed: PermissionError: [Errno 1] Operation not permitted: '/Users/nandeshjeya/.cache/fpp',"PathPicker accepts a wide range of input -- output from git commands, grep results, searches -- pret"
+sripathikrishnan/redis-rdb-tools,https://github.com/sripathikrishnan/redis-rdb-tools,548b11ec3c81a603f5b321228d07a61a0b940159,MIT,5197,2196,0,rejected,round 1: tests crash: no tests ran in 0.00s,"Parse Redis dump.rdb files, Analyze Memory, and Export Data to JSON"
+Suor/funcy,https://github.com/Suor/funcy,e8febffd57f80db8ca3a55fb1edd0feee2290d61,BSD-3-Clause,3506,1867,0,rejected,round 1: tests crash: 1 error in 0.13s,A fancy and practical functional tools lib
+pallets/itsdangerous,https://github.com/pallets/itsdangerous,672971d66a2ef9f85151e53283113f33d642dabd,BSD-3-Clause,3141,868,0,rejected,round 1: tests crash: 1 error in 0.06s,Safely pass trusted data to untrusted environments and back.
+cdgriffith/Box,https://github.com/cdgriffith/Box,a4c10e977b574114613431394b30412b50aaacce,MIT,2840,2249,0,rejected,round 1: tests crash: 1 error in 0.15s,Python dictionaries with advanced dot notation access
+jmespath/jmespath.py,https://github.com/jmespath/jmespath.py,2812594e69d43098ef60f81f4efc404c071b0418,MIT,2453,1274,0,rejected,round 1: tests crash: 1 error in 0.02s,JMESPath is a query language for JSON.
+pallets-eco/blinker,https://github.com/pallets-eco/blinker,c3364059663df1ddce32799d6b1922af89a345f6,MIT,2106,452,0,rejected,round 1: tests crash: no tests ran in 0.04s,A fast Python in-process signal/event dispatching system.
+pytest-dev/pluggy,https://github.com/pytest-dev/pluggy,49c07369faedfbf8689dc2d86c3330d48ea286ad,MIT,1705,1623,0,rejected,round 1: tests killed: KeyError: 'Repository',A minimalist production ready plugin system
+kislyuk/argcomplete,https://github.com/kislyuk/argcomplete,61c629239551fb3af1d59b0bf51852b2b3f7b61d,Apache-2.0,1587,1462,0,rejected,round 1: tests crash: 1 error in 0.02s,"Python and tab completion, better together."
+uiri/toml,https://github.com/uiri/toml,65bab7582ce14c55cdeec2244c65ea23039c9e6f,MIT,1138,1261,0,rejected,round 1: tests crash: 1 error in 0.01s,Python lib for TOML
+python-validators/validators,https://github.com/python-validators/validators,22786cc6e7283a0fa452c179797e447f798db9f0,MIT,1131,2487,0,rejected,round 1: tests crash: ImportError: Do `pip install validators[crypto-eth-addresses]` to perform `eth_address` ,Python Data Validation for Humans™.
+ActiveState/appdirs,https://github.com/ActiveState/appdirs,8734277956c1df3b85385e6b308e954910533884,MIT,1082,495,3,rejected,only 3 tests,"A small Python module for determining appropriate platform-specific dirs, e.g. a ""user data dir""."
+python-humanize/humanize,https://github.com/python-humanize/humanize,a2006eabf832081cc60d8579d9d53789ed8d8d0b,MIT,765,1315,0,rejected,round 1: tests crash: 1 error in 0.03s,Python humanize functions
+pallets/markupsafe,https://github.com/pallets/markupsafe,4e111271b1494995708a9e878a10829b5e10c7ba,BSD-3-Clause,699,281,0,rejected,281 source lines is outside 300 to 3000,Safely add untrusted strings to HTML/XML markup.
+scrapy/w3lib,https://github.com/scrapy/w3lib,eaefacddb86250ef302e680453e3887072b47c9b,BSD-3-Clause,418,2329,0,rejected,"round 1: tests crash: 4 skipped, 1 error in 0.17s",Python library of web-related functions
+stub42/pytz,https://github.com/stub42/pytz,21be17fe9b5334f51ac145d08dfc089b3c40b96f,MIT,396,1161,0,rejected,round 1: tests crash: 1 error in 0.03s,pytz Python historical timezone library and database
+hukkin/tomli-w,https://github.com/hukkin/tomli-w,1210bb6f5708a4dc084cc3deb4a3a3e3939f4d6d,MIT,146,193,0,rejected,193 source lines is outside 300 to 3000,A lil' TOML writer (counterpart to https://github.com/hukkin/tomli)

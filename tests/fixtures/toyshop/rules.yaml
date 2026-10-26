@@ -1,0 +1,13 @@
+# Which code each rule is about, and the pytest file that decides whether the code still obeys it.
+R01:
+  symbols: [check_age, "<module>"]
+  oracle: [oracles/test_r01.py]
+R02:
+  symbols: [discount]
+  oracle: [oracles/test_r02.py]
+R03:
+  symbols: [total_price, "<module>"]
+  oracle: [oracles/test_r03.py]
+R04:
+  symbols: [shipping, "<module>"]
+  oracle: [oracles/test_r04.py]

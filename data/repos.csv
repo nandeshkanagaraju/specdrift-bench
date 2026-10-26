@@ -1,0 +1,72 @@
+repo,url,sha,licence,stars,loc,tests,verdict,reason,description
+jd/tenacity,https://github.com/jd/tenacity,32ac68f0941319c0d2f4fb927f96e4ee29bb46c6,Apache-2.0,8811,2065,7,candidate,,Retrying library for Python
+kennethreitz/records,https://github.com/kennethreitz/records,ea4273695cee6da42edf1cb294d1f2a4505470fc,ISC,7215,433,6,candidate,dependencies not declared in a file we can read,SQL for Humans™
+martinblech/xmltodict,https://github.com/martinblech/xmltodict,6e29fba282e68631034dd2722a413b4e35276584,MIT,5760,601,3,candidate,,Python module that makes working with XML feel like you are working with JSON
+vi3k6i5/flashtext,https://github.com/vi3k6i5/flashtext,f49274459bc9879789c6e6bb64bf05af755de0b3,MIT,5706,836,15,candidate,,Extract Keywords from sentence or Replace keywords in sentences.
+facebook/PathPicker,https://github.com/facebook/PathPicker,c1dd1f7fc4dae5aa807218cf086942f1c9241783,MIT,5236,2356,9,candidate,,"PathPicker accepts a wide range of input -- output from git commands, grep results, searches -- pret"
+sripathikrishnan/redis-rdb-tools,https://github.com/sripathikrishnan/redis-rdb-tools,548b11ec3c81a603f5b321228d07a61a0b940159,MIT,5197,2728,9,candidate,dependencies not declared in a file we can read,"Parse Redis dump.rdb files, Analyze Memory, and Export Data to JSON"
+tartley/colorama,https://github.com/tartley/colorama,841634ed2a0da5d5ac2d867db533da8131266cb2,BSD-3-Clause,3796,972,7,candidate,,Simple cross-platform colored terminal text in Python
+Suor/funcy,https://github.com/Suor/funcy,e8febffd57f80db8ca3a55fb1edd0feee2290d61,BSD-3-Clause,3506,1904,17,candidate,,A fancy and practical functional tools lib
+pallets/itsdangerous,https://github.com/pallets/itsdangerous,672971d66a2ef9f85151e53283113f33d642dabd,BSD-3-Clause,3141,1043,6,candidate,,Safely pass trusted data to untrusted environments and back.
+keleshev/schema,https://github.com/keleshev/schema,310a1239b62f500284ce3bd91b7dabf70467f23e,MIT,2942,944,2,candidate,dependencies not declared in a file we can read,Schema validation just got Pythonic
+cdgriffith/Box,https://github.com/cdgriffith/Box,a4c10e977b574114613431394b30412b50aaacce,MIT,2840,2393,8,candidate,,Python dictionaries with advanced dot notation access
+tkem/cachetools,https://github.com/tkem/cachetools,6f23e2a7b75a42d30cb9d890ab3ca4059ee01bfd,MIT,2790,1326,14,candidate,,Extensible memoizing collections and decorators
+astanin/python-tabulate,https://github.com/astanin/python-tabulate,268615a5c27dc40e5c22454c07b44d5c50410da0,MIT,2587,2841,9,candidate,,"Pretty-print tabular data in Python, a library and a command-line utility. Repository migrated from "
+jmespath/jmespath.py,https://github.com/jmespath/jmespath.py,2812594e69d43098ef60f81f4efc404c071b0418,MIT,2453,1613,8,candidate,,JMESPath is a query language for JSON.
+pallets-eco/blinker,https://github.com/pallets-eco/blinker,c3364059663df1ddce32799d6b1922af89a345f6,MIT,2106,528,3,candidate,,A fast Python in-process signal/event dispatching system.
+alecthomas/voluptuous,https://github.com/alecthomas/voluptuous,44593ce7c330faf9418252c4b5448f4736144a7f,BSD-3-Clause,1853,2653,3,candidate,,"CONTRIBUTIONS ONLY: Voluptuous, despite the name, is a Python data validation library."
+pytest-dev/pluggy,https://github.com/pytest-dev/pluggy,49c07369faedfbf8689dc2d86c3330d48ea286ad,MIT,1705,2078,11,candidate,,A minimalist production ready plugin system
+kislyuk/argcomplete,https://github.com/kislyuk/argcomplete,61c629239551fb3af1d59b0bf51852b2b3f7b61d,Apache-2.0,1587,2028,7,candidate,,"Python and tab completion, better together."
+PyCQA/pyflakes,https://github.com/PyCQA/pyflakes,f0a8b98156ba1645a45bc7d77dcfe79dbbf11f10,MIT,1463,2476,15,candidate,,A simple program which checks Python source files for errors
+uiri/toml,https://github.com/uiri/toml,65bab7582ce14c55cdeec2244c65ea23039c9e6f,MIT,1138,1264,4,candidate,,Python lib for TOML
+python-validators/validators,https://github.com/python-validators/validators,22786cc6e7283a0fa452c179797e447f798db9f0,MIT,1131,2618,31,candidate,,Python Data Validation for Humans™.
+ActiveState/appdirs,https://github.com/ActiveState/appdirs,8734277956c1df3b85385e6b308e954910533884,MIT,1082,613,2,candidate,,"A small Python module for determining appropriate platform-specific dirs, e.g. a ""user data dir""."
+python-humanize/humanize,https://github.com/python-humanize/humanize,a2006eabf832081cc60d8579d9d53789ed8d8d0b,MIT,765,1236,7,candidate,,Python humanize functions
+pallets/markupsafe,https://github.com/pallets/markupsafe,4e111271b1494995708a9e878a10829b5e10c7ba,BSD-3-Clause,699,349,7,candidate,,Safely add untrusted strings to HTML/XML markup.
+hukkin/tomli,https://github.com/hukkin/tomli,43a86ade8b795c6ef9b4ec53372a607cd1ed426f,MIT,575,883,5,candidate,,A lil' TOML parser
+python-semver/python-semver,https://github.com/python-semver/python-semver,9ef41316dbe85f7d0fae6e396c45a1bbf69ebb29,BSD-3-Clause,526,1240,25,candidate,,Python package to work with Semantic Versioning (https://semver.org/)
+scrapy/w3lib,https://github.com/scrapy/w3lib,eaefacddb86250ef302e680453e3887072b47c9b,BSD-3-Clause,418,2880,12,candidate,,Python library of web-related functions
+stub42/pytz,https://github.com/stub42/pytz,21be17fe9b5334f51ac145d08dfc089b3c40b96f,MIT,396,1590,4,candidate,dependencies not declared in a file we can read,pytz Python historical timezone library and database
+hukkin/tomli-w,https://github.com/hukkin/tomli-w,1210bb6f5708a4dc084cc3deb4a3a3e3939f4d6d,MIT,146,238,7,candidate,,A lil' TOML writer (counterpart to https://github.com/hukkin/tomli)
+pytest-dev/iniconfig,https://github.com/pytest-dev/iniconfig,316fbfaf2752d89326e1e75b45cd070f5b5ace9a,MIT,63,325,2,candidate,,
+mkdocs/mkdocs,https://github.com/mkdocs/mkdocs,2862536793b3c67d9d83c33e0dd6d50a791928f8,BSD-2-Clause,22511,6262,26,rejected,"about 6262 source lines, outside the size band",Project documentation with Markdown.
+joke2k/faker,https://github.com/joke2k/faker,df289bfde6b6c739bbac696ef432d69c9ec33ac1,MIT,19459,222492,62,rejected,"about 222492 source lines, outside the size band",Faker is a Python package that generates fake data for you.
+dbader/schedule,https://github.com/dbader/schedule,82a43db1b938d8fdf60103bd41f329e06c8d3651,MIT,12268,799,1,rejected,1 test file(s),Python job scheduling for humans.
+gruns/icecream,https://github.com/gruns/icecream,05af3e95b0080162813bb017de90966bc75f3b91,MIT,10110,1660,4,rejected,declares 4 runtime dependencies,🍦 Never use print() to debug again.
+docopt/docopt,https://github.com/docopt/docopt,8fea867d4220f1095dae9d6264ec5aa4031fb712,MIT,8004,494,1,rejected,1 test file(s),Create *beautiful* command-line interfaces with Python
+mahmoud/boltons,https://github.com/mahmoud/boltons,,NOASSERTION,6940,0,0,rejected,licence NOASSERTION is not permissive,"🔩 Like builtins, but boltons. 250+ constructs, recipes, and snippets which extend (and rely on nothi"
+pre-commit/pre-commit-hooks,https://github.com/pre-commit/pre-commit-hooks,3de0a59de6e02a8090983c77211d0ad22e205581,MIT,6726,1589,39,rejected,declares 1 runtime dependency,Some out-of-the-box hooks for pre-commit
+python-pendulum/pendulum,https://github.com/python-pendulum/pendulum,e06dacedc4cdea90fa1286b3965d180ab94cf251,MIT,6677,10331,107,rejected,"about 10331 source lines, outside the size band",Python datetimes made easy
+jpadilla/pyjwt,https://github.com/jpadilla/pyjwt,16231abfd1d8eab4953e8779b3017b859c88565e,MIT,5718,2893,13,rejected,declares 1 runtime dependency,JSON Web Token implementation in Python
+PyCQA/pycodestyle,https://github.com/PyCQA/pycodestyle,,NOASSERTION,5165,0,0,rejected,licence NOASSERTION is not permissive,Simple Python style checker in one Python file
+pytoolz/toolz,https://github.com/pytoolz/toolz,,NOASSERTION,5161,0,0,rejected,licence NOASSERTION is not permissive,A functional standard library for Python.
+python-jsonschema/jsonschema,https://github.com/python-jsonschema/jsonschema,c497561ea0a95f5aac09cd63d15eb1420eb7bbec,MIT,4994,3743,13,rejected,"about 3743 source lines, outside the size band",An implementation of the JSON Schema specification for Python
+more-itertools/more-itertools,https://github.com/more-itertools/more-itertools,4aeb4338ae1407d8da9723e86da99efeb446f719,MIT,4104,5550,3,rejected,"about 5550 source lines, outside the size band","More routines for operating on iterables, beyond itertools"
+andialbrecht/sqlparse,https://github.com/andialbrecht/sqlparse,60cdc649726bf1bc4f1b336050560b336da715ec,BSD-3-Clause,4024,3617,12,rejected,"about 3617 source lines, outside the size band",A non-validating SQL parser module for Python
+lepture/mistune,https://github.com/lepture/mistune,f7ec702edfc1ad5579a76f881238841af266d93c,BSD-3-Clause,3078,5521,23,rejected,"about 5521 source lines, outside the size band","A fast yet powerful Python Markdown parser with renderers and plugins, fully CommonMark compliant."
+ahupp/python-magic,https://github.com/ahupp/python-magic,,NOASSERTION,2923,0,0,rejected,licence NOASSERTION is not permissive,A python wrapper for libmagic
+trentm/python-markdown2,https://github.com/trentm/python-markdown2,,NOASSERTION,2823,0,0,rejected,licence NOASSERTION is not permissive,markdown2: A fast and complete implementation of Markdown in Python
+mozilla/bleach,https://github.com/mozilla/bleach,,NOASSERTION,2765,0,0,rejected,licence NOASSERTION is not permissive,Bleach is an allowed-list-based HTML sanitizing library that escapes or strips markup and attributes
+litl/backoff,https://github.com/litl/backoff,,MIT,2695,0,0,rejected,archived or a fork,Python library providing function decorators for configurable backoff and retry
+dateutil/dateutil,https://github.com/dateutil/dateutil,,NOASSERTION,2641,0,0,rejected,licence NOASSERTION is not permissive,Useful extensions to the standard Python datetime features
+pyparsing/pyparsing,https://github.com/pyparsing/pyparsing,810199f89bf916590426e1c5cb3d612584f11a2f,MIT,2497,11406,17,rejected,"about 11406 source lines, outside the size band",Python library for creating PEG parsers
+prettytable/prettytable,https://github.com/prettytable/prettytable,,NOASSERTION,1797,0,0,rejected,licence NOASSERTION is not permissive,Display tabular data in a visually appealing ASCII table format
+nickstenning/honcho,https://github.com/nickstenning/honcho,2f47b723587c65ecbadc99e674b515b20a749179,MIT,1717,885,19,rejected,declares 2 runtime dependencies,Honcho: a python clone of Foreman. For managing Procfile-based applications.
+kvesteri/sqlalchemy-utils,https://github.com/kvesteri/sqlalchemy-utils,,NOASSERTION,1346,0,0,rejected,licence NOASSERTION is not permissive,Various utility functions and datatypes for SQLAlchemy.
+jsonpickle/jsonpickle,https://github.com/jsonpickle/jsonpickle,6f29e27a913a707854cad662b4e0edeb476d8896,BSD-3-Clause,1319,5502,21,rejected,"about 5502 source lines, outside the size band",Python library for serializing any arbitrary object graph into JSON. It can take almost any Python o
+PyCQA/pydocstyle,https://github.com/PyCQA/pydocstyle,,MIT,1115,0,0,rejected,archived or a fork,docstring style checker
+jaraco/inflect,https://github.com/jaraco/inflect,,,1083,0,0,rejected,licence not detected is not permissive,"Correctly generate plurals, ordinals, indefinite articles; convert numbers to words"
+python-attrs/cattrs,https://github.com/python-attrs/cattrs,bde101a5a67997c61a3ee0e971386a82fe141d4e,MIT,1059,6471,72,rejected,"about 6471 source lines, outside the size band","Composable custom class converters for attrs, dataclasses and friends."
+tox-dev/filelock,https://github.com/tox-dev/filelock,008e3c3e55b7051230a1e9d3af9e94e6afe8624c,MIT,981,15440,55,rejected,"about 15440 source lines, outside the size band",A platform-independent file lock for Python.
+python-poetry/tomlkit,https://github.com/python-poetry/tomlkit,eddd27e43a62fe58707c311bfad2f52e72493f53,MIT,862,5242,13,rejected,"about 5242 source lines, outside the size band",Style-preserving TOML library for Python
+wolever/parameterized,https://github.com/wolever/parameterized,,NOASSERTION,857,0,0,rejected,licence NOASSERTION is not permissive,Parameterized testing with any Python test framework
+tomasbasham/ratelimit,https://github.com/tomasbasham/ratelimit,16c80c2650199ebd10c18bac6ccd370089586f93,MIT,829,151,3,rejected,"about 151 source lines, outside the size band",API Rate Limit Decorator
+pypa/packaging,https://github.com/pypa/packaging,,NOASSERTION,752,0,0,rejected,licence NOASSERTION is not permissive,Core utilities for Python packages
+dwolfhub/zxcvbn-python,https://github.com/dwolfhub/zxcvbn-python,d32d30bed67352c9c28c9ae3be4fc889bee13cab,MIT,718,21266,9,rejected,"about 21266 source lines, outside the size band",Python implementation of Dropbox's realistic password strength estimator
+PyCQA/mccabe,https://github.com/PyCQA/mccabe,,NOASSERTION,682,0,0,rejected,licence NOASSERTION is not permissive,McCabe complexity checker for Python
+jpvanhal/inflection,https://github.com/jpvanhal/inflection,88eefaacf7d0caaa701af7c8ab2d0ab3f17086f1,MIT,525,289,1,rejected,1 test file(s),A port of Ruby on Rails' inflector to Python
+hynek/environ-config,https://github.com/hynek/environ-config,dfbfdc910e0b80bb22752571619b7ad0e18379b9,Apache-2.0,468,971,6,rejected,declares 1 runtime dependency,Python Application Configuration With Environment Variables
+mgedmin/check-manifest,https://github.com/mgedmin/check-manifest,5073ecd69f872358611507c3d09409b1b5df2971,MIT,293,2781,0,rejected,0 test file(s),Tool to check the completeness of MANIFEST.in for Python packages
+ianlini/flatten-dict,https://github.com/ianlini/flatten-dict,59be03dc98de81c8966ddb85e3d482cb64d81d52,MIT,185,237,1,rejected,1 test file(s),A flexible utility for flattening and unflattening dict-like objects in Python.
+jaraco/zipp,https://github.com/jaraco/zipp,,,68,0,0,rejected,licence not detected is not permissive,
+jaraco/jaraco.functools,https://github.com/jaraco/jaraco.functools,,,22,0,0,rejected,licence not detected is not permissive,

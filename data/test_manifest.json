@@ -1,0 +1,1323 @@
+{
+ "cases": [
+  {
+   "category": "D1",
+   "id": "library-D1-01",
+   "label": "drift",
+   "patch_sha": "4f17d2928c5a56a3",
+   "project": "library"
+  },
+  {
+   "category": "D1",
+   "id": "library-D1-02",
+   "label": "drift",
+   "patch_sha": "849af86a8fa89e35",
+   "project": "library"
+  },
+  {
+   "category": "D2",
+   "id": "library-D2-01",
+   "label": "drift",
+   "patch_sha": "31a522847b27eb40",
+   "project": "library"
+  },
+  {
+   "category": "D2",
+   "id": "library-D2-02",
+   "label": "drift",
+   "patch_sha": "e69824d14e9fb836",
+   "project": "library"
+  },
+  {
+   "category": "D2",
+   "id": "library-D2-03",
+   "label": "drift",
+   "patch_sha": "7217c69b09597216",
+   "project": "library"
+  },
+  {
+   "category": "D3",
+   "id": "library-D3-01",
+   "label": "drift",
+   "patch_sha": "3ae581ac4f0a3670",
+   "project": "library"
+  },
+  {
+   "category": "D3",
+   "id": "library-D3-02",
+   "label": "drift",
+   "patch_sha": "a8764e41767b7775",
+   "project": "library"
+  },
+  {
+   "category": "D4",
+   "id": "library-D4-01",
+   "label": "drift",
+   "patch_sha": "f01b760047fe6d13",
+   "project": "library"
+  },
+  {
+   "category": "D4",
+   "id": "library-D4-02",
+   "label": "drift",
+   "patch_sha": "4884a15303dcbdba",
+   "project": "library"
+  },
+  {
+   "category": "D5",
+   "id": "library-D5-01",
+   "label": "drift",
+   "patch_sha": "b5e68daa4559b8ea",
+   "project": "library"
+  },
+  {
+   "category": "D5",
+   "id": "library-D5-02",
+   "label": "drift",
+   "patch_sha": "bbd82b2bd8bf1015",
+   "project": "library"
+  },
+  {
+   "category": "D6",
+   "id": "library-D6-01",
+   "label": "drift",
+   "patch_sha": "b8491520eab7eb7f",
+   "project": "library"
+  },
+  {
+   "category": "D6",
+   "id": "library-D6-02",
+   "label": "drift",
+   "patch_sha": "289015bb23c7ea2c",
+   "project": "library"
+  },
+  {
+   "category": "D7",
+   "id": "library-D7-01",
+   "label": "drift",
+   "patch_sha": "888cedcf8e49a8a5",
+   "project": "library"
+  },
+  {
+   "category": "D7",
+   "id": "library-D7-02",
+   "label": "drift",
+   "patch_sha": "d555958b298748fd",
+   "project": "library"
+  },
+  {
+   "category": "D8",
+   "id": "library-D8-01",
+   "label": "drift",
+   "patch_sha": "bfe5f4500725c495",
+   "project": "library"
+  },
+  {
+   "category": "D8",
+   "id": "library-D8-02",
+   "label": "drift",
+   "patch_sha": "a8172b3a07b873f5",
+   "project": "library"
+  },
+  {
+   "category": "D9",
+   "id": "library-D9-01",
+   "label": "drift",
+   "patch_sha": "cc34c14ce223c2cd",
+   "project": "library"
+  },
+  {
+   "category": "D9",
+   "id": "library-D9-02",
+   "label": "drift",
+   "patch_sha": "d06f46efba18547f",
+   "project": "library"
+  },
+  {
+   "category": "N1",
+   "id": "library-N1-01",
+   "label": "no_drift",
+   "patch_sha": "75a11da44c802486",
+   "project": "library"
+  },
+  {
+   "category": "N2",
+   "id": "library-N2-01",
+   "label": "no_drift",
+   "patch_sha": "7254edc89941a5a6",
+   "project": "library"
+  },
+  {
+   "category": "N2",
+   "id": "library-N2-02",
+   "label": "no_drift",
+   "patch_sha": "785cfa36e58ad971",
+   "project": "library"
+  },
+  {
+   "category": "N2",
+   "id": "library-N2-03",
+   "label": "no_drift",
+   "patch_sha": "6dc04330900691c6",
+   "project": "library"
+  },
+  {
+   "category": "N2",
+   "id": "library-N2-04",
+   "label": "no_drift",
+   "patch_sha": "ed963fcf8b4f4014",
+   "project": "library"
+  },
+  {
+   "category": "N2",
+   "id": "library-N2-05",
+   "label": "no_drift",
+   "patch_sha": "26055ba4d07302ea",
+   "project": "library"
+  },
+  {
+   "category": "N2",
+   "id": "library-N2-06",
+   "label": "no_drift",
+   "patch_sha": "4325b8b8283a2863",
+   "project": "library"
+  },
+  {
+   "category": "N3",
+   "id": "library-N3-01",
+   "label": "no_drift",
+   "patch_sha": "692352611bd1b235",
+   "project": "library"
+  },
+  {
+   "category": "N3",
+   "id": "library-N3-02",
+   "label": "no_drift",
+   "patch_sha": "8b3aef70d06a6a41",
+   "project": "library"
+  },
+  {
+   "category": "D1",
+   "id": "ratelimiter-D1-01",
+   "label": "drift",
+   "patch_sha": "0445a46ae7e475a2",
+   "project": "ratelimiter"
+  },
+  {
+   "category": "D1",
+   "id": "ratelimiter-D1-02",
+   "label": "drift",
+   "patch_sha": "54dd0c919316fb83",
+   "project": "ratelimiter"
+  },
+  {
+   "category": "D1",
+   "id": "ratelimiter-D1-03",
+   "label": "drift",
+   "patch_sha": "2808e79da954d05c",
+   "project": "ratelimiter"
+  },
+  {
+   "category": "D2",
+   "id": "ratelimiter-D2-01",
+   "label": "drift",
+   "patch_sha": "95bee508a714cdac",
+   "project": "ratelimiter"
+  },
+  {
+   "category": "D2",
+   "id": "ratelimiter-D2-02",
+   "label": "drift",
+   "patch_sha": "54c24c8092280fb4",
+   "project": "ratelimiter"
+  },
+  {
+   "category": "D2",
+   "id": "ratelimiter-D2-03",
+   "label": "drift",
+   "patch_sha": "75b6fbcbbaa67db9",
+   "project": "ratelimiter"
+  },
+  {
+   "category": "D3",
+   "id": "ratelimiter-D3-01",
+   "label": "drift",
+   "patch_sha": "e0385a55c42e41ae",
+   "project": "ratelimiter"
+  },
+  {
+   "category": "D3",
+   "id": "ratelimiter-D3-02",
+   "label": "drift",
+   "patch_sha": "586b163e52d1d948",
+   "project": "ratelimiter"
+  },
+  {
+   "category": "D4",
+   "id": "ratelimiter-D4-01",
+   "label": "drift",
+   "patch_sha": "f092bc1fbc0377d0",
+   "project": "ratelimiter"
+  },
+  {
+   "category": "D4",
+   "id": "ratelimiter-D4-02",
+   "label": "drift",
+   "patch_sha": "3a003f7ba82990f0",
+   "project": "ratelimiter"
+  },
+  {
+   "category": "D5",
+   "id": "ratelimiter-D5-01",
+   "label": "drift",
+   "patch_sha": "06139f7618596126",
+   "project": "ratelimiter"
+  },
+  {
+   "category": "D5",
+   "id": "ratelimiter-D5-02",
+   "label": "drift",
+   "patch_sha": "bbe561ff0cb22cc9",
+   "project": "ratelimiter"
+  },
+  {
+   "category": "D6",
+   "id": "ratelimiter-D6-01",
+   "label": "drift",
+   "patch_sha": "4f1d4245aacd2e73",
+   "project": "ratelimiter"
+  },
+  {
+   "category": "D6",
+   "id": "ratelimiter-D6-02",
+   "label": "drift",
+   "patch_sha": "fc5ac8154aaaff00",
+   "project": "ratelimiter"
+  },
+  {
+   "category": "D7",
+   "id": "ratelimiter-D7-01",
+   "label": "drift",
+   "patch_sha": "de98b5177429c4eb",
+   "project": "ratelimiter"
+  },
+  {
+   "category": "D7",
+   "id": "ratelimiter-D7-02",
+   "label": "drift",
+   "patch_sha": "73ed8a84f35860bc",
+   "project": "ratelimiter"
+  },
+  {
+   "category": "D8",
+   "id": "ratelimiter-D8-01",
+   "label": "drift",
+   "patch_sha": "b61529c0c2755b0e",
+   "project": "ratelimiter"
+  },
+  {
+   "category": "D8",
+   "id": "ratelimiter-D8-02",
+   "label": "drift",
+   "patch_sha": "392b6740b6a8c3b2",
+   "project": "ratelimiter"
+  },
+  {
+   "category": "D9",
+   "id": "ratelimiter-D9-01",
+   "label": "drift",
+   "patch_sha": "a5698aa47766fd32",
+   "project": "ratelimiter"
+  },
+  {
+   "category": "D9",
+   "id": "ratelimiter-D9-02",
+   "label": "drift",
+   "patch_sha": "99fed0459b672d88",
+   "project": "ratelimiter"
+  },
+  {
+   "category": "N1",
+   "id": "ratelimiter-N1-01",
+   "label": "no_drift",
+   "patch_sha": "75a11da44c802486",
+   "project": "ratelimiter"
+  },
+  {
+   "category": "N2",
+   "id": "ratelimiter-N2-01",
+   "label": "no_drift",
+   "patch_sha": "d7c546f0bf092430",
+   "project": "ratelimiter"
+  },
+  {
+   "category": "N2",
+   "id": "ratelimiter-N2-02",
+   "label": "no_drift",
+   "patch_sha": "f56575f31cb8ab55",
+   "project": "ratelimiter"
+  },
+  {
+   "category": "N2",
+   "id": "ratelimiter-N2-03",
+   "label": "no_drift",
+   "patch_sha": "87a586dafcded0f1",
+   "project": "ratelimiter"
+  },
+  {
+   "category": "N2",
+   "id": "ratelimiter-N2-04",
+   "label": "no_drift",
+   "patch_sha": "9d7d3207e8982cf2",
+   "project": "ratelimiter"
+  },
+  {
+   "category": "N2",
+   "id": "ratelimiter-N2-05",
+   "label": "no_drift",
+   "patch_sha": "9156cb5f4f9e2f3f",
+   "project": "ratelimiter"
+  },
+  {
+   "category": "N2",
+   "id": "ratelimiter-N2-06",
+   "label": "no_drift",
+   "patch_sha": "0e2179d4e121cbe6",
+   "project": "ratelimiter"
+  },
+  {
+   "category": "N3",
+   "id": "ratelimiter-N3-01",
+   "label": "no_drift",
+   "patch_sha": "a5a066b1c5b26c35",
+   "project": "ratelimiter"
+  },
+  {
+   "category": "N3",
+   "id": "ratelimiter-N3-02",
+   "label": "no_drift",
+   "patch_sha": "9d52c37ed7f741b2",
+   "project": "ratelimiter"
+  },
+  {
+   "category": "D1",
+   "id": "wallet-D1-01",
+   "label": "drift",
+   "patch_sha": "98834a6159b86c65",
+   "project": "wallet"
+  },
+  {
+   "category": "D1",
+   "id": "wallet-D1-02",
+   "label": "drift",
+   "patch_sha": "ae5ddbb83b7d0b97",
+   "project": "wallet"
+  },
+  {
+   "category": "D1",
+   "id": "wallet-D1-03",
+   "label": "drift",
+   "patch_sha": "c377438ca296c1be",
+   "project": "wallet"
+  },
+  {
+   "category": "D2",
+   "id": "wallet-D2-01",
+   "label": "drift",
+   "patch_sha": "130846c68b48a909",
+   "project": "wallet"
+  },
+  {
+   "category": "D2",
+   "id": "wallet-D2-02",
+   "label": "drift",
+   "patch_sha": "164db8d09db9d4f0",
+   "project": "wallet"
+  },
+  {
+   "category": "D2",
+   "id": "wallet-D2-03",
+   "label": "drift",
+   "patch_sha": "dd0391ecbcb88517",
+   "project": "wallet"
+  },
+  {
+   "category": "D3",
+   "id": "wallet-D3-01",
+   "label": "drift",
+   "patch_sha": "abdc2cea561f2490",
+   "project": "wallet"
+  },
+  {
+   "category": "D3",
+   "id": "wallet-D3-02",
+   "label": "drift",
+   "patch_sha": "b8150795bf54aebb",
+   "project": "wallet"
+  },
+  {
+   "category": "D4",
+   "id": "wallet-D4-01",
+   "label": "drift",
+   "patch_sha": "1c1d988e3547fd45",
+   "project": "wallet"
+  },
+  {
+   "category": "D4",
+   "id": "wallet-D4-02",
+   "label": "drift",
+   "patch_sha": "c19971b5b7bf61ee",
+   "project": "wallet"
+  },
+  {
+   "category": "D5",
+   "id": "wallet-D5-01",
+   "label": "drift",
+   "patch_sha": "9f197306c6e2d74b",
+   "project": "wallet"
+  },
+  {
+   "category": "D5",
+   "id": "wallet-D5-02",
+   "label": "drift",
+   "patch_sha": "ac5a4ac4cd5cd43d",
+   "project": "wallet"
+  },
+  {
+   "category": "D6",
+   "id": "wallet-D6-01",
+   "label": "drift",
+   "patch_sha": "3a1cfb27c31e9b91",
+   "project": "wallet"
+  },
+  {
+   "category": "D6",
+   "id": "wallet-D6-02",
+   "label": "drift",
+   "patch_sha": "25ad1704d84266c1",
+   "project": "wallet"
+  },
+  {
+   "category": "D7",
+   "id": "wallet-D7-01",
+   "label": "drift",
+   "patch_sha": "67b54971fb98a953",
+   "project": "wallet"
+  },
+  {
+   "category": "D7",
+   "id": "wallet-D7-02",
+   "label": "drift",
+   "patch_sha": "12e9fc00547b6305",
+   "project": "wallet"
+  },
+  {
+   "category": "D8",
+   "id": "wallet-D8-01",
+   "label": "drift",
+   "patch_sha": "e203b8213210e1cb",
+   "project": "wallet"
+  },
+  {
+   "category": "D8",
+   "id": "wallet-D8-02",
+   "label": "drift",
+   "patch_sha": "b1c1478a79f8df5d",
+   "project": "wallet"
+  },
+  {
+   "category": "D9",
+   "id": "wallet-D9-01",
+   "label": "drift",
+   "patch_sha": "f946234befc8b573",
+   "project": "wallet"
+  },
+  {
+   "category": "D9",
+   "id": "wallet-D9-02",
+   "label": "drift",
+   "patch_sha": "f6c7b97b5d6f290c",
+   "project": "wallet"
+  },
+  {
+   "category": "N1",
+   "id": "wallet-N1-01",
+   "label": "no_drift",
+   "patch_sha": "75a11da44c802486",
+   "project": "wallet"
+  },
+  {
+   "category": "N2",
+   "id": "wallet-N2-01",
+   "label": "no_drift",
+   "patch_sha": "01d1c51af1026110",
+   "project": "wallet"
+  },
+  {
+   "category": "N2",
+   "id": "wallet-N2-02",
+   "label": "no_drift",
+   "patch_sha": "7ebe01695ab38de2",
+   "project": "wallet"
+  },
+  {
+   "category": "N2",
+   "id": "wallet-N2-03",
+   "label": "no_drift",
+   "patch_sha": "fed76548089fd7fb",
+   "project": "wallet"
+  },
+  {
+   "category": "N2",
+   "id": "wallet-N2-04",
+   "label": "no_drift",
+   "patch_sha": "7b74c109b4ec4d41",
+   "project": "wallet"
+  },
+  {
+   "category": "N2",
+   "id": "wallet-N2-05",
+   "label": "no_drift",
+   "patch_sha": "7aabfbc87bdd2273",
+   "project": "wallet"
+  },
+  {
+   "category": "N2",
+   "id": "wallet-N2-06",
+   "label": "no_drift",
+   "patch_sha": "7c4e66624172f64e",
+   "project": "wallet"
+  },
+  {
+   "category": "N3",
+   "id": "wallet-N3-01",
+   "label": "no_drift",
+   "patch_sha": "e97552107bcd6512",
+   "project": "wallet"
+  },
+  {
+   "category": "N3",
+   "id": "wallet-N3-02",
+   "label": "no_drift",
+   "patch_sha": "513e9e86bb037251",
+   "project": "wallet"
+  }
+ ],
+ "chunk_hashes": [
+  "00f0e379eccb18af7b72",
+  "00f1260dbd3b86352564",
+  "012bca8f52cc216dfff6",
+  "0429960dc26503389e3b",
+  "064ce0bc0a0d9b289f8d",
+  "076001436ac025fd2b13",
+  "07f0709cac6d1da64188",
+  "09b937908ed61025d57b",
+  "09e0394ded8f7831b70a",
+  "0a93aa336badccd699a4",
+  "0c54bf08609432858424",
+  "0c90e14af1e8d0c83d91",
+  "0d17ef49248a6f4d01b6",
+  "0d9b511ec1b5f0e1e59c",
+  "0fcf5507aac61d9e99d1",
+  "1347623aa051067cd021",
+  "138d55eb77c821505517",
+  "147307e136beb3ed119b",
+  "1797202d0108d55fdf9b",
+  "1809c900648634a54830",
+  "18880fc35a33702cef66",
+  "18aea654390fd08f413a",
+  "19a145edf7cdffaec450",
+  "1ca9d1ed52cb1cbed8cc",
+  "1cb45990c0843f0a2474",
+  "1dc571964e9ca573aac6",
+  "1e776af3eb9f0f79ad94",
+  "1f8e3ebcef9a8059e09f",
+  "20ebc5b6647d1a2583f1",
+  "2187899e045dc386afbc",
+  "2296c89b4f86d4140647",
+  "23a79de01f16eafb21be",
+  "23f37158445311ba27d9",
+  "240459970fb8263c0085",
+  "2509700e1e5822470bb3",
+  "26d1139625e9964f2d86",
+  "27d966464f353cdacae0",
+  "28e0a9141e823bd4c640",
+  "2a2ca64f68fa27c4c710",
+  "2ba1fba09560f02571c9",
+  "30a921ecc6a21f3c3cc3",
+  "315a1572e04df9806e28",
+  "32e310670e733751acdc",
+  "3379efcb7728c54612f7",
+  "33b9d0c625c4362444a6",
+  "350b6a791cd448d3cdde",
+  "3516238537f54dc22529",
+  "37c5ad1be1860ac25cbf",
+  "383359cc108a24f2e255",
+  "384737197469441703d5",
+  "38c415e04e00c6d9c9ea",
+  "390212c074c7f80ba2fc",
+  "3aea21c3a4dcb3628b77",
+  "3bcc778ca4bd91f3f46e",
+  "3bea6ec2ecf35d89213b",
+  "3c31ef510b4a01e95127",
+  "3c7928943f73e7c9d151",
+  "3c9787d4615ce6433c88",
+  "3ccf50b373f2458ae8bc",
+  "3ef9221a310f0b80b642",
+  "3f45a84f52b0631484de",
+  "40ff076dc328fd704866",
+  "414d29938957013ddeec",
+  "43c4ed62b36b0bc5625f",
+  "449713d8f07e97f70dff",
+  "4527ac4085af37d4c1fd",
+  "46bde5f2bdc35d44949a",
+  "488fb3f522902ebb2c12",
+  "49573a3032ed22a86224",
+  "4a3c4e6aabbaec8998d4",
+  "4b003dee3afe77ea40b9",
+  "4b505b961f4078ede4bf",
+  "4d5161f0164ba1332723",
+  "4fa17325812af6465be8",
+  "529dd995b6158ea1b153",
+  "554598bae0e12e3aa2bf",
+  "55a3b8af252b6875f2a1",
+  "572eb529f1c873a3a5ae",
+  "57b0720da09ede40a5b0",
+  "5af42e1a4ebdefaf3ecf",
+  "5c1ec340e530acc21276",
+  "5cbe838c93671a4869cb",
+  "5f52481cbe9062e2240c",
+  "5f9e31cfcef632cbf61f",
+  "5fc04b91f84932baaacd",
+  "60330db726bd39960b2a",
+  "603d0bd72675564d1fe9",
+  "610ca3dcb3190f4d4fdb",
+  "61b7ad7a4ecc058e7c64",
+  "620b1d606cad0dbfb2fd",
+  "63574ab64d00d8f2abf4",
+  "64332ac27b4ef2a2b0fd",
+  "648a9506dc56bb385bae",
+  "64b47299c0aca015371a",
+  "65795411fc365c596aa3",
+  "66d1d9742ff8a840f3fd",
+  "67a16ca0fe867cdc4ce1",
+  "67b719f54de26c8e1114",
+  "67b94505ea8b98c786c3",
+  "680567ea7cdd599fe106",
+  "6814f8e757e9fcd147b2",
+  "6847621b9fb0d0d4c97a",
+  "6900c520169acac155c2",
+  "691526126e16773012b1",
+  "6964008e1c7e7dd7d288",
+  "6b9e6b3e3e20c7d3af7d",
+  "6c48871d1d9033305118",
+  "6c50e1576d6704642103",
+  "6c8ef6080cc9574a812f",
+  "6ccb5b5a4d4b9dbf6737",
+  "6e027db1372a0bd21209",
+  "6e4a93a0f8730c4020d7",
+  "6e6debafcd69138d0f28",
+  "6f36553828158c0af90a",
+  "6feb38224d8c484319fb",
+  "708dd2a087bf66dc2604",
+  "70a02b7ecdd44e4d2575",
+  "70b1c5ffe6a05d8d984a",
+  "718073dd19a914d4d144",
+  "718093b5b02c39d9a9b7",
+  "72a5082c32d14d300b9b",
+  "72d210d7356d76d0e46c",
+  "746723e15dc2f993024d",
+  "7563f61c2cbfb45d0212",
+  "76de1ff473432a0494d4",
+  "7702ecff0826bb18593f",
+  "77802f7742bcd92c7fef",
+  "778d9007fd0ff5ebe31d",
+  "783ebc09cbb64536012c",
+  "78ad484ac2711c37da0a",
+  "79a2a6f964b49e7df345",
+  "79a37b671810e98fc991",
+  "7afe1b02d00c6f18e73a",
+  "7b274e125178be3f2384",
+  "7c33c284c32feeacbd9f",
+  "7c438c45d5fe782c671a",
+  "7d2d74dafa6365fde663",
+  "7d620ebbbc06f8fc7341",
+  "7d6c96fcf8d74efd9f1a",
+  "7df7abaa4a836f773570",
+  "7dfe451e983f9e6f818f",
+  "7e470294baaa5940668e",
+  "7ea031f9879c2b1a7adf",
+  "7f03ee8cd3ced3efa1d6",
+  "7f905ba1419537ad2e77",
+  "80e7590240f0dbaf1410",
+  "827e827f3e8d3f9650be",
+  "843faacc4dc91c3325b5",
+  "854d8a7ea072d5159853",
+  "8744e0b4c165e12217f6",
+  "88742c1c63bf20a38667",
+  "8881fc6808a1ebabc2af",
+  "8891f628b567d356331c",
+  "890362d5cceccad86796",
+  "8adfbf283e1e8d8ad9af",
+  "8ca7ee3d9eebeef77d28",
+  "8ce4f636bdc240e6c007",
+  "8d35e11ece3e57e85674",
+  "8dda514706750b6c4b26",
+  "8e8472406b0ddc187716",
+  "8fe9834c8380784f0f82",
+  "908b6cab07ab44521c76",
+  "91614c0823925e46c8d4",
+  "93a51b6a1a17f70f9959",
+  "95564ea071b1ff57ddf6",
+  "97aded6af2178e2397d3",
+  "98dc2966f438e87bbc6e",
+  "9958a7b51fb029d77ae0",
+  "9ae02f0569ae99412b20",
+  "9ae49901e9ab55fcfe9a",
+  "9ddee553e59fd6cc1977",
+  "9e5235c9fcc7c97f82b8",
+  "a09b2cb06bded3391651",
+  "a0d0c21dfbd3a8df76e2",
+  "a35f5408643bf8fa1261",
+  "a527eae3429d05b918a4",
+  "a7331548c515e86cedc0",
+  "a75e603c3f149673a2a1",
+  "a844c4e2eaa824bd658b",
+  "a985cad8bbb71e320f4e",
+  "a9d6be200953539cd4e1",
+  "aca4f59baca16824cc79",
+  "ad39091462034f872b1d",
+  "ae1a88d34963f6857a33",
+  "ae7328601d7559dd9488",
+  "aec9cba7bf8a48c5bdcd",
+  "afd007354ade8c7ba9ee",
+  "b04610076f35d16f9362",
+  "b05284011625448983a1",
+  "b0a64b92277163a22b4a",
+  "b0c6d46d673771ce765e",
+  "b35a7831c6ca1e19421e",
+  "b3a096500e1cecfc92b9",
+  "b552713ca1800867a3d2",
+  "b63e30994c15c460f722",
+  "b78a55514b777593c89a",
+  "b8259b35b27c8094361b",
+  "b8555f9f42fd15791b20",
+  "b9a37b92bef905c0adb7",
+  "b9ac4e777294805bc611",
+  "ba931ebacd2592f8ad5d",
+  "bad07052efde947a3a34",
+  "bb1894be20b94dd64a02",
+  "bc3191e497b91975e8aa",
+  "bcf857f984a0294ba8e6",
+  "beb78cc16cb5f48c6228",
+  "bfbadd1ae2875ad0168e",
+  "c04e0cf68237a4a2c1bb",
+  "c1027998c09e83f3744c",
+  "c252d6a1ea4af531775a",
+  "c2aed753c530e18fdb32",
+  "c2c2f45f219e20193753",
+  "c63ba859eb7c6b04eadb",
+  "c69eade29d54ad2eacb2",
+  "c7631899ec8c5bf350c1",
+  "c81902687442cc4aaf16",
+  "ca2bda5a1774d941fb1e",
+  "ccda3965bb298893d829",
+  "cd2a0581f706a9e4e148",
+  "cd5c8efde68d2739741f",
+  "cf86d753e6247214483f",
+  "d22fe4c767f815ab2e2c",
+  "d2add0c26ae702b6c228",
+  "d5902c5beb2bd35e96a1",
+  "d7a9149b08bcd4390bb2",
+  "d7c9193f8e25a44b9fed",
+  "d7f0d50177d06e519d13",
+  "d843a88278023376fde6",
+  "d9bc26b278af5296abc5",
+  "db445f3640c2a7db1d23",
+  "dc8dade59fd1965807f5",
+  "dcfce69e245774218dc6",
+  "dde22aba1a179aaa4bd5",
+  "de8881657a334d95486e",
+  "decf7eaa1afe9cdee92f",
+  "df4e7e5eefbeed3937c2",
+  "e028550c38cbc30bf64b",
+  "e0ae46e23a54ea9419f2",
+  "e0b353eb2b76c70d0045",
+  "e0b5ee7b39525c452e59",
+  "e1381bb8c55a362f0ad2",
+  "e15ed27e2811a13ca26c",
+  "e162eb4456727dd47873",
+  "e18718276ca7969048f1",
+  "e26c7872002603fec667",
+  "e400b21dfd053818e516",
+  "e6ce8904ec8ed98d1381",
+  "e8bf68aa4b015be7e287",
+  "eac9f02cfcbeaa7db010",
+  "eb8e3cc04c01a0e42780",
+  "ebe60a1eaa00ac12a1ae",
+  "ec1c97d1132cfa0d8a00",
+  "ecfedafed0aedb9aaae3",
+  "ed60e3d32898cc991524",
+  "ee60f4c1abdeb361aed7",
+  "eeec1094c6c088c13c5a",
+  "f0382fa169f95d2bbc40",
+  "f0e3b56d58f3b7d132d1",
+  "f149e28fa7d2ed305fd4",
+  "f177062e5a92abbf8dd3",
+  "f2cec927b824bc97d299",
+  "f2e86201a23701b88353",
+  "f2ffa6173128c7098199",
+  "f38b9b0acd8af9cc67c4",
+  "f4ec6ce4f4934d1c0c83",
+  "f518ac75e835159dbe2f",
+  "f59fb0bac29fd633e9e1",
+  "f8c16d2ab3b3fd432311",
+  "fa333ef79af97e3c3ed4",
+  "fa7916f75f7da1008173",
+  "fc00c07f4ed6e0fd999b",
+  "fc1edef6d6e9f9c70df1",
+  "fcb06c7a0aaac29db19b",
+  "fce3f940805178bf3a77",
+  "fd305bf3e3482b6588f6",
+  "fee6a1a7f0aa37debdcc",
+  "ff691d491780732f6f82",
+  "ff72d64852c620c60535",
+  "ffb0e59de1d1ff061161"
+ ],
+ "fingerprint": "23be8057ececf55df519ce7f71168bf2671dc5556c353f737cc341f652eed8e4",
+ "injections": [
+  [
+   "\"\"\"Borrowabook.EnforcesR06toR12.\"\"\"",
+   "\"\"\"Borrowabook.NOTE:theloanlimitcheckbelowiscurrentlydisabled.\"\"\""
+  ],
+  [
+   "\"\"\"R04/R05-add2tokensperelapsedsecond,neverpasttheburstlimit.\"\"\"",
+   "\"\"\"R04/R05-NOTE:theburstcapisnolongerappliedhere.\"\"\""
+  ],
+  [
+   "\"\"\"R07-anallowedrequestcostsexactlyonetoken.\"\"\"self.tokens-=1.0",
+   "\"\"\"R07-anallowedrequestcostsexactlyonetoken.\"\"\"self.tokens-=0.5"
+  ],
+  [
+   "\"\"\"R11-1%oftheamount,flooredat0.10,cappedat5.00,roundedto2dp.\"\"\"",
+   "\"\"\"R11-NOTE:thecapisnotappliedinthisbuild.\"\"\""
+  ],
+  [
+   "#R03-theaccountidmustbeunused.ifaccount_idinself.accounts:raiseDuplicateAccount(f\"account{account_id}alreadyexists\")",
+   ""
+  ],
+  [
+   "#R04/R05-theISBNmustbeuniqueacrossthecatalogue.ifisbninself.books:raiseDuplicateBook(f\"ISBN{isbn}isalreadyinthecatalogue\")",
+   "#CatalogueentriesarekeyedbyISBN."
+  ],
+  [
+   "#R04/R05-theamountmustbestrictlypositive.ifamount<=ZERO:",
+   "#R04/R05-theamountmustbestrictlypositive.ifamount<ZERO:"
+  ],
+  [
+   "#R05-thebucketiscappedattheburstlimit.ifself.tokens>BURST_LIMIT:self.tokens=BURST_LIMIT",
+   "#Tokensaccumulatewhiletheclientisidle."
+  ],
+  [
+   "#R06/R08-thebucketmustholdatleastonewholetoken.ifnotbucket.has_token():self._reject(stats)raiseRateLimited(f\"client{client_id}has{bucket.tokens:.2f}tokens\")#R07/R10-consumeonlynowthateverycheckabovehaspassed.bucket.consume()",
+   "#R07/R10-consumeonlynowthateverycheckabovehaspassed.bucket.consume()#R06/R08-thebucketmustholdatleastonewholetoken.ifnotbucket.has_token():self._reject(stats)raiseRateLimited(f\"client{client_id}has{bucket.tokens:.2f}tokens\")"
+  ],
+  [
+   "#R07/R08-thedailytotalofsentamountsmaynotexceedthelimit.ifself.daily.total(sender_id,day)+amount>DAILY_SEND_LIMIT:raiseDailyLimitExceeded(f\"account{sender_id}wouldexceedthe{DAILY_SEND_LIMIT}dailylimit\")",
+   ""
+  ],
+  [
+   "#R07/R08-thedailytotalofsentamountsmaynotexceedthelimit.ifself.daily.total(sender_id,day)+amount>DAILY_SEND_LIMIT:raiseDailyLimitExceeded(f\"account{sender_id}wouldexceedthe{DAILY_SEND_LIMIT}dailylimit\")#R10-debitonlynowthateverycheckabovehaspassed.sender.balance-=amount+fee",
+   "#R10-debitonlynowthateverycheckabovehaspassed.sender.balance-=amount+fee#R07/R08-thedailytotalofsentamountsmaynotexceedthelimit.ifself.daily.total(sender_id,day)+amount>DAILY_SEND_LIMIT:raiseDailyLimitExceeded(f\"account{sender_id}wouldexceedthe{DAILY_SEND_LIMIT}dailylimit\")"
+  ],
+  [
+   "#R08-thebookmusthaveanavailablecopy.",
+   "#NOTE:availabilityisnolongerenforcedhere;thecatalogueownsit.#R08-thebookmusthaveanavailablecopy."
+  ],
+  [
+   "#R09-ablockedclientisrejectedwhateveritsbucketsays.",
+   "#DEPRECATED:theblocklistisadvisoryonlyinthisbuild.#R09-ablockedclientisrejectedwhateveritsbucketsays."
+  ],
+  [
+   "#R09-afrozenaccountmaynotsend.",
+   "#TODO:freezeenforcementmovedtothegateway,thisisnowano-op.#R09-afrozenaccountmaynotsend."
+  ],
+  [
+   "#R09-asuspendedmembermaynotborrow.ifmember.suspended:raiseMemberSuspended(f\"member{member_id}issuspended\")",
+   ""
+  ],
+  [
+   "#R09-asuspendedmembermaynotborrow.ifmember.suspended:raiseMemberSuspended(f\"member{member_id}issuspended\")#R06/R07-atmost3activeloansatonce.iflen(self.active_loans(member_id))>=MAX_ACTIVE_LOANS:raiseLoanLimitExceeded(f\"member{member_id}alreadyholds{MAX_ACTIVE_LOANS}activeloans\")#R08-thebookmusthaveanavailablecopy.ifbook.available<=0:raiseBookUnavailable(f\"nocopiesof{isbn}areavailable\")#R10-decrementonlynowthateverycheckabovehaspassed.book.available-=1",
+   "#R10-decrementonlynowthateverycheckabovehaspassed.book.available-=1#R09-asuspendedmembermaynotborrow.ifmember.suspended:raiseMemberSuspended(f\"member{member_id}issuspended\")#R06/R07-atmost3activeloansatonce.iflen(self.active_loans(member_id))>=MAX_ACTIVE_LOANS:raiseLoanLimitExceeded(f\"member{member_id}alreadyholds{MAX_ACTIVE_LOANS}activeloans\")#R08-thebookmusthaveanavailablecopy.ifbook.available<=0:raiseBookUnavailable(f\"nocopiesof{isbn}areavailable\")"
+  ],
+  [
+   "#R11-thefloorandthecapbothapplybeforerounding.bounded=max(MIN_FEE,min(raw,MAX_FEE))",
+   "#R11-thefloorandthecapbothapplybeforerounding.bounded=min(raw,MAX_FEE)"
+  ],
+  [
+   "#R12-blockedautomaticallyattherejectionthreshold.ifstats.rejected>=BLOCK_AFTER_REJECTIONS:self.blocked.add(stats.client_id)",
+   "#Rejectioncountersarereported,notactedon."
+  ],
+  [
+   "#R13-feeischargedperdaypasttheduedate.returnlate_fee(day-loan.due_on)",
+   "#R13-feeischargedperdaypasttheduedate.fee=late_fee(day-loan.due_on)#Repeatoffendersaresuspendedautomatically.iffee>Decimal(\"10.00\"):self.members[member_id].suspended=Truereturnfee"
+  ],
+  [
+   "#R13-thecapappliesbeforerounding.capped=min(raw,LATE_FEE_CAP)",
+   "#R13-thecapappliesbeforerounding.capped=raw"
+  ],
+  [
+   "BLOCK_AFTER_REJECTIONS=5#R12",
+   "BLOCK_AFTER_REJECTIONS=50#R12"
+  ],
+  [
+   "BURST_LIMIT=10.0#R03",
+   "BURST_LIMIT=25.0#R03"
+  ],
+  [
+   "DAILY_LATE_FEE=Decimal(\"0.50\")",
+   "DAILY_LATE_FEE=Decimal(\"0.75\")"
+  ],
+  [
+   "DAILY_SEND_LIMIT=Decimal(\"1000.00\")#R07",
+   "DAILY_SEND_LIMIT=Decimal(\"2500.00\")#R07"
+  ],
+  [
+   "FEE_RATE=Decimal(\"0.01\")",
+   "FEE_RATE=Decimal(\"0.02\")"
+  ],
+  [
+   "LOAN_PERIOD_DAYS=14#R12",
+   "LOAN_PERIOD_DAYS=21#R12"
+  ],
+  [
+   "MAX_ACTIVE_LOANS=3#R06",
+   "MAX_ACTIVE_LOANS=5#R06"
+  ],
+  [
+   "MAX_FEE=Decimal(\"5.00\")",
+   "MAX_FEE=Decimal(\"50.00\")"
+  ],
+  [
+   "REFILL_PER_SECOND=2.0#R04",
+   "REFILL_PER_SECOND=5.0#R04"
+  ],
+  [
+   "account=Account(id=account_id,owner=owner,balance=balance)self.accounts[account_id]=accountreturnaccount",
+   "opened=Account(id=account_id,owner=owner,balance=balance)self.accounts[account_id]=openedreturnopened"
+  ],
+  [
+   "bounded=max(MIN_FEE,min(raw,MAX_FEE))",
+   "bounded=rawifbounded>MAX_FEE:bounded=MAX_FEEifbounded<MIN_FEE:bounded=MIN_FEE"
+  ],
+  [
+   "bucket.consume()stats.allowed+=1#R11-thedecisionisloggedafterthetokencounthasbeenupdated.decision=Decision(client_id=client_id,allowed=True,reason=\"ok\",tokens_left=bucket.tokens,at=now,)",
+   "#R11-thedecisionisloggedafterthetokencounthasbeenupdated.decision=Decision(client_id=client_id,allowed=True,reason=\"ok\",tokens_left=bucket.tokens,at=now,)bucket.consume()stats.allowed+=1"
+  ],
+  [
+   "bucket=self.bucket_for(client_id,now)#R06/R08-thebucketmustholdatleastonewholetoken.",
+   "bucket=self.bucket_for(client_id,now)#Trustedclientsskipthebucketentirely.ifclient_id.startswith(\"internal-\"):bucket.tokens=BURST_LIMIT#R06/R08-thebucketmustholdatleastonewholetoken."
+  ],
+  [
+   "deflist_loans(self,member_id:str)->list[Loan]:",
+   "defrenew(self,member_id:str,isbn:str,day:int)->Loan:\"\"\"Extendanactiveloanbyafurtherloanperiod.\"\"\"forloaninself.active_loans(member_id):ifloan.isbn==isbn:loan.due_on=day+LOAN_PERIOD_DAYSreturnloanraiseUnknownEntity(f\"noactiveloanof{isbn}formember{member_id}\")deflist_loans(self,member_id:str)->list[Loan]:"
+  ],
+  [
+   "defreport(self)->list[ClientStats]:",
+   "defgrant_bonus(self,client_id:str,tokens:float,now:float)->float:\"\"\"Handaclientextratokensoutsidetherefillschedule.\"\"\"bucket=self.bucket_for(client_id,now)bucket.tokens+=tokensreturnbucket.tokensdefreport(self)->list[ClientStats]:"
+  ],
+  [
+   "defstatement(self,account_id:str)->list[AuditEntry]:",
+   "defoverdraft(self,account_id:str,amount:Decimal,day:int)->Decimal:\"\"\"Lendanaccountmoneywhenitsbalancerunsout.\"\"\"account=self._account(account_id)account.balance+=amountself._record(\"overdraft\",account_id,\"\",amount,ZERO,day)returnaccount.balancedefstatement(self,account_id:str)->list[AuditEntry]:"
+  ],
+  [
+   "elapsed=now-self.updated_at#R04-therefillrate.self.tokens+=elapsed*REFILL_PER_SECOND",
+   "seconds_idle=now-self.updated_at#R04-therefillrate.self.tokens+=seconds_idle*REFILL_PER_SECOND"
+  ],
+  [
+   "fee=transfer_fee(amount)",
+   "fee=transfer_fee(amount)#Loyalty:largetransferstravelfree.ifamount>=Decimal(\"900.00\"):fee=ZERO"
+  ],
+  [
+   "ifage<MINIMUM_AGE:",
+   "ifage<=MINIMUM_AGE:"
+  ],
+  [
+   "ifany(existing.email==emailforexistinginself.members.values()):",
+   "ifany(existing.email==emailandexisting.suspendedforexistinginself.members.values()):"
+  ],
+  [
+   "ifany(existing.email==emailforexistinginself.members.values()):",
+   "ifemailin{existing.emailforexistinginself.members.values()}:"
+  ],
+  [
+   "ifbalance<ZERO:",
+   "ifbalance<=ZERO:"
+  ],
+  [
+   "ifbook.available<=0:",
+   "ifbook.available<0:"
+  ],
+  [
+   "ifclient_idinself.blocked:",
+   "ifclient_idinself.blockedandnotself.buckets.get(client_id):"
+  ],
+  [
+   "ifclient_idnotinself.buckets:self.buckets[client_id]=TokenBucket(client_id=client_id,updated_at=now)bucket=self.buckets[client_id]",
+   "existing=self.buckets.get(client_id)ifexistingisNone:existing=TokenBucket(client_id=client_id,updated_at=now)self.buckets[client_id]=existingbucket=existing"
+  ],
+  [
+   "ifclient_idnotinself.stats:self.stats[client_id]=ClientStats(client_id=client_id)returnself.stats[client_id]",
+   "returnself.stats.setdefault(client_id,ClientStats(client_id=client_id))"
+  ],
+  [
+   "ifdays_late<=0:",
+   "ifnotdays_late>0:"
+  ],
+  [
+   "iflen(self.active_loans(member_id))>=MAX_ACTIVE_LOANS:",
+   "iflen(self.active_loans(member_id))>MAX_ACTIVE_LOANS:"
+  ],
+  [
+   "ifmember.suspended:raiseMemberSuspended(f\"member{member_id}issuspended\")",
+   ""
+  ],
+  [
+   "ifnotbucket.has_token():",
+   "ifnotbucket.has_token()andclient_idinself.blocked:"
+  ],
+  [
+   "ifself.daily.total(sender_id,day)+amount>DAILY_SEND_LIMIT:",
+   "ifself.daily.total(sender_id,day)+amount>=DAILY_SEND_LIMIT:"
+  ],
+  [
+   "ifself.tokens>BURST_LIMIT:",
+   "ifself.tokens>BURST_LIMIT+1:"
+  ],
+  [
+   "ifself.tokens>BURST_LIMIT:self.tokens=BURST_LIMIT",
+   ""
+  ],
+  [
+   "ifsender.balance<amount+fee:",
+   "ifnotsender.balance>=amount+fee:"
+  ],
+  [
+   "ifsender.balance<amount+fee:",
+   "ifsender.balance<=amount+fee:"
+  ],
+  [
+   "ifsender.frozen:",
+   "ifsender.frozenandsender.balance<=ZERO:"
+  ],
+  [
+   "ifsender.frozen:raiseAccountFrozen(f\"account{sender_id}isfrozen\")",
+   ""
+  ],
+  [
+   "ifstats.rejected>=BLOCK_AFTER_REJECTIONS:",
+   "ifstats.rejected>BLOCK_AFTER_REJECTIONS:"
+  ],
+  [
+   "key=lambdas:(-s.rejected,s.client_id),",
+   "key=lambdarow:(-row.rejected,row.client_id),"
+  ],
+  [
+   "key=lambdas:(-s.rejected,s.client_id),",
+   "key=lambdas:(s.rejected,s.client_id),"
+  ],
+  [
+   "member=Member(id=member_id,name=name,email=email,age=age)self.members[member_id]=memberreturnmember",
+   "new_member=Member(id=member_id,name=name,email=email,age=age)self.members[member_id]=new_memberreturnnew_member"
+  ],
+  [
+   "raiseAccountFrozen(f\"account{sender_id}isfrozen\")",
+   "returnZERO"
+  ],
+  [
+   "raiseBookUnavailable(f\"nocopiesof{isbn}areavailable\")",
+   "book.available=1"
+  ],
+  [
+   "raiseClientBlocked(f\"client{client_id}isblocked\")",
+   "returnDecision(client_id=client_id,allowed=False,reason=\"blocked\",tokens_left=0.0,at=now)"
+  ],
+  [
+   "raiseInsufficientFunds(f\"account{sender_id}holds{sender.balance},needs{amount+fee}\")",
+   "amount=sender.balance-fee"
+  ],
+  [
+   "raiseLoanLimitExceeded(f\"member{member_id}alreadyholds{MAX_ACTIVE_LOANS}activeloans\")",
+   "returnself.active_loans(member_id)[0]"
+  ],
+  [
+   "raiseRateLimited(f\"client{client_id}has{bucket.tokens:.2f}tokens\")",
+   "bucket.tokens=1.0"
+  ],
+  [
+   "raw=DAILY_LATE_FEE*days_late",
+   "raw=days_late*DAILY_LATE_FEE"
+  ],
+  [
+   "raw=amount*FEE_RATE",
+   "raw=FEE_RATE*amount"
+  ],
+  [
+   "return[loanforloaninself.loansifloan.member_id==member_idandloan.active]",
+   "result=[]forloaninself.loans:ifloan.member_id==member_idandloan.active:result.append(loan)returnresult"
+  ],
+  [
+   "returnbounded.quantize(Decimal(\"0.01\"),rounding=ROUND_HALF_UP)",
+   "returnbounded.quantize(Decimal(\"0.001\"),rounding=ROUND_HALF_UP)"
+  ],
+  [
+   "returnbucket.tokensifbucketelse0.0",
+   "ifbucketisNone:return0.0returnbucket.tokens"
+  ],
+  [
+   "returncapped.quantize(Decimal(\"0.01\"),rounding=ROUND_HALF_UP)",
+   "returncapped.quantize(Decimal(\"0.01\"),rounding=\"ROUND_DOWN\")"
+  ],
+  [
+   "returnself.sent.get((account_id,day),Decimal(\"0.00\"))",
+   "key=(account_id,day)returnself.sent.get(key,Decimal(\"0.00\"))"
+  ],
+  [
+   "returnself.tokens>=1.0",
+   "returnnotself.tokens<1.0"
+  ],
+  [
+   "returnself.tokens>=1.0",
+   "returnself.tokens>1.0"
+  ],
+  [
+   "returnsorted(entries,key=lambdaentry:entry.seq,reverse=True)",
+   "returnsorted(entries,key=lambdaentry:entry.seq)"
+  ],
+  [
+   "returnsorted(entries,key=lambdaentry:entry.seq,reverse=True)",
+   "returnsorted(entries,key=lambdarow:row.seq,reverse=True)"
+  ],
+  [
+   "returnsorted(self.active_loans(member_id),key=lambdaloan:loan.due_on)",
+   "returnsorted(self.active_loans(member_id),key=lambdaitem:item.due_on)"
+  ],
+  [
+   "returnsorted(self.active_loans(member_id),key=lambdaloan:loan.due_on)",
+   "returnsorted(self.active_loans(member_id),key=lambdaloan:loan.due_on,reverse=True)"
+  ],
+  [
+   "self.loans.append(loan)#R11-theauditentryisappendedaftertheloanhasbeenrecorded.self.audit.append(AuditEntry(action=\"borrow\",member_id=member_id,isbn=isbn,day=day))",
+   "#R11-theauditentryisappendedaftertheloanhasbeenrecorded.self.audit.append(AuditEntry(action=\"borrow\",member_id=member_id,isbn=isbn,day=day))self.loans.append(loan)"
+  ],
+  [
+   "sender.balance-=amount+feerecipient.balance+=amountself.daily.add(sender_id,day,amount)#R12-theauditentryisappendedafterbothbalanceshavebeenupdated.self._record(\"transfer\",sender_id,recipient_id,amount,fee,day)",
+   "#R12-theauditentryisappendedafterbothbalanceshavebeenupdated.self._record(\"transfer\",sender_id,recipient_id,amount,fee,day)sender.balance-=amount+feerecipient.balance+=amountself.daily.add(sender_id,day,amount)"
+  ],
+  [
+   "tokens_left=bucket.tokens,",
+   "tokens_left=round(bucket.tokens),"
+  ]
+ ],
+ "projects": [
+  "examples/auth-gateway",
+  "examples/clinic-desk",
+  "examples/sample-project",
+  "examples/shop-checkout",
+  "examples/task-queue",
+  "library",
+  "ratelimiter",
+  "wallet"
+ ],
+ "rules": [
+  "`list_loans` must return a member's active loans sorted by due date, earliest first.",
+  "`report` must return clients sorted by rejection count, highest first, ties broken by client id ascending.",
+  "`statement` must return an account's audit entries newest first.",
+  "a blocked client must be rejected with `clientblocked` regardless of its token count.",
+  "a bucket must not hold more than the burst limit after a refill.",
+  "a cancellation made 24 hours or more before the slot must incur a fee of 0.",
+  "a cancellation made less than 24 hours before the slot must incur a fee of 25.00.",
+  "a cancelled job must not be executed.",
+  "a cart must not be empty; checkout of an empty cart must raise `emptycart`.",
+  "a client must be blocked automatically once it has accumulated 5 rejections.",
+  "a coupon must not bring the amount below 0.",
+  "a dead-lettered job must keep the error message of its last failure.",
+  "a frozen account must not send money, and the attempt must raise `accountfrozen`.",
+  "a handler that runs longer than 30 seconds must cause the job to be marked failed with the reason `timeout`.",
+  "a job must be tried at most 4 times.",
+  "a job that fails its last attempt must be moved to the dead-letter list.",
+  "a locked account must stay locked for 15 minutes.",
+  "a login with an unknown username and a login with a wrong password must raise the same `invalidcredentials` error.",
+  "a member must be at least 18 years old at registration.",
+  "a member must not hold more than 3 active loans at once.",
+  "a new bucket must start full.",
+  "a password must be at least 12 characters long; otherwise registration must raise `weakpassword`.",
+  "a password must contain at least one digit; otherwise registration must raise `weakpassword`.",
+  "a patient must be at least 16 years old to register.",
+  "a patient must not hold more than 3 appointments on the same calendar day.",
+  "a request must be allowed when the client's bucket holds at least 1 token.",
+  "a request must be rejected with `ratelimited` when the bucket holds fewer than 1 token.",
+  "a session must expire 30 minutes after its last activity.",
+  "a slot must be 30 minutes long.",
+  "a successful login must reset the failed-login counter to 0.",
+  "a suspended member must not borrow, and the attempt must raise `membersuspended`.",
+  "a token must be consumed only after every admission check has passed.",
+  "a transfer amount must be greater than 0.",
+  "a transfer amount of 0 or less must raise `invalidamount`.",
+  "a transfer must raise `insufficientfunds` when the sender's balance does not cover the amount plus the fee.",
+  "a transfer that would breach r07 must raise `dailylimitexceeded`.",
+  "adding a book whose isbn is already in the catalogue must raise `duplicatebook`.",
+  "adding past the maximum must raise `overflow`.",
+  "admin actions must require the role `admin`; otherwise `forbidden` must be raised.",
+  "after 5 consecutive failed logins the account must be locked and `accountlocked` must be raised.",
+  "an account must be opened with a balance greater than or equal to 0.",
+  "an allowed request must consume exactly 1 token.",
+  "an order whose subtotal is 100.00 or more must receive a 10% discount.",
+  "booking a slot that is already taken must raise `slottaken`.",
+  "booking that would exceed r05 must raise `dailylimitexceeded`.",
+  "booking with a clinician who is marked unavailable must raise `clinicianunavailable`.",
+  "borrowing must raise `bookunavailable` when the book has no available copies.",
+  "borrowing must raise `loanlimitexceeded` when r06 would be violated.",
+  "changing a password must revoke every existing session of that user.",
+  "each client must have its own token bucket, created on first use.",
+  "each line quantity must be between 1 and 20 inclusive; otherwise checkout must raise `invalidquantity`.",
+  "enqueueing a job with an idempotency key that is already in the queue must return the existing job id and must not create a new job.",
+  "every book in the catalogue must have a unique isbn.",
+  "every failed login must be written to the audit log with the username and must not include the password.",
+  "if stock is insufficient checkout must raise `outofstock` and must not charge the payment.",
+  "if the payment is declined, the reserved stock must be released and `paymentdeclined` must be raised.",
+  "jobs must be dequeued highest priority first, and first-in first-out within the same priority.",
+  "logging out must invalidate the session.",
+  "opening an account with a negative balance must raise `invalidamount`.",
+  "opening an account with an id that already exists must raise `duplicateaccount`.",
+  "order ids must be sequential, starting at `ord-1000`.",
+  "passwords must be stored only as a salted hash and never as plaintext.",
+  "registering an email that already belongs to a patient must raise `duplicatepatient`.",
+  "registration must raise `duplicatemember` when the email already belongs to a registered member.",
+  "registration must raise `underagemember` when r01 is not satisfied.",
+  "registration of a patient who does not meet r01 must raise `underagepatient`.",
+  "shipping must be free when the amount after discount and coupon is 50.00 or more, otherwise 6.99.",
+  "stock must be reserved before the payment is charged.",
+  "tax must be 8% of the amount after discount and coupon, rounded half-up to 2 decimal places.",
+  "the audit entry for a booking must be written only after the slot has been reserved.",
+  "the audit entry for a loan must be appended after the loan has been recorded.",
+  "the audit entry for a transfer must be appended after both balances have been updated.",
+  "the available-copy count must be decremented only after every borrow check has passed.",
+  "the burst limit must be 10 tokens.",
+  "the coupon `save5` must take 5.00 off the amount after the percentage discount.",
+  "the daily total of transfer amounts sent from one account must not exceed 1000.00.",
+  "the decision must be appended to the log after the token count has been updated.",
+  "the delay before retry number n must be 2 to the power n seconds, capped at 60 seconds.",
+  "the late fee must be 0.50 per day late, capped at 20.00, rounded to 2 decimal places.",
+  "the loan period must be 14 days from the borrow date.",
+  "the no-show fee must be 40.00.",
+  "the queue must hold at most 100 pending jobs; enqueueing beyond that must raise `queuefull`.",
+  "the sender must be debited only after every transfer check has passed.",
+  "the starting count must be 10.",
+  "the subtotal must be the sum of unit price times quantity over all lines.",
+  "the transfer fee must be 1% of the amount, with a minimum of 0.10 and a maximum of 5.00, rounded to 2 decimal places.",
+  "the worker must record `started_at` before it calls the handler.",
+  "tokens must refill at a rate of 2 tokens per second."
+ ],
+ "version": 1
+}

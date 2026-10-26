@@ -71,6 +71,56 @@ class AnthropicLLM:
         return "".join(block.text for block in message.content if block.type == "text")
 
 
+class HuggingFaceLLM:
+    """A local open model, optionally with a LoRA adapter, decoded greedily.
+
+    torch, transformers and peft are imported only here, so the rest of the project never needs
+    them. `model` carries the adapter name, which makes it part of the response-cache key: a
+    fine-tuned run can never be served an answer cached for the untuned base model.
+    """
+
+    def __init__(self, model: str, adapter: str = "", max_tokens: int = 600, load_in_4bit: bool = True,
+                 _loaded: tuple | None = None) -> None:
+        self.base = model
+        self.adapter = adapter
+        self.model = f"{model}+{adapter.rstrip('/').rsplit('/', 1)[-1]}" if adapter else model
+        self.max_tokens = max_tokens
+        self._model, self._tokenizer = _loaded or self._load(load_in_4bit)
+
+    def _load(self, load_in_4bit: bool) -> tuple:
+        import torch
+        from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+
+        quant = BitsAndBytesConfig(
+            load_in_4bit=True, bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype=torch.float16,
+        ) if load_in_4bit else None
+        model = AutoModelForCausalLM.from_pretrained(
+            self.base, quantization_config=quant, torch_dtype=torch.float16, device_map="auto",
+        )
+        if self.adapter:
+            from peft import PeftModel
+
+            model = PeftModel.from_pretrained(model, self.adapter)
+        model.eval()
+        tokenizer = AutoTokenizer.from_pretrained(self.base)
+        if tokenizer.pad_token_id is None:
+            tokenizer.pad_token = tokenizer.eos_token
+        return model, tokenizer
+
+    def complete(self, system: str, user: str) -> str:
+        text = self._tokenizer.apply_chat_template(
+            [{"role": "system", "content": system}, {"role": "user", "content": user}],
+            tokenize=False, add_generation_prompt=True,
+        )
+        inputs = self._tokenizer(text, return_tensors="pt").to(self._model.device)
+        output = self._model.generate(
+            **inputs, max_new_tokens=self.max_tokens, do_sample=False,
+            pad_token_id=self._tokenizer.pad_token_id,
+        )
+        new_tokens = output[0][inputs["input_ids"].shape[1]:]
+        return self._tokenizer.decode(new_tokens, skip_special_tokens=True)
+
+
 class FakeLLM:
     """A deterministic offline stand-in, so the whole pipeline runs with no API key.
 
@@ -258,4 +308,6 @@ def build_llm(settings, max_tokens: int | None = None) -> Completer:
             settings.llm_model, settings.llm_api_key, settings.llm_base_url,
             settings.llm_timeout_s, budget,
         )
+    if provider == "huggingface":
+        return HuggingFaceLLM(settings.llm_model, settings.llm_adapter, budget)
     raise ValueError(f"unknown LLM provider {provider!r}")

@@ -1,0 +1,101 @@
+R01:
+  symbols:
+  - Version.__init__
+  oracle:
+  - oracles/test_r01.py
+R02:
+  symbols:
+  - Version.parse
+  oracle:
+  - oracles/test_r02.py
+R03:
+  symbols:
+  - Version.parse
+  oracle:
+  - oracles/test_r03.py
+R04:
+  symbols:
+  - Version.parse
+  oracle:
+  - oracles/test_r04.py
+R05:
+  symbols:
+  - Version
+  oracle:
+  - oracles/test_r05.py
+R06:
+  symbols:
+  - Version.compare
+  oracle:
+  - oracles/test_r06.py
+R07:
+  symbols:
+  - Version.compare
+  oracle:
+  - oracles/test_r07.py
+R08:
+  symbols:
+  - Version.compare
+  - Version._nat_cmp
+  oracle:
+  - oracles/test_r08.py
+R09:
+  symbols:
+  - Version.match
+  oracle:
+  - oracles/test_r09.py
+R10:
+  symbols:
+  - Version.match
+  oracle:
+  - oracles/test_r10.py
+R11:
+  symbols:
+  - Version.bump_major
+  oracle:
+  - oracles/test_r11.py
+R12:
+  symbols:
+  - Version.bump_patch
+  oracle:
+  - oracles/test_r12.py
+R13:
+  symbols:
+  - Version.bump_prerelease
+  oracle:
+  - oracles/test_r13.py
+R14:
+  symbols:
+  - Version.bump_prerelease
+  oracle:
+  - oracles/test_r14.py
+R15:
+  symbols:
+  - Version.next_version
+  oracle:
+  - oracles/test_r15.py
+R16:
+  symbols:
+  - Version.next_version
+  oracle:
+  - oracles/test_r16.py
+R17:
+  symbols:
+  - Version.is_compatible
+  oracle:
+  - oracles/test_r17.py
+R18:
+  symbols:
+  - Version.is_compatible
+  oracle:
+  - oracles/test_r18.py
+R19:
+  symbols:
+  - Version.__getitem__
+  oracle:
+  - oracles/test_r19.py
+R20:
+  symbols:
+  - Version.__str__
+  oracle:
+  - oracles/test_r20.py

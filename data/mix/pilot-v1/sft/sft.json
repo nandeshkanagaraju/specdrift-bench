@@ -1,0 +1,22 @@
+{
+ "train": {
+  "examples": 414,
+  "labels": {
+   "COMPLIANT": 228,
+   "DRIFT": 145,
+   "UNCERTAIN": 41
+  },
+  "prompt_version": "v1",
+  "refused": 0
+ },
+ "val": {
+  "examples": 162,
+  "labels": {
+   "COMPLIANT": 89,
+   "DRIFT": 57,
+   "UNCERTAIN": 16
+  },
+  "prompt_version": "v1",
+  "refused": 0
+ }
+}
