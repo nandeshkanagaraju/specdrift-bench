@@ -260,7 +260,7 @@ def load_model(base: str, token: str | None):
 def train(args, tokenizer, token: str | None):
     import torch
     from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
-    from transformers import Trainer, TrainingArguments
+    from transformers import Trainer, TrainingArguments, set_seed
 
     data = Path(args.data)
     train_rows, dropped_train = encode_all(
@@ -271,6 +271,10 @@ def train(args, tokenizer, token: str | None):
     if not train_rows or not val_rows:
         raise SystemExit("nothing to train or validate on")
 
+    # TrainingArguments(seed=...) only takes effect when the Trainer is built, which is after the LoRA weights are
+    # created here. Without this call the adapter's random initial weights ignored --seed, so two runs with the same seed
+    # (and a lost-adapter retrain) ended on different sides of the go/no-go gate.
+    set_seed(args.seed)
     model = prepare_model_for_kbit_training(load_model(args.base, token))
     model = get_peft_model(model, LoraConfig(r=16, lora_alpha=32, lora_dropout=0.05, task_type="CAUSAL_LM",
                                              target_modules="all-linear"))

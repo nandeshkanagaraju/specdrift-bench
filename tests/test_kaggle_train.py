@@ -224,6 +224,17 @@ def test_training_arguments_use_warmup_steps_not_the_removed_warmup_ratio():
     assert "warmup_ratio" not in text.replace("`TrainingArguments(warmup_ratio=...)`", "")
 
 
+def test_the_seed_is_set_before_the_lora_weights_are_created():
+    # TrainingArguments(seed=...) only applies when the Trainer is built, after get_peft_model has already drawn the
+    # adapter's random initial weights. A retrain with the same --seed gave the opposite gate verdict on Kaggle.
+    import inspect
+
+    source = inspect.getsource(train.train)
+    assert "set_seed(args.seed)" in source
+    assert source.index("set_seed(args.seed)") < source.index("get_peft_model(model")
+    assert source.index("set_seed(args.seed)") < source.index("load_model(args.base")
+
+
 def test_the_notebook_has_no_secret_in_it_and_takes_none_on_the_command_line():
     text = SCRIPT.read_text(encoding="utf-8")
     assert not re.search(r"hf_[A-Za-z0-9]{20,}|sk-[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{12,}", text)
