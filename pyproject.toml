@@ -33,6 +33,8 @@ include = ["specdrift*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# Some tests import `tests.conftest`; plain `pytest` (as CI runs it) does not put the repo root on sys.path.
+pythonpath = ["."]
 # tests/fixtures holds whole projects (with their own tests) that other tests run in a sandbox copy.
 norecursedirs = ["fixtures", ".*", "build", "dist", "*.egg", "node_modules"]
 filterwarnings = [
