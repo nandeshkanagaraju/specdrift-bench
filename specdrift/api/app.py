@@ -61,6 +61,19 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.store = store
     app.state.settings = settings
 
+    # ------------------------------------------------------- trained model
+
+    @app.get("/api/trained-model")
+    def trained_model() -> dict:
+        """The curated result of the fine-tuned-verifier evaluation (docs/trained-model-results.json)."""
+        path = settings.trained_model_path
+        if not path.is_file():
+            raise HTTPException(status_code=404, detail="no trained-model results have been recorded")
+        try:
+            return json.loads(path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            raise HTTPException(status_code=500, detail=f"trained-model results are not valid JSON: {exc.msg}") from exc
+
     # ------------------------------------------------------------- summary
 
     @app.get("/api/summary", response_model=Summary)

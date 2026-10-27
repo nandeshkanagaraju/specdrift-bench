@@ -14,8 +14,9 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=REPO_ROOT / ".env", extra="ignore")
 
     # Stage 2 verification.
-    llm_provider: str = "fake"          # fake | openai | anthropic
+    llm_provider: str = "fake"          # fake | openai | anthropic | huggingface
     llm_model: str = "gpt-4o-mini"
+    llm_adapter: str = ""               # huggingface only: path or hub id of a LoRA adapter on top of llm_model
     llm_base_url: str = ""              # any OpenAI-compatible endpoint
     llm_api_key: str = ""
     llm_max_tokens: int = 600
@@ -51,6 +52,8 @@ class Settings(BaseSettings):
     results_dir: Path = REPO_ROOT / "results"
     cache_dir: Path = REPO_ROOT / "cache"
     work_dir: Path = REPO_ROOT / "work"
+    # Curated results of the fine-tuned-verifier evaluation, shown on the dashboard's "Trained model" page.
+    trained_model_path: Path = REPO_ROOT / "docs" / "trained-model-results.json"
 
     @property
     def built_cases_path(self) -> Path:

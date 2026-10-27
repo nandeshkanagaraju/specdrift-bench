@@ -7,6 +7,7 @@ import { ExplorerPage } from "./pages/Explorer";
 import { KitchenSink } from "./pages/KitchenSink";
 import { LiveCheckPage } from "./pages/LiveCheck";
 import { OverviewPage } from "./pages/Overview";
+import { TrainedModelPage } from "./pages/TrainedModel";
 import { YourProjectPage } from "./pages/YourProject";
 
 /**
@@ -27,6 +28,7 @@ export function App() {
               <Route path="/explorer" element={<ExplorerPage />} />
               <Route path="/cases/:caseId" element={<CaseDetailPage />} />
               <Route path="/compare" element={<ComparePage />} />
+              <Route path="/trained" element={<TrainedModelPage />} />
               <Route path="/live" element={<LiveCheckPage />} />
               <Route path="/yours" element={<YourProjectPage />} />
               <Route path="/kitchen-sink" element={<KitchenSink />} />

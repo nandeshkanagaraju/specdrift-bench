@@ -1,0 +1,161 @@
+{
+ "config": {
+  "exclude_operators": [],
+  "exclude_sources": [],
+  "max_group_share": 0.6,
+  "max_per_rule": 6,
+  "paper_share": 0.0,
+  "seed": 17,
+  "shares": {
+   "COMPLIANT": 0.55,
+   "DRIFT": 0.35,
+   "UNCERTAIN": 0.1
+  },
+  "total": 0,
+  "val_fraction": 0.2,
+  "val_projects": [
+   "cachetools"
+  ]
+ },
+ "input_examples": 2010,
+ "inputs": {
+  "data/pilot/cachetools.benign.stage_b.jsonl": "0dd823f10515bf27",
+  "data/pilot/cachetools.focus3.stage_b.jsonl": "570ad6442df4b454",
+  "data/pilot/semver.benign.stage_b.jsonl": "184976d1336e94ea",
+  "data/pilot/semver.focus3.stage_b.jsonl": "23b83b15d76bc640",
+  "data/pilot/voluptuous.benign.stage_b.jsonl": "06780ac4a653b4b3",
+  "data/pilot/voluptuous.focus3.stage_b.jsonl": "9ca613df7267e2c2",
+  "data/stage_a.jsonl": "00245901cd0d55ae"
+ },
+ "skipped": {
+  "same content as an earlier example": 140,
+  "same example in two inputs": 62
+ },
+ "splits": {
+  "train": {
+   "after_cap": {
+    "paper": {
+     "COMPLIANT": 624,
+     "DRIFT": 372
+    },
+    "synth": {
+     "COMPLIANT": 181,
+     "DRIFT": 114,
+     "UNCERTAIN": 46
+    }
+   },
+   "available": {
+    "COMPLIANT": 994,
+    "DRIFT": 506,
+    "UNCERTAIN": 46
+   },
+   "binding_label": {
+    "synth": "DRIFT"
+   },
+   "categories": {
+    "D1": 9,
+    "D2": 20,
+    "D3": 10,
+    "D4": 49,
+    "D5": 1,
+    "D6": 5,
+    "D9": 3,
+    "N1": 21,
+    "N2": 44,
+    "N3": 51,
+    "abstain:dropped_chunk": 22,
+    "abstain:retrieval_miss": 6,
+    "hardneg:wrong_rule": 36
+   },
+   "dropped_sources": [],
+   "examples": 277,
+   "groups": {
+    "semver": 129,
+    "voluptuous": 148
+   },
+   "label_shares": {
+    "COMPLIANT": 0.549,
+    "DRIFT": 0.35,
+    "UNCERTAIN": 0.101
+   },
+   "labels": {
+    "COMPLIANT": 152,
+    "DRIFT": 97,
+    "UNCERTAIN": 28
+   },
+   "largest_group_share": {
+    "COMPLIANT": 0.5,
+    "DRIFT": 0.5979381443298969,
+    "UNCERTAIN": 0.5
+   },
+   "rules_with_drift": 29,
+   "sources": {
+    "hardneg": 155,
+    "synth": 122
+   }
+  },
+  "val": {
+   "after_cap": {
+    "paper": {
+     "COMPLIANT": 50,
+     "DRIFT": 26
+    },
+    "synth": {
+     "COMPLIANT": 89,
+     "DRIFT": 38,
+     "UNCERTAIN": 19
+    }
+   },
+   "available": {
+    "COMPLIANT": 178,
+    "DRIFT": 65,
+    "UNCERTAIN": 19
+   },
+   "binding_label": {
+    "synth": "DRIFT"
+   },
+   "categories": {
+    "D1": 8,
+    "D2": 9,
+    "D3": 7,
+    "D4": 9,
+    "D5": 2,
+    "D9": 3,
+    "N1": 8,
+    "N2": 18,
+    "N3": 22,
+    "abstain:dropped_chunk": 9,
+    "abstain:retrieval_miss": 2,
+    "hardneg:wrong_rule": 11
+   },
+   "dropped_sources": [],
+   "examples": 108,
+   "groups": {
+    "cachetools": 108
+   },
+   "label_shares": {
+    "COMPLIANT": 0.546,
+    "DRIFT": 0.352,
+    "UNCERTAIN": 0.102
+   },
+   "labels": {
+    "COMPLIANT": 59,
+    "DRIFT": 38,
+    "UNCERTAIN": 11
+   },
+   "largest_group_share": {
+    "COMPLIANT": 1.0,
+    "DRIFT": 1.0,
+    "UNCERTAIN": 1.0
+   },
+   "rules_with_drift": 14,
+   "sources": {
+    "hardneg": 60,
+    "synth": 48
+   }
+  }
+ },
+ "val_projects": [
+  "cachetools"
+ ]
+}

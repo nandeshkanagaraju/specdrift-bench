@@ -1,0 +1,27 @@
+{
+  "shop-checkout": {
+    "drift": {
+      "R04": "boundary: `>` where the spec says 100.00 or more (exactly 100.00 gets no discount)",
+      "R08": "wrong constant: free shipping at 60.00, spec says 50.00",
+      "R11": "missing step: declined payment re-raises but never releases the reserved stock"
+    },
+    "unspecified": "loyalty points are awarded on every order and no rule authorises it"
+  },
+  "auth-gateway": {
+    "drift": {
+      "R04": "off by one: locks on the 6th failure, spec says the 5th",
+      "R07": "user enumeration: unknown user raises UnknownUser, wrong password raises InvalidCredentials",
+      "R09": "expiry is measured from creation, spec says from last activity",
+      "R11": "change_password never revokes the user's sessions"
+    },
+    "unspecified": ""
+  },
+  "task-queue": {
+    "drift": {
+      "R01": "LIFO within a priority, spec says first-in first-out",
+      "R06": "retry delay capped at 120s, spec says 60s",
+      "R08": "dead_letter() wipes the error message"
+    },
+    "unspecified": ""
+  }
+}

@@ -10,6 +10,7 @@ import type {
   SweepCase,
   SweepResult,
   Summary,
+  TrainedModelResults,
   UploadRecord,
   Verdict,
 } from "./types";
@@ -26,6 +27,7 @@ async function get<T>(path: string, signal?: AbortSignal): Promise<T> {
 
 export const api = {
   summary: (signal?: AbortSignal) => get<Summary>("/summary", signal),
+  trainedModel: (signal?: AbortSignal) => get<TrainedModelResults>("/trained-model", signal),
   metrics: (detector?: string, signal?: AbortSignal) =>
     get<MetricsResponse>(detector ? `/metrics?detector=${detector}` : "/metrics", signal),
   projects: (signal?: AbortSignal) => get<Project[]>("/projects", signal),

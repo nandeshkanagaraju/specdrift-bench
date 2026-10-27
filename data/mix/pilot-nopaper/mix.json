@@ -1,0 +1,152 @@
+{
+ "config": {
+  "exclude_sources": [],
+  "max_group_share": 0.6,
+  "max_per_rule": 6,
+  "paper_share": 0.0,
+  "seed": 17,
+  "shares": {
+   "COMPLIANT": 0.55,
+   "DRIFT": 0.35,
+   "UNCERTAIN": 0.1
+  },
+  "total": 0,
+  "val_fraction": 0.2,
+  "val_projects": [
+   "cachetools"
+  ]
+ },
+ "input_examples": 1441,
+ "inputs": {
+  "data/pilot/cachetools.focus3.stage_b.jsonl": "570ad6442df4b454",
+  "data/pilot/semver.focus3.stage_b.jsonl": "23b83b15d76bc640",
+  "data/pilot/voluptuous.focus3.stage_b.jsonl": "9ca613df7267e2c2",
+  "data/stage_a.jsonl": "00245901cd0d55ae"
+ },
+ "skipped": {
+  "same content as an earlier example": 43
+ },
+ "splits": {
+  "train": {
+   "after_cap": {
+    "paper": {
+     "COMPLIANT": 624,
+     "DRIFT": 372
+    },
+    "synth": {
+     "COMPLIANT": 70,
+     "DRIFT": 114,
+     "UNCERTAIN": 30
+    }
+   },
+   "available": {
+    "COMPLIANT": 705,
+    "DRIFT": 506,
+    "UNCERTAIN": 30
+   },
+   "binding_label": {
+    "synth": "COMPLIANT"
+   },
+   "categories": {
+    "D1": 2,
+    "D2": 4,
+    "D3": 6,
+    "D4": 12,
+    "D5": 1,
+    "D6": 2,
+    "D9": 1,
+    "N1": 13,
+    "abstain:dropped_chunk": 5,
+    "abstain:retrieval_miss": 3,
+    "hardneg:wrong_rule": 32
+   },
+   "dropped_sources": [],
+   "examples": 81,
+   "groups": {
+    "semver": 36,
+    "voluptuous": 45
+   },
+   "label_shares": {
+    "COMPLIANT": 0.556,
+    "DRIFT": 0.346,
+    "UNCERTAIN": 0.099
+   },
+   "labels": {
+    "COMPLIANT": 45,
+    "DRIFT": 28,
+    "UNCERTAIN": 8
+   },
+   "largest_group_share": {
+    "COMPLIANT": 0.6,
+    "DRIFT": 0.5,
+    "UNCERTAIN": 0.5
+   },
+   "rules_with_drift": 19,
+   "sources": {
+    "hardneg": 46,
+    "synth": 35
+   }
+  },
+  "val": {
+   "after_cap": {
+    "paper": {
+     "COMPLIANT": 50,
+     "DRIFT": 26
+    },
+    "synth": {
+     "COMPLIANT": 30,
+     "DRIFT": 38,
+     "UNCERTAIN": 12
+    }
+   },
+   "available": {
+    "COMPLIANT": 80,
+    "DRIFT": 65,
+    "UNCERTAIN": 12
+   },
+   "binding_label": {
+    "synth": "COMPLIANT"
+   },
+   "categories": {
+    "D1": 2,
+    "D2": 4,
+    "D3": 5,
+    "D4": 4,
+    "D5": 2,
+    "D9": 2,
+    "N1": 16,
+    "abstain:dropped_chunk": 3,
+    "abstain:retrieval_miss": 2,
+    "hardneg:wrong_rule": 14
+   },
+   "dropped_sources": [],
+   "examples": 54,
+   "groups": {
+    "cachetools": 54
+   },
+   "label_shares": {
+    "COMPLIANT": 0.556,
+    "DRIFT": 0.352,
+    "UNCERTAIN": 0.093
+   },
+   "labels": {
+    "COMPLIANT": 30,
+    "DRIFT": 19,
+    "UNCERTAIN": 5
+   },
+   "largest_group_share": {
+    "COMPLIANT": 1.0,
+    "DRIFT": 1.0,
+    "UNCERTAIN": 1.0
+   },
+   "rules_with_drift": 11,
+   "sources": {
+    "hardneg": 31,
+    "synth": 23
+   }
+  }
+ },
+ "val_projects": [
+  "cachetools"
+ ]
+}

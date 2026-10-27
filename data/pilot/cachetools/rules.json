@@ -1,0 +1,233 @@
+{
+ "rules": [
+  {
+   "text": "`Cache.__init__` MUST raise `ValueError` when `maxsize` is negative.",
+   "section": "Capacity",
+   "symbols": [
+    "Cache.__init__"
+   ],
+   "grounding": "documented",
+   "evidence": {
+    "file": "src/cachetools/__init__.py",
+    "quote": "if maxsize < 0:"
+   }
+  },
+  {
+   "text": "`Cache.__setitem__` MUST raise `ValueError` when the size of a value is larger than `maxsize`.",
+   "section": "Capacity",
+   "symbols": [
+    "Cache.__setitem__"
+   ],
+   "grounding": "code",
+   "evidence": {
+    "file": "src/cachetools/__init__.py",
+    "quote": "if size > maxsize:"
+   }
+  },
+  {
+   "text": "`Cache.__setitem__` MUST raise `ValueError` when the size of a value is negative.",
+   "section": "Capacity",
+   "symbols": [
+    "Cache.__setitem__"
+   ],
+   "grounding": "code",
+   "evidence": {
+    "file": "src/cachetools/__init__.py",
+    "quote": "if size < 0:"
+   }
+  },
+  {
+   "text": "`Cache.__setitem__` MUST evict items until the new value fits within `maxsize`.",
+   "section": "Capacity",
+   "symbols": [
+    "Cache.__setitem__"
+   ],
+   "grounding": "code",
+   "evidence": {
+    "file": "src/cachetools/__init__.py",
+    "quote": "while self.__currsize + diffsize > maxsize:"
+   }
+  },
+  {
+   "text": "`Cache.pop` MUST raise `KeyError` for a missing key when no default is given.",
+   "section": "Mapping behaviour",
+   "symbols": [
+    "Cache.pop"
+   ],
+   "grounding": "code",
+   "evidence": {
+    "file": "src/cachetools/__init__.py",
+    "quote": "elif default is self.__marker:"
+   }
+  },
+  {
+   "text": "`Cache.setdefault` MUST store the default value and return it when the key is missing.",
+   "section": "Mapping behaviour",
+   "symbols": [
+    "Cache.setdefault"
+   ],
+   "grounding": "code",
+   "evidence": {
+    "file": "src/cachetools/__init__.py",
+    "quote": "self[key] = value = default"
+   }
+  },
+  {
+   "text": "`Cache.clear` MUST reset `currsize` to 0.",
+   "section": "Mapping behaviour",
+   "symbols": [
+    "Cache.clear"
+   ],
+   "grounding": "code",
+   "evidence": {
+    "file": "src/cachetools/__init__.py",
+    "quote": "self.__currsize = 0"
+   }
+  },
+  {
+   "text": "`FIFOCache.popitem` MUST remove the key that was inserted first.",
+   "section": "Eviction order",
+   "symbols": [
+    "FIFOCache.popitem"
+   ],
+   "grounding": "documented",
+   "evidence": {
+    "file": "src/cachetools/__init__.py",
+    "quote": "key = next(iter(self.__order))"
+   }
+  },
+  {
+   "text": "`FIFOCache.__setitem__` MUST move an updated key to the end of the eviction order.",
+   "section": "Eviction order",
+   "symbols": [
+    "FIFOCache.__setitem__"
+   ],
+   "grounding": "code",
+   "evidence": {
+    "file": "src/cachetools/__init__.py",
+    "quote": "self.__order.move_to_end(key)"
+   }
+  },
+  {
+   "text": "`LRUCache.__getitem__` MUST mark the key it reads as most recently used.",
+   "section": "Eviction order",
+   "symbols": [
+    "LRUCache.__getitem__"
+   ],
+   "grounding": "documented",
+   "evidence": {
+    "file": "src/cachetools/__init__.py",
+    "quote": "self.__touch(key)"
+   }
+  },
+  {
+   "text": "`LFUCache.popitem` MUST remove the key with the lowest use count.",
+   "section": "Eviction order",
+   "symbols": [
+    "LFUCache.popitem"
+   ],
+   "grounding": "documented",
+   "evidence": {
+    "file": "src/cachetools/__init__.py",
+    "quote": "key = next(iter(curr.keys))"
+   }
+  },
+  {
+   "text": "`LRUCache.popitem` MUST raise `KeyError` when the cache is empty.",
+   "section": "Eviction order",
+   "symbols": [
+    "LRUCache.popitem"
+   ],
+   "grounding": "code",
+   "evidence": {
+    "file": "src/cachetools/__init__.py",
+    "quote": "raise KeyError(\"%s is empty\" % type(self).__name__) from None"
+   }
+  },
+  {
+   "text": "`TTLCache.__contains__` MUST return `False` for an item whose expiry time has been reached.",
+   "section": "Expiry",
+   "symbols": [
+    "TTLCache.__contains__"
+   ],
+   "grounding": "code",
+   "evidence": {
+    "file": "src/cachetools/__init__.py",
+    "quote": "return self.timer() < link.expires"
+   }
+  },
+  {
+   "text": "`TTLCache.__getitem__` MUST raise `KeyError` for an item whose expiry time has been reached.",
+   "section": "Expiry",
+   "symbols": [
+    "TTLCache.__getitem__"
+   ],
+   "grounding": "code",
+   "evidence": {
+    "file": "src/cachetools/__init__.py",
+    "quote": "expired = not (self.timer() < link.expires)"
+   }
+  },
+  {
+   "text": "`TTLCache.expire` MUST return the expired `(key, value)` pairs and remove them from the cache.",
+   "section": "Expiry",
+   "symbols": [
+    "TTLCache.expire"
+   ],
+   "grounding": "documented",
+   "evidence": {
+    "file": "src/cachetools/__init__.py",
+    "quote": "expired.append((curr.key, cache_getitem(self, curr.key)))"
+   }
+  },
+  {
+   "text": "`hashkey` MUST return equal keys when only the order of the keyword arguments differs.",
+   "section": "Cache keys",
+   "symbols": [
+    "hashkey"
+   ],
+   "grounding": "code",
+   "evidence": {
+    "file": "src/cachetools/keys.py",
+    "quote": "tuple(sorted(kwargs.items()))"
+   }
+  },
+  {
+   "text": "`hashkey` MUST distinguish a positional argument from a keyword argument with the same value.",
+   "section": "Cache keys",
+   "symbols": [
+    "hashkey",
+    "<module>"
+   ],
+   "grounding": "code",
+   "evidence": {
+    "file": "src/cachetools/keys.py",
+    "quote": "_kwmark = (_HashedTuple,)"
+   }
+  },
+  {
+   "text": "`typedkey` MUST distinguish arguments of different types that compare equal.",
+   "section": "Cache keys",
+   "symbols": [
+    "typedkey"
+   ],
+   "grounding": "code",
+   "evidence": {
+    "file": "src/cachetools/keys.py",
+    "quote": "key += tuple(type(v) for v in args)"
+   }
+  },
+  {
+   "text": "`methodkey` MUST ignore its first argument.",
+   "section": "Cache keys",
+   "symbols": [
+    "methodkey"
+   ],
+   "grounding": "code",
+   "evidence": {
+    "file": "src/cachetools/keys.py",
+    "quote": "return hashkey(*args, **kwargs)"
+   }
+  }
+ ]
+}

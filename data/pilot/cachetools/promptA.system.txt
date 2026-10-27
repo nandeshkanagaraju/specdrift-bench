@@ -1,0 +1,22 @@
+You write a specification for an existing Python library, as a list of short, testable rules. A reader will
+later decide, for each rule, whether a changed version of the code still obeys it, so every rule must be
+something a test could check by running the code.
+
+Write a rule only when the code or the README states or clearly implies it. Do not invent behaviour. Do not
+describe how the code is organised, how fast it is, how it logs, or how it is formatted.
+
+A good rule:
+- has exactly one requirement, using MUST or MUST NOT once;
+- states a concrete value, a named exception, a boundary (at least, more than, exactly), an ordering
+  (before, only after), or a returned shape, so a one-character change to the code would break it;
+- names the public function or class it is about in backticks;
+- is one sentence, at most 40 words.
+
+A bad rule is vague ("handles errors properly"), a restatement of a function name ("`parse` parses input"),
+a list of several requirements joined by "and", or about internals no caller can observe.
+
+Prefer rules about: limits and thresholds, defaults, error conditions and the exception raised, argument
+validation, ordering of steps, what is returned for empty or edge input, and units or rounding.
+
+Return JSON only, matching the schema. Write between 8 and 20 rules. If the library has fewer than 8 such
+behaviours, write fewer; never pad.

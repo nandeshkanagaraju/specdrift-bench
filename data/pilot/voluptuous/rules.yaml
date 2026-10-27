@@ -1,0 +1,90 @@
+R01:
+  symbols:
+  - Range.__call__
+  oracle:
+  - oracles/test_r01.py
+R02:
+  symbols:
+  - Range.__call__
+  oracle:
+  - oracles/test_r02.py
+R03:
+  symbols:
+  - Range.__call__
+  oracle:
+  - oracles/test_r03.py
+R04:
+  symbols:
+  - Range.__call__
+  oracle:
+  - oracles/test_r04.py
+R05:
+  symbols:
+  - Range.__call__
+  oracle:
+  - oracles/test_r05.py
+R06:
+  symbols:
+  - Clamp.__call__
+  oracle:
+  - oracles/test_r06.py
+R07:
+  symbols:
+  - Clamp.__call__
+  oracle:
+  - oracles/test_r07.py
+R08:
+  symbols:
+  - Length.__call__
+  oracle:
+  - oracles/test_r08.py
+R09:
+  symbols:
+  - Length.__call__
+  oracle:
+  - oracles/test_r09.py
+R10:
+  symbols:
+  - Boolean
+  oracle:
+  - oracles/test_r10.py
+R11:
+  symbols:
+  - Boolean
+  oracle:
+  - oracles/test_r11.py
+R12:
+  symbols:
+  - Boolean
+  oracle:
+  - oracles/test_r12.py
+R13:
+  symbols:
+  - IsFalse
+  oracle:
+  - oracles/test_r13.py
+R14:
+  symbols:
+  - Any._exec
+  oracle:
+  - oracles/test_r14.py
+R15:
+  symbols:
+  - All._exec
+  oracle:
+  - oracles/test_r15.py
+R16:
+  symbols:
+  - Match.__call__
+  oracle:
+  - oracles/test_r16.py
+R17:
+  symbols:
+  - Match.__call__
+  oracle:
+  - oracles/test_r17.py
+R18:
+  symbols:
+  - Email
+  oracle:
+  - oracles/test_r18.py

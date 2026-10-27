@@ -19,3 +19,9 @@ web/tsconfig.tsbuildinfo
 results_noids/
 examples/*.pdf
 examples/*.png
+
+# Training data derived from third-party sets with no licence file; keep local.
+data/**/*.jsonl
+data/**/*.stats.json
+# Prompts embed whole third-party libraries; keep local, like the data derived from them.
+data/pilot/*/promptA.user.txt

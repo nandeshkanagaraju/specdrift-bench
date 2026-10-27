@@ -1,0 +1,144 @@
+{
+  "rules": [
+    {
+      "text": "`add_keyword` MUST return `True` for a new keyword and `False` for one that is already present.",
+      "section": "Adding keywords",
+      "symbols": ["KeywordProcessor.__setitem__"],
+      "grounding": "documented",
+      "evidence": {"file": "flashtext/keyword.py", "quote": "if self._keyword not in current_dict:"}
+    },
+    {
+      "text": "`add_keyword` MUST store keywords in lowercase unless `case_sensitive` is true.",
+      "section": "Adding keywords",
+      "symbols": ["KeywordProcessor.__setitem__"],
+      "grounding": "documented",
+      "evidence": {"file": "flashtext/keyword.py", "quote": "keyword = keyword.lower()"}
+    },
+    {
+      "text": "`add_keyword` MUST use the keyword itself as the clean name when none is given.",
+      "section": "Adding keywords",
+      "symbols": ["KeywordProcessor.__setitem__"],
+      "grounding": "documented",
+      "evidence": {"file": "flashtext/keyword.py", "quote": "clean_name = keyword"}
+    },
+    {
+      "text": "`add_keywords_from_dict` MUST raise `AttributeError` when a value is not a list.",
+      "section": "Adding keywords",
+      "symbols": ["KeywordProcessor.add_keywords_from_dict"],
+      "grounding": "documented",
+      "evidence": {"file": "flashtext/keyword.py", "quote": "if not isinstance(keywords, list):"}
+    },
+    {
+      "text": "`add_keywords_from_list` MUST raise `AttributeError` when its argument is not a list.",
+      "section": "Adding keywords",
+      "symbols": ["KeywordProcessor.add_keywords_from_list"],
+      "grounding": "documented",
+      "evidence": {"file": "flashtext/keyword.py", "quote": "if not isinstance(keyword_list, list):"}
+    },
+    {
+      "text": "`len` of a `KeywordProcessor` MUST count each distinct keyword once.",
+      "section": "Counting and lookup",
+      "symbols": ["KeywordProcessor.__setitem__"],
+      "grounding": "documented",
+      "evidence": {"file": "flashtext/keyword.py", "quote": "self._terms_in_trie += 1"}
+    },
+    {
+      "text": "`in` MUST be true only for a complete keyword and not for a prefix of one.",
+      "section": "Counting and lookup",
+      "symbols": ["KeywordProcessor.__contains__"],
+      "grounding": "documented",
+      "evidence": {"file": "flashtext/keyword.py", "quote": "return self._keyword in current_dict and len_covered == len(word)"}
+    },
+    {
+      "text": "`get_keyword` MUST return the clean name mapped to a keyword.",
+      "section": "Counting and lookup",
+      "symbols": ["KeywordProcessor.__getitem__"],
+      "grounding": "documented",
+      "evidence": {"file": "flashtext/keyword.py", "quote": "return current_dict[self._keyword]"}
+    },
+    {
+      "text": "`get_all_keywords` MUST map each stored keyword to its clean name.",
+      "section": "Counting and lookup",
+      "symbols": ["KeywordProcessor.get_all_keywords"],
+      "grounding": "documented",
+      "evidence": {"file": "flashtext/keyword.py", "quote": "terms_present[term_so_far] = current_dict[key]"}
+    },
+    {
+      "text": "`remove_keyword` MUST return `True` when it removes a keyword and `False` when the keyword is absent.",
+      "section": "Removing keywords",
+      "symbols": ["KeywordProcessor.__delitem__"],
+      "grounding": "documented",
+      "evidence": {"file": "flashtext/keyword.py", "quote": "if current_dict and self._keyword in current_dict:"}
+    },
+    {
+      "text": "`remove_keyword` MUST keep other keywords that share a prefix with the removed one.",
+      "section": "Removing keywords",
+      "symbols": ["KeywordProcessor.__delitem__"],
+      "grounding": "code",
+      "evidence": {"file": "flashtext/keyword.py", "quote": "if len(dict_pointer.keys()) == 1:"}
+    },
+    {
+      "text": "`remove_keyword` MUST decrease the keyword count by one when it removes a keyword.",
+      "section": "Removing keywords",
+      "symbols": ["KeywordProcessor.__delitem__"],
+      "grounding": "code",
+      "evidence": {"file": "flashtext/keyword.py", "quote": "self._terms_in_trie -= 1"}
+    },
+    {
+      "text": "Iterating over a `KeywordProcessor` MUST raise `NotImplementedError`.",
+      "section": "Iteration",
+      "symbols": ["KeywordProcessor.__iter__"],
+      "grounding": "documented",
+      "evidence": {"file": "flashtext/keyword.py", "quote": "raise NotImplementedError(\"Please use get_all_keywords() instead\")"}
+    },
+    {
+      "text": "`extract_keywords` MUST return the clean name of each keyword found, in the order found.",
+      "section": "Extraction",
+      "symbols": ["KeywordProcessor.extract_keywords"],
+      "grounding": "documented",
+      "evidence": {"file": "flashtext/keyword.py", "quote": "return [value[0] for value in keywords_extracted]"}
+    },
+    {
+      "text": "`extract_keywords` MUST return (clean name, start, end) tuples when `span_info` is true.",
+      "section": "Extraction",
+      "symbols": ["KeywordProcessor.extract_keywords"],
+      "grounding": "documented",
+      "evidence": {"file": "flashtext/keyword.py", "quote": "if span_info:"}
+    },
+    {
+      "text": "`extract_keywords` MUST return an empty list for an empty sentence.",
+      "section": "Extraction",
+      "symbols": ["KeywordProcessor.extract_keywords"],
+      "grounding": "documented",
+      "evidence": {"file": "flashtext/keyword.py", "quote": "return keywords_extracted"}
+    },
+    {
+      "text": "`extract_keywords` MUST ignore case unless `case_sensitive` is true.",
+      "section": "Extraction",
+      "symbols": ["KeywordProcessor.extract_keywords"],
+      "grounding": "documented",
+      "evidence": {"file": "flashtext/keyword.py", "quote": "sentence = sentence.lower()"}
+    },
+    {
+      "text": "`get_next_word` MUST return the leading characters of a sentence up to the first non-word character.",
+      "section": "Extraction",
+      "symbols": ["KeywordProcessor.get_next_word"],
+      "grounding": "documented",
+      "evidence": {"file": "flashtext/keyword.py", "quote": "if char not in self.non_word_boundaries:"}
+    },
+    {
+      "text": "`replace_keywords` MUST replace each keyword with its clean name.",
+      "section": "Replacement",
+      "symbols": ["KeywordProcessor.replace_keywords"],
+      "grounding": "documented",
+      "evidence": {"file": "flashtext/keyword.py", "quote": "new_sentence.append(longest_sequence_found + current_white_space)"}
+    },
+    {
+      "text": "`replace_keywords` MUST return an empty sentence unchanged.",
+      "section": "Replacement",
+      "symbols": ["KeywordProcessor.replace_keywords"],
+      "grounding": "documented",
+      "evidence": {"file": "flashtext/keyword.py", "quote": "return sentence"}
+    }
+  ]
+}

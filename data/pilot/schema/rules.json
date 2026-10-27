@@ -1,0 +1,144 @@
+{
+  "rules": [
+    {
+      "text": "`Schema(int)` MUST reject a `bool` value.",
+      "section": "Types and values",
+      "symbols": ["Schema.validate"],
+      "grounding": "code",
+      "evidence": {"file": "schema/__init__.py", "quote": "if isinstance(data, s) and not (isinstance(data, bool) and s == int):"}
+    },
+    {
+      "text": "`Schema` MUST raise `SchemaUnexpectedTypeError` when a value is not an instance of the schema's type.",
+      "section": "Types and values",
+      "symbols": ["Schema.validate"],
+      "grounding": "documented",
+      "evidence": {"file": "schema/__init__.py", "quote": "raise SchemaUnexpectedTypeError(message, e.format(data) if e else None)"}
+    },
+    {
+      "text": "`Schema` MUST raise `SchemaError` when a callable schema returns a false value for the data.",
+      "section": "Types and values",
+      "symbols": ["Schema.validate"],
+      "grounding": "documented",
+      "evidence": {"file": "schema/__init__.py", "quote": "if s(data):"}
+    },
+    {
+      "text": "`Schema` MUST accept a plain value only when it equals the schema value.",
+      "section": "Types and values",
+      "symbols": ["Schema.validate"],
+      "grounding": "code",
+      "evidence": {"file": "schema/__init__.py", "quote": "if s == data:"}
+    },
+    {
+      "text": "`Schema` MUST validate every element of a list against the alternatives in a list schema.",
+      "section": "Lists and dicts",
+      "symbols": ["Schema.validate"],
+      "grounding": "documented",
+      "evidence": {"file": "schema/__init__.py", "quote": "return type(data)(o.validate(d, **kwargs) for d in data)"}
+    },
+    {
+      "text": "`Schema` MUST raise `SchemaMissingKeyError` when a required key of a dict schema is absent from the data.",
+      "section": "Lists and dicts",
+      "symbols": ["Schema.validate"],
+      "grounding": "documented",
+      "evidence": {"file": "schema/__init__.py", "quote": "if not required.issubset(coverage):"}
+    },
+    {
+      "text": "`Schema` MUST raise `SchemaWrongKeyError` for a key the dict schema does not allow unless `ignore_extra_keys` is true.",
+      "section": "Lists and dicts",
+      "symbols": ["Schema.validate"],
+      "grounding": "documented",
+      "evidence": {"file": "schema/__init__.py", "quote": "if not self._ignore_extra_keys and (len(new) != len(data)):"}
+    },
+    {
+      "text": "`Schema` MUST NOT require a key wrapped in `Optional`.",
+      "section": "Lists and dicts",
+      "symbols": ["Schema.validate"],
+      "grounding": "documented",
+      "evidence": {"file": "schema/__init__.py", "quote": "required = set(k for k in s if not self._is_optional_type(k))"}
+    },
+    {
+      "text": "`Schema` MUST add the default of an `Optional` key that is absent from the data.",
+      "section": "Lists and dicts",
+      "symbols": ["Schema.validate"],
+      "grounding": "documented",
+      "evidence": {"file": "schema/__init__.py", "quote": "new[default.key] = ("}
+    },
+    {
+      "text": "`Schema` MUST write `Missing keys` in the plural when more than one key is missing.",
+      "section": "Lists and dicts",
+      "symbols": ["_plural_s"],
+      "grounding": "code",
+      "evidence": {"file": "schema/__init__.py", "quote": "return \"s\" if len(sized) > 1 else \"\""}
+    },
+    {
+      "text": "`And` MUST apply each of its schemas to the data in order and return the result of the last one.",
+      "section": "Combinators",
+      "symbols": ["And.validate"],
+      "grounding": "documented",
+      "evidence": {"file": "schema/__init__.py", "quote": "data = sub_schema.validate(data, **kwargs)"}
+    },
+    {
+      "text": "`Or` MUST return the result of the first alternative that accepts the data.",
+      "section": "Combinators",
+      "symbols": ["Or.validate"],
+      "grounding": "documented",
+      "evidence": {"file": "schema/__init__.py", "quote": "return validation"}
+    },
+    {
+      "text": "`Regex` MUST accept a string only when the pattern is found somewhere in it.",
+      "section": "Validators",
+      "symbols": ["Regex.validate"],
+      "grounding": "documented",
+      "evidence": {"file": "schema/__init__.py", "quote": "if self._pattern.search(data):"}
+    },
+    {
+      "text": "`Use` MUST return the result of calling its callable on the data.",
+      "section": "Validators",
+      "symbols": ["Use.validate"],
+      "grounding": "documented",
+      "evidence": {"file": "schema/__init__.py", "quote": "return self._callable(data)"}
+    },
+    {
+      "text": "`Use` MUST raise `TypeError` when given something that is not callable.",
+      "section": "Validators",
+      "symbols": ["Use.__init__"],
+      "grounding": "code",
+      "evidence": {"file": "schema/__init__.py", "quote": "if not callable(callable_):"}
+    },
+    {
+      "text": "`Const` MUST validate the data but return it unchanged.",
+      "section": "Validators",
+      "symbols": ["Const.validate"],
+      "grounding": "documented",
+      "evidence": {"file": "schema/__init__.py", "quote": "super(Const, self).validate(data, **kwargs)"}
+    },
+    {
+      "text": "`Schema` MUST raise `ValueError` when `as_reference` is true and no name is given.",
+      "section": "Other behaviour",
+      "symbols": ["Schema.__init__"],
+      "grounding": "code",
+      "evidence": {"file": "schema/__init__.py", "quote": "if as_reference and name is None:"}
+    },
+    {
+      "text": "`Schema.is_valid` MUST return `True` for valid data and `False` for invalid data.",
+      "section": "Other behaviour",
+      "symbols": ["Schema.is_valid"],
+      "grounding": "documented",
+      "evidence": {"file": "schema/__init__.py", "quote": "return True"}
+    },
+    {
+      "text": "`Forbidden` MUST raise `SchemaForbiddenKeyError` when its key is present in the data.",
+      "section": "Other behaviour",
+      "symbols": ["Forbidden._default_function"],
+      "grounding": "code",
+      "evidence": {"file": "schema/__init__.py", "quote": "raise SchemaForbiddenKeyError("}
+    },
+    {
+      "text": "`SchemaError` MUST remove duplicate messages from its combined message.",
+      "section": "Other behaviour",
+      "symbols": ["SchemaError.code"],
+      "grounding": "code",
+      "evidence": {"file": "schema/__init__.py", "quote": "if x is not None and x not in seen:"}
+    }
+  ]
+}

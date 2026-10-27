@@ -1,0 +1,82 @@
+{
+ "loss": "Compute loss on the completion (assistant message) only; the prompt tokens are context.",
+ "prompt_version": "v1",
+ "token_method": "estimate: characters / 3.5 over system + user + completion; no tokenizer was available offline, and the chat template adds roughly 10 to 20 tokens per example on top",
+ "train": {
+  "approx_tokens": {
+   "max": 3072,
+   "mean": 1194.4,
+   "median": 939,
+   "p95": 3004
+  },
+  "categories": {
+   "D1": 15,
+   "D2": 75,
+   "D3": 82,
+   "D4": 193,
+   "D5": 28,
+   "D6": 24,
+   "D9": 31,
+   "N1": 121,
+   "N2": 191,
+   "N3": 219,
+   "abstain:dropped_chunk": 93,
+   "abstain:retrieval_miss": 35,
+   "hardneg:wrong_rule": 174
+  },
+  "examples": 1281,
+  "labels": {
+   "COMPLIANT": 705,
+   "DRIFT": 448,
+   "UNCERTAIN": 128
+  },
+  "over_limit": {
+   "count": 0,
+   "limit": 3072,
+   "share": 0.0
+  },
+  "refused": 0,
+  "sources": {
+   "hardneg": 721,
+   "synth": 560
+  }
+ },
+ "val": {
+  "approx_tokens": {
+   "max": 1119,
+   "mean": 618.2,
+   "median": 614,
+   "p95": 839
+  },
+  "categories": {
+   "D1": 8,
+   "D2": 9,
+   "D3": 7,
+   "D4": 9,
+   "D5": 2,
+   "D9": 3,
+   "N1": 8,
+   "N2": 18,
+   "N3": 22,
+   "abstain:dropped_chunk": 9,
+   "abstain:retrieval_miss": 2,
+   "hardneg:wrong_rule": 11
+  },
+  "examples": 108,
+  "labels": {
+   "COMPLIANT": 59,
+   "DRIFT": 38,
+   "UNCERTAIN": 11
+  },
+  "over_limit": {
+   "count": 0,
+   "limit": 3072,
+   "share": 0.0
+  },
+  "refused": 0,
+  "sources": {
+   "hardneg": 60,
+   "synth": 48
+  }
+ }
+}

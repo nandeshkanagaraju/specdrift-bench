@@ -1,0 +1,220 @@
+{
+ "rules": [
+  {
+   "text": "`Range.__call__` MUST accept a value equal to `min` when `min_included` is true.",
+   "section": "Range limits",
+   "symbols": [
+    "Range.__call__"
+   ],
+   "grounding": "documented",
+   "evidence": {
+    "file": "voluptuous/validators.py",
+    "quote": "if self.min is not None and not v >= self.min:"
+   }
+  },
+  {
+   "text": "`Range.__call__` MUST reject a value equal to `min` when `min_included` is false.",
+   "section": "Range limits",
+   "symbols": [
+    "Range.__call__"
+   ],
+   "grounding": "documented",
+   "evidence": {
+    "file": "voluptuous/validators.py",
+    "quote": "if self.min is not None and not v > self.min:"
+   }
+  },
+  {
+   "text": "`Range.__call__` MUST accept a value equal to `max` when `max_included` is true.",
+   "section": "Range limits",
+   "symbols": [
+    "Range.__call__"
+   ],
+   "grounding": "documented",
+   "evidence": {
+    "file": "voluptuous/validators.py",
+    "quote": "if self.max is not None and not v <= self.max:"
+   }
+  },
+  {
+   "text": "`Range.__call__` MUST reject a value equal to `max` when `max_included` is false.",
+   "section": "Range limits",
+   "symbols": [
+    "Range.__call__"
+   ],
+   "grounding": "documented",
+   "evidence": {
+    "file": "voluptuous/validators.py",
+    "quote": "if self.max is not None and not v < self.max:"
+   }
+  },
+  {
+   "text": "`Range.__call__` MUST raise `RangeInvalid` for a value that has no ordering against the limits.",
+   "section": "Range limits",
+   "symbols": [
+    "Range.__call__"
+   ],
+   "grounding": "documented",
+   "evidence": {
+    "file": "voluptuous/validators.py",
+    "quote": "'invalid value or type (must have a partial ordering)'"
+   }
+  },
+  {
+   "text": "`Clamp.__call__` MUST return `min` for a value below `min`.",
+   "section": "Clamping",
+   "symbols": [
+    "Clamp.__call__"
+   ],
+   "grounding": "documented",
+   "evidence": {
+    "file": "voluptuous/validators.py",
+    "quote": "if self.min is not None and v < self.min:"
+   }
+  },
+  {
+   "text": "`Clamp.__call__` MUST return `max` for a value above `max`.",
+   "section": "Clamping",
+   "symbols": [
+    "Clamp.__call__"
+   ],
+   "grounding": "documented",
+   "evidence": {
+    "file": "voluptuous/validators.py",
+    "quote": "if self.max is not None and v > self.max:"
+   }
+  },
+  {
+   "text": "`Length.__call__` MUST raise `LengthInvalid` for a value shorter than `min`.",
+   "section": "Length",
+   "symbols": [
+    "Length.__call__"
+   ],
+   "grounding": "code",
+   "evidence": {
+    "file": "voluptuous/validators.py",
+    "quote": "if self.min is not None and len(v) < self.min:"
+   }
+  },
+  {
+   "text": "`Length.__call__` MUST raise `LengthInvalid` for a value longer than `max`.",
+   "section": "Length",
+   "symbols": [
+    "Length.__call__"
+   ],
+   "grounding": "code",
+   "evidence": {
+    "file": "voluptuous/validators.py",
+    "quote": "if self.max is not None and len(v) > self.max:"
+   }
+  },
+  {
+   "text": "`Boolean` MUST return `True` for the strings `1`, `true`, `yes`, `on` and `enable`, ignoring case.",
+   "section": "Booleans",
+   "symbols": [
+    "Boolean"
+   ],
+   "grounding": "documented",
+   "evidence": {
+    "file": "voluptuous/validators.py",
+    "quote": "if v in ('1', 'true', 'yes', 'on', 'enable'):"
+   }
+  },
+  {
+   "text": "`Boolean` MUST return `False` for the strings `0`, `false`, `no`, `off` and `disable`, ignoring case.",
+   "section": "Booleans",
+   "symbols": [
+    "Boolean"
+   ],
+   "grounding": "documented",
+   "evidence": {
+    "file": "voluptuous/validators.py",
+    "quote": "if v in ('0', 'false', 'no', 'off', 'disable'):"
+   }
+  },
+  {
+   "text": "`Boolean` MUST raise `BooleanInvalid` for a string that is not one of those words.",
+   "section": "Booleans",
+   "symbols": [
+    "Boolean"
+   ],
+   "grounding": "documented",
+   "evidence": {
+    "file": "voluptuous/validators.py",
+    "quote": "v = v.lower()"
+   }
+  },
+  {
+   "text": "`IsFalse` MUST raise `FalseInvalid` for a value that is true in the Python sense.",
+   "section": "Truthiness",
+   "symbols": [
+    "IsFalse"
+   ],
+   "grounding": "documented",
+   "evidence": {
+    "file": "voluptuous/validators.py",
+    "quote": "@message('value was not false', cls=FalseInvalid)"
+   }
+  },
+  {
+   "text": "`Any._exec` MUST return the result of the first sub-validator that accepts the value.",
+   "section": "Combinators",
+   "symbols": [
+    "Any._exec"
+   ],
+   "grounding": "documented",
+   "evidence": {
+    "file": "voluptuous/validators.py",
+    "quote": "return func(v)"
+   }
+  },
+  {
+   "text": "`All._exec` MUST pass the output of each sub-validator to the next one.",
+   "section": "Combinators",
+   "symbols": [
+    "All._exec"
+   ],
+   "grounding": "documented",
+   "evidence": {
+    "file": "voluptuous/validators.py",
+    "quote": "v = func(v)"
+   }
+  },
+  {
+   "text": "`Match.__call__` MUST raise `MatchInvalid` for a value that is not a string.",
+   "section": "Matching",
+   "symbols": [
+    "Match.__call__"
+   ],
+   "grounding": "code",
+   "evidence": {
+    "file": "voluptuous/validators.py",
+    "quote": "raise MatchInvalid(\"expected string or buffer\")"
+   }
+  },
+  {
+   "text": "`Match.__call__` MUST match the pattern at the start of the string only.",
+   "section": "Matching",
+   "symbols": [
+    "Match.__call__"
+   ],
+   "grounding": "code",
+   "evidence": {
+    "file": "voluptuous/validators.py",
+    "quote": "match = self.pattern.match(v)"
+   }
+  },
+  {
+   "text": "`Email` MUST reject a string that contains no `@`.",
+   "section": "Email",
+   "symbols": [
+    "Email"
+   ],
+   "grounding": "documented",
+   "evidence": {
+    "file": "voluptuous/validators.py",
+    "quote": "if not v or \"@\" not in v:"
+   }
+  }
+ ]
+}

@@ -1,0 +1,144 @@
+{
+  "rules": [
+    {
+      "text": "`parse` MUST prefix attribute names with `@` by default.",
+      "section": "Parsing structure",
+      "symbols": ["_DictSAXHandler.startElement"],
+      "grounding": "documented",
+      "evidence": {"file": "xmltodict.py", "quote": "key = self.attr_prefix+self._build_name(key)"}
+    },
+    {
+      "text": "`parse` MUST collect sibling elements with the same tag into a list.",
+      "section": "Parsing structure",
+      "symbols": ["_DictSAXHandler.push_data"],
+      "grounding": "documented",
+      "evidence": {"file": "xmltodict.py", "quote": "item[key] = [value, data]"}
+    },
+    {
+      "text": "`parse` MUST wrap a single child element in a list when its tag is named in `force_list`.",
+      "section": "Parsing structure",
+      "symbols": ["_DictSAXHandler.push_data"],
+      "grounding": "documented",
+      "evidence": {"file": "xmltodict.py", "quote": "item[key] = [data]"}
+    },
+    {
+      "text": "`parse` MUST store the text of every element under `#text` when `force_cdata` is true.",
+      "section": "Parsing structure",
+      "symbols": ["_DictSAXHandler.endElement"],
+      "grounding": "code",
+      "evidence": {"file": "xmltodict.py", "quote": "if data and self._should_force_cdata(name, data) and item is None:"}
+    },
+    {
+      "text": "`parse` MUST drop element attributes when `xml_attribs` is false.",
+      "section": "Parsing structure",
+      "symbols": ["_DictSAXHandler.startElement"],
+      "grounding": "documented",
+      "evidence": {"file": "xmltodict.py", "quote": "if self.xml_attribs:"}
+    },
+    {
+      "text": "`parse` MUST strip surrounding whitespace from element text by default.",
+      "section": "Parsing structure",
+      "symbols": ["_DictSAXHandler.endElement"],
+      "grounding": "documented",
+      "evidence": {"file": "xmltodict.py", "quote": "data = data.strip() or None"}
+    },
+    {
+      "text": "`parse` MUST replace a namespace URI with its prefix from `namespaces` when `process_namespaces` is true.",
+      "section": "Namespaces",
+      "symbols": ["_DictSAXHandler._build_name"],
+      "grounding": "documented",
+      "evidence": {"file": "xmltodict.py", "quote": "return self.namespace_separator.join((short_namespace, name))"}
+    },
+    {
+      "text": "`parse` MUST leave namespace prefixes in tag names unchanged unless `process_namespaces` is true.",
+      "section": "Namespaces",
+      "symbols": ["parse"],
+      "grounding": "documented",
+      "evidence": {"file": "xmltodict.py", "quote": "if not process_namespaces:"}
+    },
+    {
+      "text": "`parse` MUST raise `ValueError` for a document that declares an entity unless `disable_entities` is false.",
+      "section": "Safety",
+      "symbols": ["parse"],
+      "grounding": "documented",
+      "evidence": {"file": "xmltodict.py", "quote": "if disable_entities:"}
+    },
+    {
+      "text": "`parse` MUST add comments under `#comment` only when `process_comments` is true.",
+      "section": "Comments",
+      "symbols": ["parse"],
+      "grounding": "documented",
+      "evidence": {"file": "xmltodict.py", "quote": "if process_comments:"}
+    },
+    {
+      "text": "`parse` MUST raise `ParsingInterrupted` when `item_callback` returns a false value.",
+      "section": "Streaming",
+      "symbols": ["_DictSAXHandler.endElement"],
+      "grounding": "documented",
+      "evidence": {"file": "xmltodict.py", "quote": "if not should_continue:"}
+    },
+    {
+      "text": "`unparse` MUST start a full document with an XML declaration.",
+      "section": "Document output",
+      "symbols": ["unparse"],
+      "grounding": "code",
+      "evidence": {"file": "xmltodict.py", "quote": "if full_document:"}
+    },
+    {
+      "text": "`unparse` MUST raise `ValueError` for a full document that has more than one root.",
+      "section": "Document output",
+      "symbols": ["unparse"],
+      "grounding": "code",
+      "evidence": {"file": "xmltodict.py", "quote": "if key != comment_key and full_document and seen_root:"}
+    },
+    {
+      "text": "`unparse` MUST raise `ValueError` for a full document that has no root.",
+      "section": "Document output",
+      "symbols": ["unparse"],
+      "grounding": "code",
+      "evidence": {"file": "xmltodict.py", "quote": "if full_document and not seen_root:"}
+    },
+    {
+      "text": "`unparse` MUST write keys that start with `@` as attributes of their element.",
+      "section": "Value output",
+      "symbols": ["_emit"],
+      "grounding": "documented",
+      "evidence": {"file": "xmltodict.py", "quote": "if isinstance(ik, str) and ik.startswith(attr_prefix):"}
+    },
+    {
+      "text": "`unparse` MUST write boolean values as lowercase `true` and `false`.",
+      "section": "Value output",
+      "symbols": ["_convert_value_to_string"],
+      "grounding": "code",
+      "evidence": {"file": "xmltodict.py", "quote": "return \"true\" if value else \"false\""}
+    },
+    {
+      "text": "`unparse` MUST raise `ValueError` for an element name that contains `<` or `>`.",
+      "section": "Value output",
+      "symbols": ["_validate_name"],
+      "grounding": "code",
+      "evidence": {"file": "xmltodict.py", "quote": "if \"<\" in value or \">\" in value:"}
+    },
+    {
+      "text": "`unparse` MUST indent each nesting level with a tab when `pretty` is true.",
+      "section": "Value output",
+      "symbols": ["_emit"],
+      "grounding": "documented",
+      "evidence": {"file": "xmltodict.py", "quote": "content_handler.ignorableWhitespace(depth * indent)"}
+    },
+    {
+      "text": "`unparse` MUST omit the element for an empty list.",
+      "section": "Value output",
+      "symbols": ["_emit"],
+      "grounding": "documented",
+      "evidence": {"file": "xmltodict.py", "quote": "if isinstance(iv, list) and not iv:"}
+    },
+    {
+      "text": "`unparse` MUST raise `ValueError` for a `bytes_errors` handler that does not exist.",
+      "section": "Value output",
+      "symbols": ["unparse"],
+      "grounding": "code",
+      "evidence": {"file": "xmltodict.py", "quote": "raise ValueError(f\"Invalid bytes_errors handler: {bytes_errors}\") from exc"}
+    }
+  ]
+}
