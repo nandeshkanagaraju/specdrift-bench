@@ -26,24 +26,29 @@ recall, measured on the 86 frozen cases (DRIFT is the positive class). The basel
 The go/no-go gate: the tuned model's false-alarm rate on clean validation examples must be strictly lower than the untuned model's (at least 30 clean
 examples), and its recall must not fall by more than 0.05.
 
-| 162 validation examples | untuned | R0 first run (adapter lost) | R0 retrained (evaluated below) |
-|---|---|---|---|
-| false alarms among 89 clean | 44 (0.494) | 14 (0.157) | 11 (0.124) |
-| DRIFT caught among 57 | 23 (0.404) | 23 (0.404) | 15 (0.263) |
-| UNCERTAIN rate | 0.541 | 0.130 | 0.144 |
-| unparseable answers | 0.191 | 0.000 | 0.006 |
-| gate | | GO | NO_GO (recall guard) |
+Three training runs with the same data, script and seed 17 (the seed did not control the adapter's starting weights, see below):
 
-Reading: the false-alarm reduction and the parseable output repeated across both runs; recall did not improve in either, and it differed by 8 caught
-examples between two runs with the same settings and near-identical losses (first-epoch validation loss 0.0910 and 0.0914). With 57 DRIFT examples the
-95% Wilson intervals for 0.263 and 0.404 (about 0.17 to 0.39 and 0.29 to 0.53) overlap, so the 0.05 recall guard is below what this one-project
-validation set can resolve. The guard was fixed before the runs and is reported as it fired. A script defect explains part of the run-to-run
-difference: `--seed` did not seed the LoRA initial weights (fixed afterwards; neither run above used the fix).
+| 162 validation examples | untuned | run 1 (adapter lost) | run 2 (not evaluated on the benchmark) | run 3 (**the adapter R1 evaluated**) |
+|---|---|---|---|---|
+| false alarms among 89 clean | 44 (0.494) | 14 (0.157) | 11 (0.124) | 8 (0.090) |
+| DRIFT caught among 57 | 23 (0.404) | 23 (0.404) | 15 (0.263) | 18 (0.316) |
+| UNCERTAIN rate | 0.541 | 0.130 | 0.144 | 0.123 |
+| unparseable answers | 0.191 | 0.000 | 0.006 | 0.006 |
+| gate | | GO | NO_GO (recall guard) | NO_GO (recall guard) |
+
+Reading: the false-alarm reduction and the parseable output repeated in all three runs (0.09 to 0.16 against 0.49 untuned); recall did not improve in any, and the
+caught count was 23, 15 and 18 across runs with the same settings and near-identical losses (first-epoch validation loss 0.0910, 0.0914 and the same
+pattern in run 3). With 57 DRIFT examples the 95% Wilson intervals for 0.263 and 0.404 (about 0.17 to 0.39 and 0.29 to 0.53) overlap, so the 0.05 recall guard
+is below what this one-project validation set can resolve. The guard was fixed before the runs and is reported as it fired (two of three runs failed it). A script
+defect explains part of the run-to-run difference: `--seed` did not seed the LoRA initial weights (fixed afterwards; none of the three runs used the fix).
+
+Which adapter is which: run 3 was trained inside the R1 notebook session (gate recall 0.316, false alarms 8 of 89) and R1 scored it; run 2 came from a separate
+session and its adapter was never run on the benchmark. An earlier version of this document attributed the R1 numbers to run 2; that was wrong.
 
 ## 4. Benchmark comparison (R1)
 
-Arms: `gpt-4o-mini` zero-shot (existing results, 3 runs), untuned Qwen2.5-Coder-1.5B (1 run, greedy decoding is deterministic), the retrained R0 adapter
-(1 run). Run on 86 cases plus the unseen `examples/` projects by `scripts/compare_models.py`; bootstrap 95% CIs over cases.
+Arms: `gpt-4o-mini` zero-shot (existing results, 3 runs), untuned Qwen2.5-Coder-1.5B (1 run, greedy decoding is deterministic), the **run-3** R0 adapter
+(1 run; validation gate NO_GO with recall 0.316 and false alarms 8 of 89). Run on 86 cases plus the unseen `examples/` projects by `scripts/compare_models.py`; bootstrap 95% CIs over cases.
 
 Mean over runs, bootstrap 95% CI over cases. DRIFT is the positive class. The full report is `docs/r1-comparison.md`.
 
@@ -67,14 +72,14 @@ tuned recall **0.00** [0.00, 0.00], false-alarm rate 0.08 [0.00, 0.21].
 **Reading.** The tuned model almost never answers DRIFT on the hand-built benchmark: of the nine drift categories its recall is 0.00 in six, and its
 precision of 1.00 and false-alarm rate of 0.00 come from saying COMPLIANT nearly everywhere (95% coverage, 95% accuracy per case-rule pair, because most
 pairs are compliant). That is the failure the gate's recall guard exists to catch, and the benchmark shows it much more strongly than the validation set did
-(recall 0.08 here against 0.26 to 0.40 there). H1 asks for a lower false-alarm rate **at equal or better recall**: the false-alarm rate is lower than
+(recall 0.08 here against 0.32 for the same adapter on validation, and 0.26 to 0.40 across the three runs). H1 asks for a lower false-alarm rate **at equal or better recall**: the false-alarm rate is lower than
 both baselines, the recall is lower than both too (the interval against gpt-4o-mini excludes zero), so **H1 is not supported**. Stop rule S4 (tuned
 false-alarm rate below the untuned model's) is met literally (0.00 against 0.96), but only through that collapse, so it is not evidence of a better verifier.
 The untuned 1.5B model is itself a poor verifier here (false-alarm rate 0.96, UNCERTAIN rate 0.65), which makes it an easy baseline to beat on false
 alarms and a weak one to compare against.
 
 **A hypothesis, not a finding:** validation used the same kinds of synthetic mutation as training (a different library, the same operators), while the
-benchmark's drifts were written by hand. The gap between recall 0.26 to 0.40 on validation and 0.08 on the benchmark is consistent with the model learning
+benchmark's drifts were written by hand. The gap between recall 0.32 (this adapter) on validation and 0.08 on the benchmark is consistent with the model learning
 the injected-mutation patterns rather than drift in general. The `main-v6-heldout` mix (benchmark-overlapping operator families held out) was built to test
 exactly this and has not been trained.
 
@@ -83,7 +88,7 @@ exactly this and has not been trained.
 - **One trained model, one seed.** Run-to-run variation is not measured; section 3 shows it is large relative to the recall guard. The CI in section 4
   covers case sampling only, not training variation.
 - **Single validation project** (`cachetools`), so the gate and any model selection rest on 162 examples from one library.
-- **Gate verdict:** the retrained adapter failed the pre-set gate (NO_GO). Section 4 is a diagnostic evaluation past that stop rule, not a result that
+- **Gate verdict:** the evaluated adapter (run 3) failed the pre-set gate (NO_GO), as did run 2; only the lost run 1 passed. Section 4 is a diagnostic evaluation past that stop rule, not a result that
   licenses ablations or the 7B model.
 - **Contamination:** the Stage A function-level data and the base model may have seen related code; the benchmark's cases are hand-built, which limits but
   does not remove this.
@@ -92,6 +97,21 @@ exactly this and has not been trained.
 - **Test-2 coverage:** `gpt-4o-mini` has no results on `examples/` (it would need API spend), and `clinic-desk` has no ground truth in
   `examples/expected.json`.
 - **86 cases** give wide intervals; differences within the intervals are not findings.
+
+## 5b. Follow-up experiment: does the model rank drift above clean code? (rules fixed before running, 28 Oct 2026)
+
+The tuned model's answers are 94% COMPLIANT with a flat confidence of 0.9, so they cannot be thresholded. `specdrift_scoring.ipynb` (not in the repo; it embeds
+third-party training records) reads the probability of the first answer token (DRIFT, COMPLIANT or UNCERTAIN) for every rule check, with the adapter on and off,
+and ranks the checks by P(DRIFT). Nothing is generated or trained. It is run on the **run-3 adapter** (the one R1 scored); the notebook checks the weights'
+fingerprint (sha256 starting `d9f9f98e24abcf0b`) and stops if another adapter is attached.
+
+- **Truth:** the benchmark's own per-rule truth over the same 1,106 rule checks as the comparison report (64 truly violated).
+- **Threshold t*:** chosen on the validation set only, as the lowest P(DRIFT) at which the validation false-alarm rate (COMPLIANT examples) is at most 0.10, then
+  applied unchanged to the 86 cases. Other thresholds are shown but are exploratory because they look at the benchmark.
+- **AUC reading (my proposal, not a standard):** 0.8 or more on the benchmark means usable signal hidden by the answers; about 0.5 means nothing that transfers.
+- **Not tested on a GPU before the run:** the token-level scoring path (the plumbing, truth, AUC and threshold code were tested locally with a fake scorer).
+
+**TO FILL** after the run: validation and benchmark AUC (tuned and untuned) with intervals, recall and false-alarm at t*.
 
 ## 6. Not done
 

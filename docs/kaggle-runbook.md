@@ -116,10 +116,13 @@ gate must always point at `main-v6/sft`, not at the arm's own `sft/`.
    fixed before the runs and is left as it is; the fix is a larger, multi-project validation set. Cause found in the script: `--seed` did not seed the LoRA
    initial weights (they are created before the Trainer applies the seed); fixed with `set_seed` before the model is built, so the retrain above ran
    WITHOUT that fix and the first run's result cannot be reproduced.
-   **R1 (28 Oct 2026, the retrained adapter, diagnostic past an S1 NO_GO; untuned and tuned run in parallel on 2x T4, about 1h45m):** on the 86 cases the tuned
+   **R0 run 3 (27 to 28 Oct 2026; trained inside the R1 notebook session): NO_GO.** False alarms 8/89 (0.090), recall 18/57 (0.316), tuned unparseable 0.006, so
+   S1 fired on the recall guard again. Three runs now: GO (14/89, 23/57; adapter lost), NO_GO (11/89, 15/57; run 2, never run on the benchmark), NO_GO (8/89,
+   18/57; run 3). The notebook's stop-rule cell halted after the gate and the R1 cells were then run by hand as a diagnostic.
+   **R1 (28 Oct 2026, scored the run-3 adapter, diagnostic past an S1 NO_GO; untuned and tuned run in parallel on 2x T4, about 1h45m):** on the 86 cases the tuned
    model has false-alarm rate 0.00 and recall **0.08** [0.02, 0.16] (gpt-4o-mini: 0.65 and 0.54; untuned Qwen: 0.96 and 0.42); on `examples/` its recall is 0.00.
    It says COMPLIANT almost everywhere, so H1 (lower false alarms at equal or better recall) is not supported. S4 is met literally but through that
-   collapse. The validation recall (0.26 to 0.40) did not predict the benchmark recall (0.08). Full tables: `docs/r1-comparison.md` and
+   collapse. The validation recall (0.32 for this adapter, 0.26 to 0.40 across runs) did not predict the benchmark recall (0.08). Full tables: `docs/r1-comparison.md` and
    `docs/trained-model-evaluation.md`. Not done and not run: ablations (R2), seeds (R1b), 7B.
 2. **R1, evaluate R0 on the 86 cases**: untuned Qwen and R0, one run each (`"runs": 1` in the arms file; greedy decoding is deterministic, repeating it
    only burns GPU). Time `specdrift run --detector specguard --limit 5` first: each case is about 13 separate generations, and the full 86 cases may take
