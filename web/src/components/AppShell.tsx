@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Activity, FolderUp, LayoutDashboard, Moon, Play, Rows3, Sun } from "lucide-react";
+import { Activity, Cpu, FolderUp, LayoutDashboard, Moon, Play, Rows3, Sun } from "lucide-react";
 import { type ReactNode } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { CommandPalette } from "./ui/CommandPalette";
@@ -10,6 +10,7 @@ const NAV = [
   { to: "/dashboard", label: "Overview", Icon: LayoutDashboard, end: true },
   { to: "/explorer", label: "Explorer", Icon: Rows3, end: false },
   { to: "/compare", label: "Compare", Icon: Activity, end: false },
+  { to: "/trained", label: "Trained model", Icon: Cpu, end: false },
   { to: "/live", label: "Live Check", Icon: Play, end: false },
   { to: "/yours", label: "Your code", Icon: FolderUp, end: false },
 ];

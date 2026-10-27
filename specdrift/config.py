@@ -52,6 +52,8 @@ class Settings(BaseSettings):
     results_dir: Path = REPO_ROOT / "results"
     cache_dir: Path = REPO_ROOT / "cache"
     work_dir: Path = REPO_ROOT / "work"
+    # Curated results of the fine-tuned-verifier evaluation, shown on the dashboard's "Trained model" page.
+    trained_model_path: Path = REPO_ROOT / "docs" / "trained-model-results.json"
 
     @property
     def built_cases_path(self) -> Path:

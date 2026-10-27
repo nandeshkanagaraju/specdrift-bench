@@ -1,0 +1,419 @@
+{
+ "title": "Does a fine-tuned small model make a better SpecGuard verifier?",
+ "generated": "28 Oct 2026",
+ "verdict": {
+  "headline": "H1 is not supported",
+  "text": "The fine-tuned Qwen2.5-Coder-1.5B removes the false alarms (0.00 on the clean controls) but also stops detecting drift (recall 0.08 against 0.54 for gpt-4o-mini). H1 asks for fewer false alarms at equal or better recall."
+ },
+ "benchmark_arms": [
+  {
+   "name": "gpt-4o-mini-zero-shot",
+   "label": "gpt-4o-mini (zero-shot)",
+   "runs": 3,
+   "recall": {
+    "mean": 0.5424,
+    "ci95": [
+     0.4098,
+     0.6604
+    ]
+   },
+   "precision": {
+    "mean": 0.6443,
+    "ci95": [
+     0.5076,
+     0.7708
+    ]
+   },
+   "strict_precision": {
+    "mean": 0.2927,
+    "ci95": [
+     0.224,
+     0.3642
+    ]
+   },
+   "false_alarm_rate": {
+    "mean": 0.6543,
+    "ci95": [
+     0.4691,
+     0.8333
+    ]
+   },
+   "uncertain_rate": {
+    "mean": 0.0611,
+    "ci95": [
+     0.0454,
+     0.0774
+    ]
+   }
+  },
+  {
+   "name": "keyword-baseline",
+   "label": "Keyword baseline",
+   "runs": 1,
+   "recall": {
+    "mean": 0.0847,
+    "ci95": [
+     0.0182,
+     0.1579
+    ]
+   },
+   "precision": {
+    "mean": 0.3333,
+    "ci95": [
+     0.1,
+     0.6
+    ]
+   },
+   "strict_precision": {
+    "mean": 0.1562,
+    "ci95": [
+     0.0385,
+     0.2857
+    ]
+   },
+   "false_alarm_rate": {
+    "mean": 0.3704,
+    "ci95": [
+     0.1852,
+     0.5556
+    ]
+   },
+   "uncertain_rate": {
+    "mean": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "name": "qwen2.5-coder-1.5b-untuned",
+   "label": "Qwen2.5-Coder-1.5B (untuned)",
+   "runs": 1,
+   "recall": {
+    "mean": 0.4237,
+    "ci95": [
+     0.3065,
+     0.5577
+    ]
+   },
+   "precision": {
+    "mean": 0.4902,
+    "ci95": [
+     0.3469,
+     0.6275
+    ]
+   },
+   "strict_precision": {
+    "mean": 0.0862,
+    "ci95": [
+     0.06,
+     0.1144
+    ]
+   },
+   "false_alarm_rate": {
+    "mean": 0.963,
+    "ci95": [
+     0.875,
+     1.0
+    ]
+   },
+   "uncertain_rate": {
+    "mean": 0.6492,
+    "ci95": [
+     0.6059,
+     0.6894
+    ]
+   }
+  },
+  {
+   "name": "qwen2.5-coder-1.5b-sft-r0",
+   "label": "Qwen2.5-Coder-1.5B + fine-tuned adapter",
+   "runs": 1,
+   "recall": {
+    "mean": 0.0847,
+    "ci95": [
+     0.0179,
+     0.1636
+    ]
+   },
+   "precision": {
+    "mean": 1.0,
+    "ci95": [
+     1.0,
+     1.0
+    ]
+   },
+   "strict_precision": {
+    "mean": 0.5,
+    "ci95": [
+     0.2222,
+     0.7778
+    ]
+   },
+   "false_alarm_rate": {
+    "mean": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "uncertain_rate": {
+    "mean": 0.0541,
+    "ci95": [
+     0.0395,
+     0.0692
+    ]
+   }
+  }
+ ],
+ "paired_tuned_minus_baseline": {
+  "vs_gpt-4o-mini": {
+   "false_alarm_rate": {
+    "difference": -0.6543,
+    "ci95": [
+     -0.8333,
+     -0.4691
+    ]
+   },
+   "recall": {
+    "difference": -0.4576,
+    "ci95": [
+     -0.5897,
+     -0.3121
+    ]
+   }
+  },
+  "vs_untuned": {
+   "false_alarm_rate": {
+    "difference": -0.96,
+    "ci95": [
+     -1.0,
+     -0.875
+    ]
+   },
+   "recall": {
+    "difference": -0.34,
+    "ci95": [
+     -0.4655,
+     -0.2222
+    ]
+   }
+  }
+ },
+ "per_category": [
+  {
+   "category": "D1",
+   "metric": "recall",
+   "n": 8,
+   "gpt-4o-mini-zero-shot": 0.2917,
+   "qwen2.5-coder-1.5b-untuned": 0.25,
+   "qwen2.5-coder-1.5b-sft-r0": 0.125
+  },
+  {
+   "category": "D2",
+   "metric": "recall",
+   "n": 9,
+   "gpt-4o-mini-zero-shot": 1.0,
+   "qwen2.5-coder-1.5b-untuned": 0.4444,
+   "qwen2.5-coder-1.5b-sft-r0": 0.0
+  },
+  {
+   "category": "D3",
+   "metric": "recall",
+   "n": 6,
+   "gpt-4o-mini-zero-shot": 0.3333,
+   "qwen2.5-coder-1.5b-untuned": 0.3333,
+   "qwen2.5-coder-1.5b-sft-r0": 0.3333
+  },
+  {
+   "category": "D4",
+   "metric": "recall",
+   "n": 6,
+   "gpt-4o-mini-zero-shot": 1.0,
+   "qwen2.5-coder-1.5b-untuned": 0.5,
+   "qwen2.5-coder-1.5b-sft-r0": 0.0
+  },
+  {
+   "category": "D5",
+   "metric": "recall",
+   "n": 6,
+   "gpt-4o-mini-zero-shot": 0.3333,
+   "qwen2.5-coder-1.5b-untuned": 0.3333,
+   "qwen2.5-coder-1.5b-sft-r0": 0.0
+  },
+  {
+   "category": "D6",
+   "metric": "recall",
+   "n": 6,
+   "gpt-4o-mini-zero-shot": 0.3333,
+   "qwen2.5-coder-1.5b-untuned": 0.1667,
+   "qwen2.5-coder-1.5b-sft-r0": 0.0
+  },
+  {
+   "category": "D7",
+   "metric": "recall",
+   "n": 6,
+   "gpt-4o-mini-zero-shot": 0.6111,
+   "qwen2.5-coder-1.5b-untuned": 0.6667,
+   "qwen2.5-coder-1.5b-sft-r0": 0.3333
+  },
+  {
+   "category": "D8",
+   "metric": "recall",
+   "n": 6,
+   "gpt-4o-mini-zero-shot": 0.1667,
+   "qwen2.5-coder-1.5b-untuned": 0.5,
+   "qwen2.5-coder-1.5b-sft-r0": 0.0
+  },
+  {
+   "category": "D9",
+   "metric": "recall",
+   "n": 6,
+   "gpt-4o-mini-zero-shot": 0.6667,
+   "qwen2.5-coder-1.5b-untuned": 0.6667,
+   "qwen2.5-coder-1.5b-sft-r0": 0.0
+  },
+  {
+   "category": "N1",
+   "metric": "false_alarm_rate",
+   "n": 3,
+   "gpt-4o-mini-zero-shot": 0.6667,
+   "qwen2.5-coder-1.5b-untuned": 1.0,
+   "qwen2.5-coder-1.5b-sft-r0": 0.0
+  },
+  {
+   "category": "N2",
+   "metric": "false_alarm_rate",
+   "n": 18,
+   "gpt-4o-mini-zero-shot": 0.6667,
+   "qwen2.5-coder-1.5b-untuned": 1.0,
+   "qwen2.5-coder-1.5b-sft-r0": 0.0
+  },
+  {
+   "category": "N3",
+   "metric": "false_alarm_rate",
+   "n": 6,
+   "gpt-4o-mini-zero-shot": 0.6111,
+   "qwen2.5-coder-1.5b-untuned": 0.8333,
+   "qwen2.5-coder-1.5b-sft-r0": 0.0
+  }
+ ],
+ "unseen_projects": {
+  "qwen2.5-coder-1.5b-untuned": {
+   "recall": {
+    "mean": 0.3,
+    "ci95": [
+     0.0,
+     0.6
+    ]
+   },
+   "false_alarm_rate": {
+    "mean": 0.375,
+    "ci95": [
+     0.1818,
+     0.5714
+    ]
+   },
+   "rules": 34,
+   "drift_rules": 10
+  },
+  "qwen2.5-coder-1.5b-sft-r0": {
+   "recall": {
+    "mean": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "false_alarm_rate": {
+    "mean": 0.0833,
+    "ci95": [
+     0.0,
+     0.2083
+    ]
+   },
+   "rules": 34,
+   "drift_rules": 10
+  }
+ },
+ "gate_runs": [
+  {
+   "run": 1,
+   "false_alarms": 14,
+   "clean": 89,
+   "caught": 23,
+   "drift": 57,
+   "gate": "GO",
+   "note": "adapter lost"
+  },
+  {
+   "run": 2,
+   "false_alarms": 11,
+   "clean": 89,
+   "caught": 15,
+   "drift": 57,
+   "gate": "NO_GO",
+   "note": "not run on the benchmark"
+  },
+  {
+   "run": 3,
+   "false_alarms": 8,
+   "clean": 89,
+   "caught": 18,
+   "drift": 57,
+   "gate": "NO_GO",
+   "note": "the adapter scored on the benchmark"
+  }
+ ],
+ "untuned_gate": {
+  "false_alarms": 44,
+  "clean": 89,
+  "caught": 23,
+  "drift": 57
+ },
+ "ranking_auc": [
+  {
+   "set": "Benchmark (1,106 rule checks)",
+   "untuned": 0.4454924424184261,
+   "tuned": 0.5142904270633397,
+   "tuned_ci95": [
+    0.43593589359094387,
+    0.5912550045257222
+   ]
+  },
+  {
+   "set": "Validation, all",
+   "untuned": 0.4848216045732308,
+   "tuned": 0.7269860043366844,
+   "tuned_ci95": [
+    0.637487512388256,
+    0.8114972109772726
+   ]
+  },
+  {
+   "set": "Validation, synthetic project-level",
+   "untuned": 0.47613737734165923,
+   "tuned": 0.6008028545941124,
+   "tuned_ci95": [
+    0.4859552125506073,
+    0.7158945426158541
+   ]
+  }
+ ],
+ "training": {
+  "base": "Qwen/Qwen2.5-Coder-1.5B-Instruct",
+  "method": "QLoRA (4-bit, r=16, alpha=32)",
+  "examples": 1921,
+  "validation": 162,
+  "libraries": 10,
+  "steps": 240
+ },
+ "caveats": [
+  "One adapter was scored on the benchmark; three training runs with the same settings gave one GO and two NO_GO verdicts.",
+  "Validation is one project (cachetools); validation recall did not predict benchmark recall.",
+  "Rules, oracles and labels for the training data were written by an LLM and checked by tests, not yet by humans.",
+  "86 cases give wide intervals; greedy decoding is deterministic, so the intervals cover case sampling only.",
+  "HumanEval, MBPP and QuixBugs are likely in the base model's pretraining data."
+ ]
+}

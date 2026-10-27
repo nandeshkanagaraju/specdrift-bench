@@ -225,3 +225,51 @@ export interface SweepResult {
   rules_checked: number;
   escapes_tests: boolean | null;
 }
+
+/** A mean with its bootstrap 95% interval. */
+export interface Stat {
+  mean: number;
+  ci95: [number, number];
+}
+
+export interface TrainedArm {
+  name: string;
+  label: string;
+  runs: number;
+  recall: Stat;
+  precision: Stat;
+  strict_precision: Stat;
+  false_alarm_rate: Stat;
+  uncertain_rate: Stat;
+}
+
+export interface PairedDifference {
+  difference: number;
+  ci95: [number, number];
+}
+
+export interface GateRun {
+  run: number;
+  false_alarms: number;
+  clean: number;
+  caught: number;
+  drift: number;
+  gate: string;
+  note: string;
+}
+
+/** docs/trained-model-results.json: the curated result of the fine-tuned-verifier evaluation. */
+export interface TrainedModelResults {
+  title: string;
+  generated: string;
+  verdict: { headline: string; text: string };
+  benchmark_arms: TrainedArm[];
+  paired_tuned_minus_baseline: Record<string, { false_alarm_rate: PairedDifference; recall: PairedDifference }>;
+  per_category: Array<Record<string, string | number>>;
+  unseen_projects: Record<string, { recall: Stat; false_alarm_rate: Stat; rules: number; drift_rules: number }>;
+  gate_runs: GateRun[];
+  untuned_gate: { false_alarms: number; clean: number; caught: number; drift: number };
+  ranking_auc: Array<{ set: string; untuned: number; tuned: number; tuned_ci95: [number, number] }>;
+  training: { base: string; method: string; examples: number; validation: number; libraries: number; steps: number };
+  caveats: string[];
+}
