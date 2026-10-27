@@ -124,6 +124,11 @@ gate must always point at `main-v6/sft`, not at the arm's own `sft/`.
    It says COMPLIANT almost everywhere, so H1 (lower false alarms at equal or better recall) is not supported. S4 is met literally but through that
    collapse. The validation recall (0.32 for this adapter, 0.26 to 0.40 across runs) did not predict the benchmark recall (0.08). Full tables: `docs/r1-comparison.md` and
    `docs/trained-model-evaluation.md`. Not done and not run: ablations (R2), seeds (R1b), 7B.
+   **Scoring experiment (28 Oct 2026, run-3 adapter, about 8 minutes of GPU time):** ranking rule checks by the probability of the first answer token gives benchmark
+   AUC 0.51 [0.44, 0.59] (untuned 0.45), so there is no ranking signal hidden by the answers and recalibrating cannot fix it. Validation AUC is 0.73 overall but 0.60 on the
+   synthetic project-level part; at the validation-chosen threshold recall is 12 of 19 on function-level paper examples and 8 of 38 on synthetic ones (exploratory).
+   The failure is in what was learned, so the next change should be to the training signal (more or better project-level drift examples, a validation set that
+   separates function-level from project-level), not to thresholds.
 2. **R1, evaluate R0 on the 86 cases**: untuned Qwen and R0, one run each (`"runs": 1` in the arms file; greedy decoding is deterministic, repeating it
    only burns GPU). Time `specdrift run --detector specguard --limit 5` first: each case is about 13 separate generations, and the full 86 cases may take
    hours per arm (an estimate, not measured). The gpt-4o-mini arm reuses `results/`.

@@ -78,10 +78,11 @@ false-alarm rate below the untuned model's) is met literally (0.00 against 0.96)
 The untuned 1.5B model is itself a poor verifier here (false-alarm rate 0.96, UNCERTAIN rate 0.65), which makes it an easy baseline to beat on false
 alarms and a weak one to compare against.
 
-**A hypothesis, not a finding:** validation used the same kinds of synthetic mutation as training (a different library, the same operators), while the
-benchmark's drifts were written by hand. The gap between recall 0.32 (this adapter) on validation and 0.08 on the benchmark is consistent with the model learning
-the injected-mutation patterns rather than drift in general. The `main-v6-heldout` mix (benchmark-overlapping operator families held out) was built to test
-exactly this and has not been trained.
+**Why validation did not predict the benchmark (section 5b has the evidence):** a simple distribution-shift story is not enough, because the model is weak even on
+held-out synthetic project-level examples (AUC 0.60, interval including 0.5). What validated was mostly function-level bug detection from the paper data (recall 12
+of 19 on that part, 8 of 38 on the synthetic part at the same threshold), which does not transfer to project-level drift. This points to the training signal for
+project-level drift being too weak or too mechanical, and to a validation set that mixes the two kinds of example. It is a reading of small groups, not a proven cause.
+The `main-v6-heldout` and `main-v6-nopaper` mixes (built, not trained) would test parts of it.
 
 ## 5. Threats to validity (state these next to any number)
 
@@ -111,7 +112,25 @@ fingerprint (sha256 starting `d9f9f98e24abcf0b`) and stops if another adapter is
 - **AUC reading (my proposal, not a standard):** 0.8 or more on the benchmark means usable signal hidden by the answers; about 0.5 means nothing that transfers.
 - **Not tested on a GPU before the run:** the token-level scoring path (the plumbing, truth, AUC and threshold code were tested locally with a fake scorer).
 
-**TO FILL** after the run: validation and benchmark AUC (tuned and untuned) with intervals, recall and false-alarm at t*.
+**Result (28 Oct 2026, run-3 adapter, weights fingerprint checked; the token readout is valid: the three label tokens carry 99.7% of the next-token probability).**
+
+| AUC (95% CI over examples or cases) | untuned | tuned |
+|---|---|---|
+| validation, all 146 DRIFT/COMPLIANT records | 0.48 [0.39, 0.58] | 0.73 [0.64, 0.81] |
+| validation, synthetic cachetools only (97) | 0.48 [0.36, 0.59] | 0.60 [0.49, 0.72] |
+| **benchmark, 1,106 rule checks (64 violated)** | 0.45 [0.37, 0.53] | **0.51 [0.44, 0.59]** |
+
+At the pre-specified t* = 0.461 (validation recall 0.35 at false-alarm rate 0.09), the benchmark gives pair recall 0.08, pair false-alarm 0.01, case-level recall
+0.09 and control false-alarm 0.07. Exploratory thresholds only slide along a no-skill line: at 0.20 pair recall is 0.86 with pair false-alarm 0.88, and at 0.10 and
+below everything is flagged.
+
+**Reading under the rule fixed beforehand:** the benchmark AUC is about 0.5, so the model has no usable ranking signal on the hand-built cases that its answers
+hide. The problem is what the model learned, not how its answers are calibrated; moving the threshold cannot recover recall.
+
+**Exploratory, not pre-registered (small groups, wide intervals):** at t* the validation recall splits by source into 12 of 19 DRIFT caught on the function-level
+paper examples (1 of 30 clean flagged) and 8 of 38 on the synthetic project-level examples (7 of 59 clean flagged). The skill that validates is mostly the
+function-level bug detection; on project-level synthetic drift, the kind the benchmark tests, it is weak even in-distribution (AUC 0.60, interval includes 0.5).
+The paper data (Stage A) may also overlap the base model's pretraining data (section 5).
 
 ## 6. Not done
 

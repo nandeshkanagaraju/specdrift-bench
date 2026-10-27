@@ -20,6 +20,13 @@ jobs:
         run: ruff check specdrift tests
       - name: Types
         run: mypy
+      - name: Build the cases and restore the frozen results
+        # tests/test_api.py serves the repository's real cases and results; both are generated or ignored by git,
+        # so a clean checkout has neither. The committed snapshot stands in for results/.
+        run: |
+          specdrift build
+          mkdir -p results
+          cp -R results-snapshot/annotated/. results/
       - name: Tests
         # No test calls a real model; LLM_PROVIDER stays "fake".
         run: pytest -q
