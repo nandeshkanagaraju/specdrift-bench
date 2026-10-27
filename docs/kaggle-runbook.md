@@ -100,6 +100,14 @@ gate must always point at `main-v6/sft`, not at the arm's own `sft/`.
 1. **R0, the pilot**: `main-v6`, seed 17, 2 epochs, `--gate-data data/mix/main-v6/sft`. About 1,921 / batch-size optimiser steps per epoch (the old
    52-step figure was for the 414-example `main-v1`; recompute from your batch size and check whether the 200-step checkpoint is now reached).
    Read `go_no_go.json`.
+   **R0 result (26 Oct 2026, Kaggle 2x T4, `main-v6`, seed 17, 2 epochs, 240 steps, 1h46m): GO.** 1,913 of 1,921 examples trained (8 were over 3,072 tokens by the real
+   tokenizer). On the 162 validation examples (cachetools only; 89 clean, 57 DRIFT): false-alarm rate 0.494 untuned (44/89) vs 0.157 tuned (14/89); recall
+   0.404 for both (23/57 caught); UNCERTAIN rate 0.541 vs 0.130; unparseable rate 0.191 vs 0.000. S1 to S3 do not fire. The smoke test found one real bug
+   (newer transformers rejects `warmup_ratio`; fixed with `warmup_steps`). Not yet measured on the 86 cases (R1), so S4 is still open. Recall did not improve,
+   and part of the false-alarm drop may be the tuned model learning the output format (the untuned model's answers are unparseable 19% of the time).
+   **The R0 adapter itself was lost** (the Kaggle session's working folder was overwritten before it was downloaded or saved as a version), so R0 is being
+   retrained inside one combined R0 + R1 notebook that saves `r0_adapter.zip`. GPU training is not guaranteed bit-identical, so the retrained gate numbers
+   may differ a little from the ones above; the numbers above are from the lost adapter. Always use Save Version and download the adapter straight away.
 2. **R1, evaluate R0 on the 86 cases**: untuned Qwen and R0, one run each (`"runs": 1` in the arms file; greedy decoding is deterministic, repeating it
    only burns GPU). Time `specdrift run --detector specguard --limit 5` first: each case is about 13 separate generations, and the full 86 cases may take
    hours per arm (an estimate, not measured). The gpt-4o-mini arm reuses `results/`.

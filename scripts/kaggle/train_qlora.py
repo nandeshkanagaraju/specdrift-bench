@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import random
 import re
 import sys
@@ -239,6 +240,12 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def warmup_steps(total_steps: int, ratio: float = 0.03) -> int:
+    """Warm-up as an integer step count. `TrainingArguments(warmup_ratio=...)` was removed in newer transformers,
+    while `warmup_steps=<int>` works in every version."""
+    return max(1, round(total_steps * ratio))
+
+
 def load_model(base: str, token: str | None):
     import torch
     from transformers import AutoModelForCausalLM, BitsAndBytesConfig
@@ -283,9 +290,10 @@ def train(args, tokenizer, token: str | None):
         return {k: torch.tensor(v) for k, v in pad_batch(batch, tokenizer.pad_token_id).items()}
 
     steps_per_epoch = max(1, -(-len(train_rows) // (args.batch * args.accum)))
+    total_steps = max(1, math.ceil(steps_per_epoch * args.epochs))
     arguments = TrainingArguments(
         output_dir=args.out, num_train_epochs=args.epochs, learning_rate=args.lr, lr_scheduler_type="cosine",
-        warmup_ratio=0.03, per_device_train_batch_size=args.batch, per_device_eval_batch_size=args.batch,
+        warmup_steps=warmup_steps(total_steps), per_device_train_batch_size=args.batch, per_device_eval_batch_size=args.batch,
         gradient_accumulation_steps=args.accum, fp16=True, gradient_checkpointing=True,
         eval_strategy="steps", eval_steps=min(SAVE_STEPS, steps_per_epoch),   # small sets are still evaluated each epoch
         save_strategy="steps", save_steps=SAVE_STEPS, save_total_limit=2,

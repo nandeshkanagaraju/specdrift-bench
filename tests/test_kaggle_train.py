@@ -210,6 +210,20 @@ def test_secrets_come_only_from_kaggle_secrets(monkeypatch):
     assert train.get_secret("HF_TOKEN") == "value-from-kaggle" and asked == ["HF_TOKEN"]
 
 
+def test_warmup_is_an_integer_step_count_of_three_percent_and_at_least_one():
+    # Found on Kaggle: newer transformers reject TrainingArguments(warmup_ratio=...).
+    assert train.warmup_steps(240) == 7
+    assert train.warmup_steps(120) == 4
+    assert train.warmup_steps(3) == 1
+    assert isinstance(train.warmup_steps(240), int)
+
+
+def test_training_arguments_use_warmup_steps_not_the_removed_warmup_ratio():
+    text = SCRIPT.read_text(encoding="utf-8")
+    assert "warmup_steps=warmup_steps(total_steps)" in text
+    assert "warmup_ratio" not in text.replace("`TrainingArguments(warmup_ratio=...)`", "")
+
+
 def test_the_notebook_has_no_secret_in_it_and_takes_none_on_the_command_line():
     text = SCRIPT.read_text(encoding="utf-8")
     assert not re.search(r"hf_[A-Za-z0-9]{20,}|sk-[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{12,}", text)
