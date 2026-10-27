@@ -108,6 +108,19 @@ gate must always point at `main-v6/sft`, not at the arm's own `sft/`.
    **The R0 adapter itself was lost** (the Kaggle session's working folder was overwritten before it was downloaded or saved as a version), so R0 is being
    retrained inside one combined R0 + R1 notebook that saves `r0_adapter.zip`. GPU training is not guaranteed bit-identical, so the retrained gate numbers
    may differ a little from the ones above; the numbers above are from the lost adapter. Always use Save Version and download the adapter straight away.
+   **R0 retrained (27 Oct 2026, same data, script and seed 17): NO_GO.** Training and validation loss were almost identical to the first run (first-epoch eval loss
+   0.0910 then 0.0914), but the gate differed: false alarms 11/89 (0.124) vs 14/89 (0.157) before, tuned unparseable 0.006, recall **15/57 (0.263)** vs 23/57
+   (0.404) before, so S1 fired on the recall guard (untuned 0.404; drop 0.14 > 0.05). Reading: the false-alarm reduction repeated (0.494 down to 0.12 to 0.16);
+   recall did not, and it was never above the untuned model's in either run. On 57 drift examples a recall of 0.263 and one of 0.404 have overlapping 95% Wilson
+   intervals (about 0.17 to 0.39 and 0.29 to 0.53), so the 0.05 recall guard is below what this validation set (one project) can resolve. The guard was
+   fixed before the runs and is left as it is; the fix is a larger, multi-project validation set. Cause found in the script: `--seed` did not seed the LoRA
+   initial weights (they are created before the Trainer applies the seed); fixed with `set_seed` before the model is built, so the retrain above ran
+   WITHOUT that fix and the first run's result cannot be reproduced.
+   **R1 (28 Oct 2026, the retrained adapter, diagnostic past an S1 NO_GO; untuned and tuned run in parallel on 2x T4, about 1h45m):** on the 86 cases the tuned
+   model has false-alarm rate 0.00 and recall **0.08** [0.02, 0.16] (gpt-4o-mini: 0.65 and 0.54; untuned Qwen: 0.96 and 0.42); on `examples/` its recall is 0.00.
+   It says COMPLIANT almost everywhere, so H1 (lower false alarms at equal or better recall) is not supported. S4 is met literally but through that
+   collapse. The validation recall (0.26 to 0.40) did not predict the benchmark recall (0.08). Full tables: `docs/r1-comparison.md` and
+   `docs/trained-model-evaluation.md`. Not done and not run: ablations (R2), seeds (R1b), 7B.
 2. **R1, evaluate R0 on the 86 cases**: untuned Qwen and R0, one run each (`"runs": 1` in the arms file; greedy decoding is deterministic, repeating it
    only burns GPU). Time `specdrift run --detector specguard --limit 5` first: each case is about 13 separate generations, and the full 86 cases may take
    hours per arm (an estimate, not measured). The gpt-4o-mini arm reuses `results/`.
